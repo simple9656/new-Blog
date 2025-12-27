@@ -9,3 +9,71 @@
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
 }
+
+/* Twikoo 评论区美化 */
+
+/* 1. 评论区整体容器美化 */
+.twikoo {
+    background: rgba(255, 255, 255, 0.8); /* 整体背景改为半透明白色，解决背景图太花导致看不清的问题 */
+    backdrop-filter: blur(10px); /* 增加毛玻璃效果 */
+    border-radius: 12px; /* 圆角 */
+    padding: 20px; /* 内边距 */
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1); /* 柔和阴影 */
+    margin-top: 20px;
+}
+
+/* 2. 输入框区域美化 */
+.tk-input {
+    background: rgba(255, 255, 255, 0.6) !important; /* 输入框背景半透明 */
+    border-radius: 8px !important; /* 输入框圆角 */
+    border: 1px solid rgba(0, 0, 0, 0.1); /* 边框 */
+    transition: all 0.3s ease;
+}
+
+/* 输入框聚焦时的效果 */
+.tk-input:focus-within {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-color: #49b1f5; /* 聚焦时边框变蓝，可改为您主题色 */
+    box-shadow: 0 0 8px rgba(73, 177, 245, 0.2);
+}
+
+/* 3. 评论列表卡片美化 */
+.tk-content {
+    background: rgba(255, 255, 255, 0.5); /* 每条评论的背景 */
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-top: 10px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* 4. 按钮美化（预览和发送按钮） */
+.tk-submit-action-icon, .tk-submit-action-button {
+    border-radius: 6px !important;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.tk-submit-action-button {
+    background-color: #49b1f5 !important; /* 按钮颜色 */
+    color: white !important;
+}
+
+.tk-submit-action-button:hover {
+    background-color: #FF7242 !important; /* 悬停变色 */
+    transform: translateY(-2px); /* 悬停上浮效果 */
+}
+
+/* 适配暗黑模式 (Dark Mode) - 必须加，否则夜间模式会亮瞎眼 */
+[data-theme="dark"] .twikoo {
+    background: rgba(30, 30, 30, 0.8); /* 暗色背景 */
+    box-shadow: none;
+}
+[data-theme="dark"] .tk-input {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #eee;
+}
+[data-theme="dark"] .tk-content {
+    background: rgba(0, 0, 0, 0.3);
+    color: #ddd;
+}
