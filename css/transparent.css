@@ -1,0 +1,81 @@
+
+/* 1. 设置全屏背景图 - 本地图片版 */
+body {
+    /* 
+       Hexo 的规则是：source/img/p.jpg 会被发布到 /img/p.jpg
+       所以这里要写绝对路径 '/img/p.jpg' 
+    */
+    background: url('/img/p.jpg') no-repeat center center fixed !important;
+    
+    /* 保证图片始终填满屏幕，不会变形，也不会随着滚动条滚动 */
+    background-size: cover !important;
+}
+
+
+/* 2. 卡片透明化 + 毛玻璃特效 */
+/* 侧边栏 */
+.card-widget,
+/* 首页文章卡片 (加了更多名字来确保选中它) */
+.recent-post-item,
+div.recent-post-item,
+/* 文章详情页区域 */
+#post,
+#post > #post-info,
+#post > #post-content,
+.post-copyright {
+    /* 核心代码：白色背景，0.6 透明度 (你可以调 0.1 到 0.9) */
+    background-color: rgba(255, 255, 255, 0.6) !important;
+    
+    /* 核心代码：毛玻璃模糊 (数字越大越模糊) */
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    
+    /* 稍微加一点圆角和边框让它更有质感 */
+    border-radius: 12px !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* 3. 让顶栏导航条也变透明一点，保持一致 */
+#page-header #nav {
+    background: rgba(255, 255, 255, 0.5) !important;
+    backdrop-filter: blur(5px) !important;
+}
+
+/* source/css/transparent.css - 顶部透明去灰版 */
+
+/* 1. 顶部大区域：完全透明，不要灰色，不要模糊 */
+#page-header {
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    backdrop-filter: none !important; /* 去掉毛玻璃，让背景清晰 */
+    -webkit-backdrop-filter: none !important;
+}
+
+/* 2. 顶部导航条（最上面那个细条）：也完全透明 */
+#page-header #nav {
+    background: transparent !important;
+    box-shadow: none !important; /* 去掉底部的阴影线 */
+    backdrop-filter: none !important;
+}
+
+/* 3. 核心关键：文字加阴影 */
+/* 既然背景是透明的，字必须要有“轮廓”才能看清 */
+#page-header #site-title,       /* 大标题 */
+#page-header #site-subtitle,    /* 副标题 */
+#page-header .post-meta,        /* 文章信息 */
+#page-header #nav .site-page,   /* 导航栏文字 */
+#page-header .toggle-menu       /* 手机端菜单按钮 */
+{
+    color: #fff !important; /* 强制白色文字 */
+    text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.9),   /* 黑色投影 */
+        0 0 5px rgba(0, 0, 0, 0.5) !important; /* 黑色发光 */
+}
+
+/* 4. 如果导航栏有背景色变化（滚动时），也强制去掉 */
+#page-header.fixed #nav {
+    background: rgba(255, 255, 255, 0.1) !important; /* 滚动下来后只给一点点淡淡的透明白 */
+    backdrop-filter: blur(5px) !important; /* 滚动下来后加一点点模糊 */
+    box-shadow: 0 5px 6px -5px rgba(133, 133, 133, 0.6);
+}

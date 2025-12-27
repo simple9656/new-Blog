@@ -1,33 +1,11 @@
-/* 全屏背景图设置 */
-#web_bg {
-  /* 这里用了一个比较稳的二次元图床，你也可以换成自己的图片链接 */
-  background: url("https://api.paugram.com/wallpaper/") no-repeat center center;
-  background-size: cover;
-  background-attachment: fixed;
-}
-
-/* 首页文章卡片毛玻璃效果 */
+/* 毛玻璃/半透明卡片效果 (威力加强版) */
 #recent-posts > .recent-post-item,
-.layout > .recent-posts .pagination > .page-number,
-.layout > .recent-posts .pagination > .extend {
-  background: rgba(255, 255, 255, 0.8) !important; /* 白色背景，80%不透明 */
-  backdrop-filter: blur(10px); /* 模糊滤镜 */
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 15px; /* 圆角 */
-}
-
-/* 侧边栏卡片毛玻璃 */
-.card-widget {
-  background: rgba(255, 255, 255, 0.8) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 15px;
-}
-
-/* 鼠标样式 (变成可爱的小箭头) */
-body {
-  cursor: url('https://cdn.jsdelivr.net/gh/sviptzk/HexoStaticFile@latest/Hexo/img/default.cur'), auto;
-}
-a:hover {
-  cursor: url('https://cdn.jsdelivr.net/gh/sviptzk/HexoStaticFile@latest/Hexo/img/pointer.cur'), pointer;
+.card-widget,
+#aside-content .card-widget,
+#post > #post-info,
+#post > #post-content,
+.post-copyright {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
 }
