@@ -1,3 +1,81 @@
+/* --- 
+   美化合集 (By 资深软件工程师)
+   - 新增：全局字体强制修改 (霞鹜文楷)
+   - 新增：页脚透明化，实现背景图穿透效果
+   - 保留：您原来的毛玻璃卡片和 Twikoo 评论区美化
+--- */
+
+/* --- 1. 新增：全局字体强制修改 --- */
+
+/* 强制全局使用霞鹜文楷 */
+body {
+    font-family: 'LXGW WenKai Screen', sans-serif !important;
+}
+
+/* 专门强制首页大标题（和副标题）也用这个字体 */
+#site-title, 
+#site-subtitle, 
+.site-name {
+    font-family: 'LXGW WenKai Screen', sans-serif !important;
+}
+
+/* --- 2. 新增：页脚透明化，实现背景图穿透效果 --- */
+
+/* 保证背景图固定且全屏 */
+#web_bg {
+    background-attachment: fixed !important;
+    background-size: cover !important;
+    background-repeat: no-repeat !important;
+}
+
+/* --- 优化后的页脚：增加文字阴影，防止背景太亮看不清 --- */
+
+/* 页脚容器 */
+#footer {
+    background: transparent !important; /* 背景保持透明 */
+    /* 关键点：添加黑色文字阴影 (x偏移 y偏移 模糊度 颜色) */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0,0,0,0.5);
+    color: #fff !important;
+    backdrop-filter: none !important;
+}
+
+/* 针对页脚里的链接（比如 Hexo, Butterfly 字样）也加上阴影 */
+#footer a {
+    color: #fff !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+    font-weight: bold; /*稍微加粗一点，更清晰 */
+}
+
+/* 去除页脚顶部的横线 */
+#footer::before {
+    background: transparent !important;
+}
+
+/* 备案号等图标颜色校正 */
+#footer-wrap i {
+    color: #fff !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+/* 去除页脚顶部的横线，让融合更自然 */
+#footer::before {
+    background: transparent !important;
+}
+
+/* 修改页脚链接颜色为白色 */
+#footer a {
+    color: #fff !important;
+}
+
+/* 暗黑模式下，页脚文字颜色可能需要调整回来 */
+[data-theme="dark"] #footer,
+[data-theme="dark"] #footer a {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+
+/* --- 3. 保留：您原来的毛玻璃卡片和 Twikoo 美化 --- */
+
 /* 毛玻璃/半透明卡片效果 (威力加强版) */
 #recent-posts > .recent-post-item,
 .card-widget,
@@ -10,34 +88,36 @@
     -webkit-backdrop-filter: blur(10px) !important;
 }
 
-/* Twikoo 评论区美化 */
+/* 暗黑模式下的卡片适配 */
+[data-theme="dark"] #recent-posts > .recent-post-item,
+[data-theme="dark"] .card-widget,
+[data-theme="dark"] #aside-content .card-widget,
+[data-theme="dark"] #post > #post-info,
+[data-theme="dark"] #post > #post-content,
+[data-theme="dark"] .post-copyright {
+    background: rgba(30, 30, 30, 0.8) !important;
+}
 
-/* 1. 评论区整体容器美化 */
+/* Twikoo 评论区美化 */
 .twikoo {
-    background: rgba(255, 255, 255, 0.8); /* 整体背景改为半透明白色，解决背景图太花导致看不清的问题 */
+    background: rgba(255, 255, 255, 0.8); /* 整体背景改为半透明白色 */
     backdrop-filter: blur(10px); /* 增加毛玻璃效果 */
     border-radius: 12px; /* 圆角 */
     padding: 20px; /* 内边距 */
     box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1); /* 柔和阴影 */
     margin-top: 20px;
 }
-
-/* 2. 输入框区域美化 */
 .tk-input {
     background: rgba(255, 255, 255, 0.6) !important; /* 输入框背景半透明 */
     border-radius: 8px !important; /* 输入框圆角 */
     border: 1px solid rgba(0, 0, 0, 0.1); /* 边框 */
     transition: all 0.3s ease;
 }
-
-/* 输入框聚焦时的效果 */
 .tk-input:focus-within {
     background: rgba(255, 255, 255, 0.9) !important;
-    border-color: #49b1f5; /* 聚焦时边框变蓝，可改为您主题色 */
+    border-color: #49b1f5; /* 聚焦时边框变蓝 */
     box-shadow: 0 0 8px rgba(73, 177, 245, 0.2);
 }
-
-/* 3. 评论列表卡片美化 */
 .tk-content {
     background: rgba(255, 255, 255, 0.5); /* 每条评论的背景 */
     border-radius: 8px;
@@ -45,25 +125,21 @@
     margin-top: 10px;
     border: 1px solid rgba(0,0,0,0.05);
 }
-
-/* 4. 按钮美化（预览和发送按钮） */
 .tk-submit-action-icon, .tk-submit-action-button {
     border-radius: 6px !important;
     cursor: pointer;
     transition: all 0.3s;
 }
-
 .tk-submit-action-button {
     background-color: #49b1f5 !important; /* 按钮颜色 */
     color: white !important;
 }
-
 .tk-submit-action-button:hover {
     background-color: #FF7242 !important; /* 悬停变色 */
     transform: translateY(-2px); /* 悬停上浮效果 */
 }
 
-/* 适配暗黑模式 (Dark Mode) - 必须加，否则夜间模式会亮瞎眼 */
+/* 适配暗黑模式 (Dark Mode) */
 [data-theme="dark"] .twikoo {
     background: rgba(30, 30, 30, 0.8); /* 暗色背景 */
     box-shadow: none;
