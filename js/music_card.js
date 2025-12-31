@@ -1,90 +1,74 @@
-// 动态加载 APlayer 的 CSS
+// 1. 动态加载 APlayer 的 CSS
 var link = document.createElement('link');
 link.rel = 'stylesheet';
 link.type = 'text/css';
 link.href = 'https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css';
 document.head.appendChild(link);
 
-// 动态加载 APlayer 的 JS
+// 2. 动态加载 APlayer 的 JS
 var script = document.createElement('script');
 script.type = 'text/javascript';
 script.src = 'https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js';
 document.head.appendChild(script);
 
-// 注入样式
+// 3. 注入样式 (手机端隐藏 + 进度条修复)
 var style = document.createElement('style');
 style.innerHTML = `
-    /* 主容器样式 */
+    /* === 手机端完全隐藏 === */
+    @media (max-width: 768px) {
+        #aplayer-fixed {
+            display: none !important;
+            visibility: hidden !important;
+        }
+    }
+
+    /* === 电脑端样式 === */
     #aplayer-fixed {
         position: fixed;
         bottom: 20px;
         left: 20px;
         width: 340px;
-        z-index: 9999;
+        z-index: 99999;
         background: #fff;
         border-radius: 6px;
         box-shadow: 0 2px 15px rgba(0,0,0,0.2);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-family: -apple-system, Arial, sans-serif;
     }
-  
-    /* 封面可拖拽 */
-    .aplayer-pic {
+
+    #aplayer-fixed .aplayer-pic {
         cursor: move !important;
-        z-index: 1002 !important; /* 确保封面也在高层级 */
+        z-index: 11 !important;
     }
-  
-    /* 歌词点击穿透 */
-    .aplayer-lrc {
+
+    #aplayer-fixed .aplayer-lrc {
         pointer-events: none !important;
     }
 
-    /* === 终极修复核心代码 === */
-    
-    /* 1. 控制栏(Info)：强制置顶，锁定高度，纯白背景 */
-    .aplayer .aplayer-info {
+    /* === 修复进度条点击问题 === */
+    #aplayer-fixed .aplayer-info {
+        z-index: 12 !important;
         position: relative !important;
-        z-index: 1001 !important;
-        background-color: #fff !important;
-        padding-bottom: 10px !important; /* 增加底部内边距，给进度条留空间 */
-        border-bottom: 1px solid #eee !important; /* 视觉分隔 */
-        overflow: visible !important; /* 防止进度条圆点被切掉 */
-        transform: translateZ(10px); /* 强制 GPU 分层 */
+        overflow: visible !important; 
     }
 
-    /* 2. 进度条区域：强制最高层级，扩大点击热区 */
-    .aplayer-bar-wrap {
+    #aplayer-fixed .aplayer-bar-wrap {
+        z-index: 20 !important;
         position: relative !important;
-        z-index: 1005 !important; /* 比 Info 还要高 */
-        pointer-events: auto !important;
         cursor: pointer !important;
-        height: 10px !important; /* 增加高度，更容易点中 */
-    }
-    
-    /* 进度条本体 */
-    .aplayer-bar {
-        height: 4px !important; /* 视觉高度保持原样 */
-        margin-top: 3px !important; /* 垂直居中 */
+        pointer-events: auto !important;
+        padding: 10px 0 !important;
     }
 
-    /* 3. 播放列表：强制下移，降低层级 */
-    .aplayer .aplayer-list {
-        position: relative !important;
-        z-index: 999 !important;
-        margin-top: 0px !important; /* 重置可能存在的负边距 */
-        padding-top: 2px !important;
-        border-top: none !important;
-    }
-    
-    /* 列表项：防止点击事件冒泡干扰 */
-    .aplayer .aplayer-list ol li {
-        position: relative;
-        z-index: 998;
-        border-top: 1px solid #eee;
+    #aplayer-fixed .aplayer-list {
+        z-index: 1 !important;
     }
 `;
 document.head.appendChild(style);
 
 script.onload = function() {
+    // 手机端直接不初始化，节省资源
+    if (window.innerWidth <= 768) return;
+
     var apDiv = document.createElement('div');
     apDiv.id = 'aplayer-fixed';
     document.body.appendChild(apDiv);
@@ -195,7 +179,7 @@ script.onload = function() {
         ]
     });
 
-    // 拖拽功能
+    // === 拖拽功能 ===
     const player = document.getElementById('aplayer-fixed');
     const handle = player.querySelector('.aplayer-pic');
   
@@ -207,25 +191,22 @@ script.onload = function() {
         if (e.button !== 0) return;
         isDragging = true;
         hasMoved = false;
-      
         startX = e.clientX;
         startY = e.clientY;
-      
         const rect = player.getBoundingClientRect();
         initLeft = rect.left;
         initTop = rect.top;
-      
+        // 重置定位
+        player.style.bottom = 'auto'; 
+        player.style.right = 'auto';
         player.style.left = initLeft + 'px';
         player.style.top = initTop + 'px';
-        player.style.bottom = 'auto';
     });
 
     document.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
-      
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
-      
         if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
             hasMoved = true;
             player.style.left = (initLeft + dx) + 'px';
@@ -237,7 +218,6 @@ script.onload = function() {
         isDragging = false;
     });
 
-    // 防止拖动后触发暂停
     handle.addEventListener('click', (e) => {
         if (hasMoved) {
             e.stopImmediatePropagation();
