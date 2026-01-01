@@ -1,6 +1,319 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>vulnix常用靶机用testssl扫描结果</title>
+    <url>/2026/01/01/Vulnix%20993%20SSLTLS%20%E5%AE%89%E5%85%A8%E6%89%AB%E6%8F%8F%E7%BB%93%E6%9E%9C%E6%B1%87%E6%80%BB/</url>
+    <content><![CDATA[<think>
+
+</think>
+使用了testssl.sh-3.3
+
+<hr>
+<h3 id="Vulnix-192-168-137-133-993-SSL-TLS-安全扫描结果汇总"><a href="#Vulnix-192-168-137-133-993-SSL-TLS-安全扫描结果汇总" class="headerlink" title="Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总"></a>Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总</h3><p><strong>扫描时间:</strong> 2025-12-03 08:10:02 - 08:10:57 (总耗时 56s)<br><strong>目标服务:</strong> IMAP<br><strong>OpenSSL版本 (客户端检测):</strong> OpenSSL 1.0.2-bad (Mar 28 2025)<br><strong>总体评级:</strong> T (信任问题)</p>
+<hr>
+<h3 id="表格一：支持的-SSL-TLS-协议和密码套件-协议和Cipher-Categories部分"><a href="#表格一：支持的-SSL-TLS-协议和密码套件-协议和Cipher-Categories部分" class="headerlink" title="表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)"></a>表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)</h3><table>
+<thead>
+<tr>
+<th align="left">类别</th>
+<th align="left">项目</th>
+<th align="left">状态 &#x2F; 结果</th>
+<th align="left">严重性 &#x2F; 建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>协议支持</strong></td>
+<td align="left">SSLv2</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">SSLv3</td>
+<td align="left"><code>offered (NOT ok)</code> (已提供)</td>
+<td align="left"><strong>高危</strong>。完全过时，存在 POODLE 漏洞风险，应立即禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.0</td>
+<td align="left"><code>offered (deprecated)</code> (已提供，已弃用)</td>
+<td align="left"><strong>中危</strong>。已过时，存在已知缺陷，应禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.1</td>
+<td align="left"><code>offered (deprecated)</code> (已提供，已弃用)</td>
+<td align="left"><strong>中危</strong>。已过时，存在已知缺陷，应禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.2</td>
+<td align="left"><code>offered (OK)</code> (已提供)</td>
+<td align="left">正常，目前建议支持。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.3</td>
+<td align="left"><code>not offered and downgraded to a weaker protocol</code> (未提供)</td>
+<td align="left"><strong>低危</strong>。不支持最新、最安全的协议。建议升级支持 TLS 1.3 以提高安全性。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">NPN&#x2F;SPDY</td>
+<td align="left"><code>not offered</code> (未提供)</td>
+<td align="left">正常，与 HTTP&#x2F;2&#x2F;3 相关，不影响 IMAP。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">ALPN&#x2F;HTTP2</td>
+<td align="left"><code>not offered</code> (未提供)</td>
+<td align="left">正常，与 HTTP&#x2F;2&#x2F;3 相关，不影响 IMAP。</td>
+</tr>
+<tr>
+<td align="left"><strong>密码套件类别</strong></td>
+<td align="left">NULL ciphers</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全（无加密）。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Anonymous NULL</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全（无认证）。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Export ciphers</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全（导出级弱加密）。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">LOW: 64 Bit + DES, RC[2,4], MD5</td>
+<td align="left"><code>offered (NOT ok)</code> (已提供)</td>
+<td align="left"><strong>高危</strong>。提供低强度（64位、DES、RC4、MD5）密码套件。极易被暴力破解，应立即禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Triple DES &#x2F; IDEA</td>
+<td align="left"><code>offered</code> (已提供)</td>
+<td align="left"><strong>中危</strong>。提供 3DES&#x2F;IDEA 密码套件。这些算法存在性能问题且易受 SWEET32 攻击。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Obsoleted CBC</td>
+<td align="left"><code>offered</code> (已提供)</td>
+<td align="left"><strong>中危</strong>。提供已过时的 CBC 模式密码套件。易受 BEAST、POODLE、LUCKY13 攻击。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Strong (AEAD) no FS</td>
+<td align="left"><code>offered (OK)</code> (已提供)</td>
+<td align="left">正常，提供强加密（AEAD）密码套件。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Strong (AEAD) FS</td>
+<td align="left"><code>offered (OK)</code> (已提供)</td>
+<td align="left">正常，提供强加密（AEAD）和前向保密（FS）密码套件。</td>
+</tr>
+<tr>
+<td align="left"><strong>密码套件偏好</strong></td>
+<td align="left">服务器密码顺序</td>
+<td align="left"><code>no (NOT ok)</code> (无)</td>
+<td align="left"><strong>中危</strong>。服务器未强制自己的密码套件顺序，可能导致客户端选择弱密码套件。应配置服务器强制使用安全密码套件的优先顺序。</td>
+</tr>
+<tr>
+<td align="left"><strong>证书信息</strong></td>
+<td align="left">签名算法</td>
+<td align="left"><code>SHA1 with RSA</code></td>
+<td align="left"><strong>高危</strong>。SHA1 哈希算法已不安全，存在碰撞风险，主流浏览器已不信任 SHA1 证书。应使用 SHA256 或更强的算法。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">SAN</td>
+<td align="left"><code>missing -- no SAN is deprecated</code></td>
+<td align="left"><strong>中危</strong>。缺少主题备用名称 (SAN) 字段。SAN 是现代证书匹配域名的标准，缺失会导致客户端警告。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">信任链</td>
+<td align="left"><code>NOT ok (self signed)</code> (自签名)</td>
+<td align="left"><strong>严重</strong>。证书是自签名的，不被任何公共信任机构认可。导致所有客户端都会警告连接不安全，且易受中间人攻击。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">证书有效期</td>
+<td align="left"><code>expired (2012-09-02 --&gt; 2022-09-02)</code> (已过期)</td>
+<td align="left"><strong>严重</strong>。证书已过期。任何客户端都会拒绝连接或发出严重警告。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">证书有效期长度</td>
+<td align="left"><code>&gt;= 10 years is way too long</code> (10年以上)</td>
+<td align="left"><strong>策略问题</strong>。证书有效期过长，与当前安全最佳实践（1-2年）不符，增加了长期风险。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">OCSP &#x2F; CRL</td>
+<td align="left"><code>NOT ok -- neither CRL nor OCSP URI provided</code> (未提供)</td>
+<td align="left"><strong>中危</strong>。未提供证书吊销信息。无法及时检查证书是否已被吊销，可能导致已泄露或滥用的证书仍被信任。</td>
+</tr>
+<tr>
+<td align="left"><strong>密钥信息</strong></td>
+<td align="left">服务器密钥大小</td>
+<td align="left"><code>RSA 2048 bits</code> (2048位)</td>
+<td align="left">正常，目前普遍接受的密钥大小。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">DH 组</td>
+<td align="left"><code>Unknown DH group (1024 bits)</code> (未知DH组，1024位)</td>
+<td align="left"><strong>中危</strong>。DH组长度为1024位，强度偏弱，易受 Logjam 攻击。建议使用 2048位或更大的 DH 参数。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="表格二：检测到的漏洞-Vulnerabilities部分"><a href="#表格二：检测到的漏洞-Vulnerabilities部分" class="headerlink" title="表格二：检测到的漏洞 (Vulnerabilities部分)"></a>表格二：检测到的漏洞 (Vulnerabilities部分)</h3><table>
+<thead>
+<tr>
+<th align="left">漏洞名称</th>
+<th align="left">CVE ID</th>
+<th align="left">状态 &#x2F; 结果</th>
+<th align="left">严重性 &#x2F; 影响</th>
+<th align="left">建议修复</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>Heartbleed</strong></td>
+<td align="left">CVE-2014-0160</td>
+<td align="left"><code>VULNERABLE (NOT ok)</code></td>
+<td align="left"><strong>严重</strong>。服务器内存泄露，攻击者可窃取私钥、用户名、密码等敏感信息。</td>
+<td align="left">升级 OpenSSL 到无此漏洞的版本 (1.0.1g 或更高)。</td>
+</tr>
+<tr>
+<td align="left"><strong>CCS Injection</strong></td>
+<td align="left">CVE-2014-0224</td>
+<td align="left"><code>VULNERABLE (NOT ok)</code></td>
+<td align="left"><strong>严重</strong>。中间人攻击者可解密和篡改TLS连接。</td>
+<td align="left">升级 OpenSSL 到无此漏洞的版本 (1.0.1h 或更高)。</td>
+</tr>
+<tr>
+<td align="left">Ticketbleed</td>
+<td align="left">CVE-2016-9244</td>
+<td align="left"><code>(applicable only for HTTP service)</code> (仅适用于HTTP服务)</td>
+<td align="left">不适用于IMAP服务。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">Opossum</td>
+<td align="left">CVE-2025-49812</td>
+<td align="left"><code>(implemented currently for HTTP only)</code> (当前仅适用于HTTP)</td>
+<td align="left">不适用于IMAP服务。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">ROBOT</td>
+<td align="left"></td>
+<td align="left"><code>not vulnerable (OK)</code></td>
+<td align="left">正常，不受 ROBOT 攻击影响。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">Secure Renegotiation</td>
+<td align="left">RFC 5746</td>
+<td align="left"><code>supported (OK)</code></td>
+<td align="left">正常，支持安全重新协商。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">Secure Client-Initiated Renegotiation</td>
+<td align="left"></td>
+<td align="left"><code>VULNERABLE (NOT ok), potential DoS threat</code></td>
+<td align="left"><strong>中危</strong>。可能被恶意客户端利用进行拒绝服务 (DoS) 攻击。</td>
+<td align="left">配置服务器禁用客户端发起的重新协商。</td>
+</tr>
+<tr>
+<td align="left"><strong>CRIME, TLS</strong></td>
+<td align="left">CVE-2012-4929</td>
+<td align="left"><code>VULNERABLE but not using HTTP: probably no exploit known</code></td>
+<td align="left"><strong>中危</strong>。存在 CRIME 漏洞。在非HTTP服务上直接利用较难，但仍是安全缺陷。</td>
+<td align="left">禁用 TLS 压缩。</td>
+</tr>
+<tr>
+<td align="left"><strong>POODLE, SSL</strong></td>
+<td align="left">CVE-2014-3566</td>
+<td align="left"><code>VULNERABLE (NOT ok)</code></td>
+<td align="left"><strong>高危</strong>。攻击者可利用 SSLv3 和 CBC 密码套件解密敏感数据。</td>
+<td align="left">禁用 SSLv3 协议。</td>
+</tr>
+<tr>
+<td align="left">TLS_FALLBACK_SCSV</td>
+<td align="left">RFC 7507</td>
+<td align="left"><code>Downgrade attack prevention NOT supported and vulnerable to POODLE SSL</code></td>
+<td align="left"><strong>高危</strong>。不支持 SCSV，使得中间人攻击者可强制降级到不安全的 SSLv3，再利用 POODLE 攻击。</td>
+<td align="left">升级 OpenSSL 并启用 SCSV 保护。</td>
+</tr>
+<tr>
+<td align="left"><strong>SWEET32</strong></td>
+<td align="left">CVE-2016-2183, CVE-2016-6329</td>
+<td align="left"><code>VULNERABLE, uses 64 bit block ciphers</code></td>
+<td align="left"><strong>中危</strong>。使用 64 位块密码（如 3DES），可能导致在长时间连接下信息泄露。</td>
+<td align="left">禁用 64 位块密码（如 3DES、IDEA）。</td>
+</tr>
+<tr>
+<td align="left">FREAK</td>
+<td align="left">CVE-2015-0204</td>
+<td align="left"><code>not vulnerable (OK)</code></td>
+<td align="left">正常，不受 FREAK 攻击影响。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">DROWN</td>
+<td align="left">CVE-2016-0800, CVE-2016-0703</td>
+<td align="left"><code>not vulnerable on this host and port (OK)</code></td>
+<td align="left">正常，不受 DROWN 攻击影响。<strong>注意</strong>：如果此证书在其他启用 SSLv2 的服务上使用，仍可能易受攻击。</td>
+<td align="left">N&#x2F;A (此服务不受影响)</td>
+</tr>
+<tr>
+<td align="left">LOGJAM</td>
+<td align="left">CVE-2015-4000</td>
+<td align="left"><code>not vulnerable (OK): no DH EXPORT ciphers. But: Unknown DH group (1024 bits)</code></td>
+<td align="left">正常，不受 Logjam 攻击直接影响。但使用的 DH 组强度偏弱（1024位），存在潜在风险。</td>
+<td align="left">使用 2048位或更大的 DH 参数。</td>
+</tr>
+<tr>
+<td align="left"><strong>BEAST</strong></td>
+<td align="left">CVE-2011-3389</td>
+<td align="left"><code>VULNERABLE -- but also supports higher protocols TLSv1.1 TLSv1.2 (likely mitigated)</code></td>
+<td align="left"><strong>中危</strong>。TLS 1.0 使用 CBC 模式，存在 BEAST 攻击条件。虽然有更高协议，但仍可能受影响。</td>
+<td align="left">禁用 TLS 1.0，优先使用 TLS 1.2 及以上协议。</td>
+</tr>
+<tr>
+<td align="left">LUCKY13</td>
+<td align="left">CVE-2013-0169</td>
+<td align="left"><code>potentially VULNERABLE, uses cipher block chaining (CBC) ciphers with TLS. Check patches</code></td>
+<td align="left"><strong>低危</strong>。TLS 中使用 CBC 密码套件，存在定时攻击的可能性。</td>
+<td align="left">更新相关补丁，禁用存在漏洞的 CBC 密码套件。</td>
+</tr>
+<tr>
+<td align="left">Winshock</td>
+<td align="left">CVE-2014-6321</td>
+<td align="left"><code>not vulnerable (OK)</code></td>
+<td align="left">正常，不受 Winshock 攻击影响。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left"><strong>RC4</strong></td>
+<td align="left">CVE-2013-2566, CVE-2015-2808</td>
+<td align="left"><code>VULNERABLE (NOT ok): RC4-SHA, RC4-MD5</code></td>
+<td align="left"><strong>高危</strong>。使用 RC4 流密码。RC4 已被证明存在严重缺陷，容易被攻击者破解。</td>
+<td align="left">禁用所有 RC4 密码套件。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这份详尽的表格清晰地展示了 Vulnix 靶机在 SSL&#x2F;TLS 配置方面存在的<strong>大量且严重的漏洞和配置缺陷</strong>。从协议、密码套件到证书管理，几乎每个环节都存在问题。这使得该服务极易受到多种已知攻击的影响，是一个典型的存在“开放大门”的靶机。</p>
+]]></content>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2025/12/26/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
