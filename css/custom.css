@@ -1,11 +1,12 @@
 /* --- 
-   美化合集 (By 资深软件工程师)
-   - 新增：全局字体强制修改 (霞鹜文楷)
-   - 新增：页脚透明化，实现背景图穿透效果
-   - 保留：您原来的毛玻璃卡片和 Twikoo 评论区美化
+   美化合集 (By 资深软件工程师 & Joke的小世界)
+   - 包含：字体、页脚透明、毛玻璃、Twikoo美化
+   - 新增：修复移动端菜单溢出问题
 --- */
 
-/* --- 1. 新增：全局字体强制修改 --- */
+/* ============================================
+   1. 新增：全局字体强制修改 
+   ============================================ */
 
 /* 强制全局使用霞鹜文楷 */
 body {
@@ -19,7 +20,9 @@ body {
     font-family: 'LXGW WenKai Screen', sans-serif !important;
 }
 
-/* --- 2. 新增：页脚透明化，实现背景图穿透效果 --- */
+/* ============================================
+   2. 新增：页脚透明化，实现背景图穿透效果 
+   ============================================ */
 
 /* 保证背景图固定且全屏 */
 #web_bg {
@@ -28,9 +31,7 @@ body {
     background-repeat: no-repeat !important;
 }
 
-/* --- 优化后的页脚：增加文字阴影，防止背景太亮看不清 --- */
-
-/* 页脚容器 */
+/* 优化后的页脚：增加文字阴影，防止背景太亮看不清 */
 #footer {
     background: transparent !important; /* 背景保持透明 */
     /* 关键点：添加黑色文字阴影 (x偏移 y偏移 模糊度 颜色) */
@@ -43,12 +44,7 @@ body {
 #footer a {
     color: #fff !important;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-    font-weight: bold; /*稍微加粗一点，更清晰 */
-}
-
-/* 去除页脚顶部的横线 */
-#footer::before {
-    background: transparent !important;
+    font-weight: bold; /* 稍微加粗一点，更清晰 */
 }
 
 /* 备案号等图标颜色校正 */
@@ -62,19 +58,15 @@ body {
     background: transparent !important;
 }
 
-/* 修改页脚链接颜色为白色 */
-#footer a {
-    color: #fff !important;
-}
-
 /* 暗黑模式下，页脚文字颜色可能需要调整回来 */
 [data-theme="dark"] #footer,
 [data-theme="dark"] #footer a {
     color: rgba(255, 255, 255, 0.7) !important;
 }
 
-
-/* --- 3. 保留：您原来的毛玻璃卡片和 Twikoo 美化 --- */
+/* ============================================
+   3. 保留：您原来的毛玻璃卡片和 Twikoo 美化 
+   ============================================ */
 
 /* 毛玻璃/半透明卡片效果 (威力加强版) */
 #recent-posts > .recent-post-item,
@@ -152,4 +144,31 @@ body {
 [data-theme="dark"] .tk-content {
     background: rgba(0, 0, 0, 0.3);
     color: #ddd;
+}
+
+/* ============================================
+   4. 【关键修复】移动端适配与Bug修复 
+   ============================================ */
+
+/* 1. 强制禁止水平滚动 - 解决菜单弹出页面缩小问题 */
+html, body {
+    overflow-x: hidden !important;
+    width: 100%;
+    position: relative; /* 确保定位基准 */
+}
+
+/* 2. 限制樱花/Canvas特效的宽度 - 防止特效撑大手机屏幕 */
+canvas {
+    max-width: 100vw !important;
+    overflow: hidden;
+}
+
+/* 3. 针对移动端侧边栏的层级修复 */
+#sidebar {
+    z-index: 9999 !important; /* 确保它在最上面 */
+}
+
+/* 4. 修复移动端右侧菜单弹出时，mask遮罩层的层级 */
+#rightside {
+    z-index: 1000;
 }
