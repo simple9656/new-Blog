@@ -1,174 +1,128 @@
-/* --- 
-   美化合集 (By 资深软件工程师 & Joke的小世界)
-   - 包含：字体、页脚透明、毛玻璃、Twikoo美化
-   - 新增：修复移动端菜单溢出问题
---- */
+/* =================================================================
+   Hexo Butterfly 个性化定制 - 最终修复版
+   ================================================================= */
 
-/* ============================================
-   1. 新增：全局字体强制修改 
-   ============================================ */
-
-/* 强制全局使用霞鹜文楷 */
+/* -----------------------------------------------------------------
+   1. 全局背景设置 (你的樱花背景)
+   ----------------------------------------------------------------- */
 body {
-    font-family: 'LXGW WenKai Screen', sans-serif !important;
+    /* 如果背景图没了，请检查下面这个 url 里的链接对不对 */
+    background: url("https://img2.baidu.com/it/u=223264907,2608449749&fm=253&fmt=auto&app=138&f=JPEG?w=889&h=500") no-repeat center center fixed;
+    background-size: cover;
 }
 
-/* 专门强制首页大标题（和副标题）也用这个字体 */
-#site-title, 
-#site-subtitle, 
-.site-name {
-    font-family: 'LXGW WenKai Screen', sans-serif !important;
-}
-
-/* ============================================
-   2. 新增：页脚透明化，实现背景图穿透效果 
-   ============================================ */
-
-/* 保证背景图固定且全屏 */
-#web_bg {
-    background-attachment: fixed !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
-}
-
-/* 优化后的页脚：增加文字阴影，防止背景太亮看不清 */
-#footer {
-    background: transparent !important; /* 背景保持透明 */
-    /* 关键点：添加黑色文字阴影 (x偏移 y偏移 模糊度 颜色) */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0,0,0,0.5);
-    color: #fff !important;
-    backdrop-filter: none !important;
-}
-
-/* 针对页脚里的链接（比如 Hexo, Butterfly 字样）也加上阴影 */
-#footer a {
-    color: #fff !important;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-    font-weight: bold; /* 稍微加粗一点，更清晰 */
-}
-
-/* 备案号等图标颜色校正 */
-#footer-wrap i {
-    color: #fff !important;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-}
-
-/* 去除页脚顶部的横线，让融合更自然 */
-#footer::before {
+/* -----------------------------------------------------------------
+   2. 页脚修复 (去除蓝条，透明化)
+   ----------------------------------------------------------------- */
+/* 强制页脚容器透明 */
+#footer, 
+#footer-wrap {
     background: transparent !important;
+    background-color: transparent !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
 }
 
-/* 暗黑模式下，页脚文字颜色可能需要调整回来 */
-[data-theme="dark"] #footer,
-[data-theme="dark"] #footer a {
-    color: rgba(255, 255, 255, 0.7) !important;
+/* 杀掉那个蓝色的遮罩层 */
+#footer::before,
+#footer::after {
+    display: none !important;
+    background: none !important;
 }
 
-/* ============================================
-   3. 保留：您原来的毛玻璃卡片和 Twikoo 美化 
-   ============================================ */
+/* 页脚文字：白色 + 黑色描边 (防止背景太花看不清) */
+#footer, 
+#footer a, 
+#footer-wrap,
+#footer-wrap i {
+    color: #ffffff !important;
+    font-weight: bold !important;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.95) !important;
+}
 
-/* 毛玻璃/半透明卡片效果 (威力加强版) */
+/* -----------------------------------------------------------------
+   3. 首页 & 侧边栏卡片 (白底黑字)
+   ----------------------------------------------------------------- */
+/* 卡片背景：半透明白色 */
 #recent-posts > .recent-post-item,
 .card-widget,
 #aside-content .card-widget,
-#post > #post-info,
 #post > #post-content,
 .post-copyright {
-    background: rgba(255, 255, 255, 0.85) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
     backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
 }
 
-/* 暗黑模式下的卡片适配 */
+/* 首页文章标题：深黑色 */
+#recent-posts > .recent-post-item > .recent-post-info > .article-title,
+#recent-posts > .recent-post-item > .recent-post-info > .article-title a {
+    color: #1f2d3d !important;
+    text-shadow: none !important;
+}
+
+/* 首页文章摘要 & 元数据：深灰色 */
+#recent-posts > .recent-post-item > .recent-post-info .content,
+#recent-posts > .recent-post-item > .recent-post-info .article-meta-wrap,
+#recent-posts > .recent-post-item > .recent-post-info .article-meta-wrap a,
+#recent-posts > .recent-post-item > .recent-post-info .article-meta-wrap i,
+.card-widget .item-headline,
+.card-widget .card-content {
+    color: #4c4948 !important;
+}
+
+/* -----------------------------------------------------------------
+   4. 文章详情页头部 (深色背景图上的文字)
+   ----------------------------------------------------------------- */
+/* 这里的文字必须是白色！ */
+#post-info .post-title,
+#post-info #post-meta,
+#post-info #post-meta a,
+#post-info #post-meta i,
+#post-info .meta-second {
+    color: #ffffff !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* -----------------------------------------------------------------
+   5. 文章正文内容 (白底黑字)
+   ----------------------------------------------------------------- */
+#post > #post-content {
+    color: #4c4948 !important;
+}
+/* 正文标题 */
+#article-container h1, 
+#article-container h2, 
+#article-container h3, 
+#article-container h4 {
+    color: #1f2d3d !important;
+}
+
+/* -----------------------------------------------------------------
+   6. 顶部导航栏 (透明化)
+   ----------------------------------------------------------------- */
+#page-header.not-top-img #nav,
+#page-header #nav {
+    background: rgba(255,255,255,0) !important;
+    box-shadow: none !important;
+}
+/* 导航栏文字颜色 */
+#page-header #nav a,
+#page-header #nav .site-name {
+    color: #fff !important;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* -----------------------------------------------------------------
+   7. 暗黑模式适配 (关灯后的效果)
+   ----------------------------------------------------------------- */
 [data-theme="dark"] #recent-posts > .recent-post-item,
 [data-theme="dark"] .card-widget,
-[data-theme="dark"] #aside-content .card-widget,
-[data-theme="dark"] #post > #post-info,
-[data-theme="dark"] #post > #post-content,
-[data-theme="dark"] .post-copyright {
+[data-theme="dark"] #post > #post-content {
     background: rgba(30, 30, 30, 0.8) !important;
+    color: #eee !important;
 }
-
-/* Twikoo 评论区美化 */
-.twikoo {
-    background: rgba(255, 255, 255, 0.8); /* 整体背景改为半透明白色 */
-    backdrop-filter: blur(10px); /* 增加毛玻璃效果 */
-    border-radius: 12px; /* 圆角 */
-    padding: 20px; /* 内边距 */
-    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1); /* 柔和阴影 */
-    margin-top: 20px;
-}
-.tk-input {
-    background: rgba(255, 255, 255, 0.6) !important; /* 输入框背景半透明 */
-    border-radius: 8px !important; /* 输入框圆角 */
-    border: 1px solid rgba(0, 0, 0, 0.1); /* 边框 */
-    transition: all 0.3s ease;
-}
-.tk-input:focus-within {
-    background: rgba(255, 255, 255, 0.9) !important;
-    border-color: #49b1f5; /* 聚焦时边框变蓝 */
-    box-shadow: 0 0 8px rgba(73, 177, 245, 0.2);
-}
-.tk-content {
-    background: rgba(255, 255, 255, 0.5); /* 每条评论的背景 */
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin-top: 10px;
-    border: 1px solid rgba(0,0,0,0.05);
-}
-.tk-submit-action-icon, .tk-submit-action-button {
-    border-radius: 6px !important;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-.tk-submit-action-button {
-    background-color: #49b1f5 !important; /* 按钮颜色 */
-    color: white !important;
-}
-.tk-submit-action-button:hover {
-    background-color: #FF7242 !important; /* 悬停变色 */
-    transform: translateY(-2px); /* 悬停上浮效果 */
-}
-
-/* 适配暗黑模式 (Dark Mode) */
-[data-theme="dark"] .twikoo {
-    background: rgba(30, 30, 30, 0.8); /* 暗色背景 */
-    box-shadow: none;
-}
-[data-theme="dark"] .tk-input {
-    background: rgba(0, 0, 0, 0.4) !important;
-    border-color: rgba(255, 255, 255, 0.1);
-    color: #eee;
-}
-[data-theme="dark"] .tk-content {
-    background: rgba(0, 0, 0, 0.3);
-    color: #ddd;
-}
-
-/* ============================================
-   4. 【关键修复】移动端适配与Bug修复 
-   ============================================ */
-
-/* 1. 强制禁止水平滚动 - 解决菜单弹出页面缩小问题 */
-html, body {
-    overflow-x: hidden !important;
-    width: 100%;
-    position: relative; /* 确保定位基准 */
-}
-
-/* 2. 限制樱花/Canvas特效的宽度 - 防止特效撑大手机屏幕 */
-canvas {
-    max-width: 100vw !important;
-    overflow: hidden;
-}
-
-/* 3. 针对移动端侧边栏的层级修复 */
-#sidebar {
-    z-index: 9999 !important; /* 确保它在最上面 */
-}
-
-/* 4. 修复移动端右侧菜单弹出时，mask遮罩层的层级 */
-#rightside {
-    z-index: 1000;
+[data-theme="dark"] .article-title,
+[data-theme="dark"] .article-title a,
+[data-theme="dark"] .content {
+    color: #eee !important;
 }
