@@ -1,108 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2025/12/26/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+    <title>CVE-2014-0224复现流程</title>
+    <url>/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><h3 id="什么是CCS注入漏洞？"><a href="#什么是CCS注入漏洞？" class="headerlink" title="什么是CCS注入漏洞？"></a>什么是CCS注入漏洞？</h3><p>  CCS注入漏洞（CVE-2014-0224这是流行的 OpenSSL 加密软件库中的一个严重漏洞。OpenSSL 是 SSL&#x2F;TLS 加密协议的实现，用于保护互联网通信的隐私。许多网站和其他应用程序（例如电子邮件、即时通讯和 VPN）都使用 OpenSSL。</p>
+<p>  在某些版本的 OpenSSL 中，攻击者可以利用精心构造的握手协议，强制 OpenSSL SSL&#x2F;TLS 客户端和服务器使用弱密钥材料。这可被中间人 (MITM) 攻击利用，攻击者可以解密并篡改来自受攻击客户端和服务器的流量。</p>
+<h3 id="CCS注入漏洞会影响哪些人？"><a href="#CCS注入漏洞会影响哪些人？" class="headerlink" title="CCS注入漏洞会影响哪些人？"></a>CCS注入漏洞会影响哪些人？</h3><p>  最近的报告显示，该漏洞至少存在了十年，但直到最近才被发现。由于许多组织部署了运行 OpenSSL 的服务器，因此，那些关注或受到最近 Heartbleed 漏洞影响的公司可能也应该认真考虑这个漏洞。</p>
+<p>影响版本：OpenSSL 0.9.8za 之前的版本、1.0.0m 之前的 1.0.0 版本以及 1.0.1h 之前的 1.0.1 版本</p>
+<h4 id="攻击条件"><a href="#攻击条件" class="headerlink" title="攻击条件"></a>攻击条件</h4><p>要利用此漏洞，通常需要满足以下条件：</p>
+<ul>
+<li><strong>客户端和服务器都必须易受攻击</strong>：即双方都运行着受影响版本的 OpenSSL。如果仅有一方受影响，握手通常会失败。</li>
+<li><strong>中间人位置</strong>：攻击者必须处于能够拦截和修改网络流量的位置。</li>
+</ul>
+<p>网络拓扑图：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">        [ 虚拟交换机 / 网关 ]</span><br><span class="line">        (Virtual Switch / Gateway)</span><br><span class="line">      (通常是 .1 或 .2, 负责流量转发)</span><br><span class="line">                 |</span><br><span class="line">    +------------+----------------------+----------------------+</span><br><span class="line">    |                                   |                      |</span><br><span class="line">[ Ubuntu (客户端) ]               [ Kali (攻击者) ]        [ Vulnix (靶机/服务端) ]</span><br><span class="line">IP: 192.168.137.129             IP: 192.168.137.132      IP: 192.168.137.133</span><br><span class="line">MAC: AA:BB:CC:..:..             MAC: 攻击者MAC           MAC: 目标MAC</span><br><span class="line">(高版本 OS)                      (运行 Ettercap)          (存在 OpenSSL 漏洞)</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<h1 id="中间人攻击过程演示"><a href="#中间人攻击过程演示" class="headerlink" title="中间人攻击过程演示"></a>中间人攻击过程演示</h1><h2 id="第-1-阶段：环境初始化（物理层）"><a href="#第-1-阶段：环境初始化（物理层）" class="headerlink" title="第 1 阶段：环境初始化（物理层）"></a>第 1 阶段：环境初始化（物理层）</h2><p><strong>目标：</strong> 确保三台机器在同一个纯净的局域网内，且 IP 互通。</p>
+<h3 id="1-1-虚拟机网络设置"><a href="#1-1-虚拟机网络设置" class="headerlink" title="1.1 虚拟机网络设置"></a>1.1 虚拟机网络设置</h3><ul>
+<li><p><strong>操作：</strong> 打开 VMware，将 Kali、Ubuntu、Vulnix 三台虚拟机的网络适配器<strong>全部设置为「NAT 模式」</strong>。</p>
+</li>
+<li><p><strong>原因：</strong> 桥接模式受路由器影响太大，NAT 模式能提供最稳定的实验环境。</p>
+</li>
+<li><h3 id="1-2-确认-IP-地址"><a href="#1-2-确认-IP-地址" class="headerlink" title="1.2 确认 IP 地址"></a>1.2 确认 IP 地址</h3><p>在kali和ubuntu和vulnix机器终端分别输入 <code>ip addr</code>。请记下你的 IP</p>
+<ul>
+<li><p><strong>Kali (攻击者):</strong> <code>192.168.137.132</code></p>
+</li>
+<li><p><strong>Ubuntu (受害者):</strong> <code>192.168.137.129</code></p>
+</li>
+<li><p><strong>vulnix</strong> <strong>(服务端)</strong>：192.168.137.133</p>
+</li>
+<li><p>首先三台机子是ping 通的因为在同一网关下</p>
+<p>在实验开始之前，我要确定服务端是否有这个漏洞,先扫这个靶机有ccs这个漏洞的端口</p>
+<p>输入指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -sV -p- 192.168.137.133</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251209211011957.png" class="" title="nmap扫描结果"></li>
+</ul>
+</li>
+</ul>
+<p>因为ccs漏洞是tls上的，可以看到端口995，993可能会有这个漏洞，所以这两个端口都要扫一下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -p 993,995 --script ssl-ccs-injection 192.168.137.133</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251209211454223.png" class="" title="nmap漏洞脚本扫描">
+
+<p>可以发现: Vulnix 靶机 (192.168.137.133) 上的 IMAPS 服务 (端口 993) 和 POP3S 服务 (端口 995) 确定存在 CCS 注入漏洞 (CVE-2014-0224)。</p>
+<h2 id="第-2-阶段：实现中间人欺骗环境"><a href="#第-2-阶段：实现中间人欺骗环境" class="headerlink" title="第 2 阶段：实现中间人欺骗环境"></a>第 2 阶段：实现中间人欺骗环境</h2><h3 id="启动-Ettercap"><a href="#启动-Ettercap" class="headerlink" title="启动 Ettercap"></a>启动 Ettercap</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo ettercap -G</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251129145138663.png" class="" title="启动Ettercap">
+
+<p>这里我选择默认的网段eth0,按上面的对勾就是启动了服务</p>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251129145311864.png" class="" title="Ettercap界面">
+
+<p>1.<strong>扫描主机：</strong> 点击左上角的 <strong>放大镜图标</strong> (Scan for hosts)。他会扫描一切主机</p>
+<p>2.按放大镜右边那个Host List，可以看到我的网关和客户端和服务端两台主机（这个列表默认是没有本机：kali）</p>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211181711093.png" class="" title="HostList">
+
+<p>3.<strong>选定目标：</strong></p>
+<ul>
+<li><p>选中 <strong>192.168.137.129</strong> (Ubuntu)，点击下方的 <strong>Add to Target 1</strong>。</p>
+</li>
+<li><p>选中 <strong>192.168.137.133</strong> (Vulnix)，点击下方的 <strong>Add to Target 2</strong>。</p>
+<p>为什么这么选呢？</p>
+<p>之所以要这样设置 Target 1 和 Target 2，是因为 Ettercap 需要明确“我们要在这个双向通信的链路中欺骗谁和谁”。只是一个指定目标的意思。</p>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182439066.png" class="" title="设置Target"></li>
+</ul>
+<p>从下面输出的可以看出已经指定目标了</p>
+<p>4.开始arp欺骗:</p>
+<ul>
+<li><p>点击右上角的 <strong>地球图标</strong> (MITM Menu)。</p>
+</li>
+<li><p>选择 <strong>ARP poisoning</strong>。</p>
+</li>
+<li><p><strong>关键：</strong> 勾选 <strong>Sniff remote connections</strong> -&gt; 点击 <strong>OK</strong>。</p>
+</li>
+</ul>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182746240.png" class="" title="选择ARP欺骗">
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182819879.png" class="" title="勾选Sniff">
+
+<p>ARP Poisoning  :arp欺骗</p>
+<p>Sniff remote connections：嗅探远程连接，监听那些仅仅是“路过”我电脑的流量。</p>
+<p>但是我们所用的监听工具是sslsplit后面会提到。</p>
+<p>5.这是展现的是流量转发，使客户端可以上网</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211183852053.png" class="" title="开启转发">
+<p>6.<strong>创建伪造的 CA 证书</strong>:<br><code>sslsplit</code> 需要使用自签名的证书来欺骗客户端，假装自己是真正的服务器。<br>在 Kali 的 <code>~/Desktop</code> 目录下执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd ~/Desktop</span><br><span class="line">openssl genrsa -out ca.key 2048 # 生成私钥</span><br><span class="line"># 生成自签名证书，一路回车接受默认值，或自定义 Common Name (CN)</span><br><span class="line">openssl req -new -x509 -days 365 -key ca.key -out ca.crt</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211184732478.png" class="" title="生成证书">
+
+<p>这里我把原来以前生成过的删掉了，重新生成了一次，可以看到桌面上的ca.crt和ca.key,因为只是测试，所以证书随便填。</p>
+<p>7.<strong>配置 <code>iptables</code> 规则</strong>:<br>将目标为 Vulnix IMAPS (993) 端口（有漏洞的端口）的流量重定向到 Kali 本地 <code>sslsplit</code> 监听的端口 (例如 8993)。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo iptables -t nat -F # 清除所有旧的 NAT 规则</span><br><span class="line">sudo iptables -t nat -A PREROUTING -p tcp --destination-port 993 -j REDIRECT --to-port 8993</span><br></pre></td></tr></table></figure>
+
+<p>8.<strong>启动 <code>sslsplit</code></strong>:</p>
+<p><strong>SSLsplit 是什么？</strong><br><strong>SSLsplit 是一个透明的 SSL&#x2F;TLS 中间人攻击（MitM）工具。</strong></p>
+<p><strong>它的角色：它就像一个“伪装的翻译官”。</strong><br><strong>它的工作原理：</strong><br><strong>当受害者（Ubuntu）想和服务器（Vulnix）建立加密连接（SSL握手）时，流量被 iptables 强行转给了 SSLsplit。</strong><br><strong>对内欺骗：SSLsplit 假装自己是服务器，拿出一个（伪造的）证书和受害者建立连接。</strong><br><strong>对外连接：SSLsplit 同时作为客户端，真正去连接远程服务器。</strong><br><strong>中间操作：受害者发来的加密数据，SSLsplit 解密成明文（记录下来），然后再加密发给真正的服务器。</strong><br><strong>简单来说：SSLsplit 负责把“加密的信封”拆开，看完内容后，再换个新信封封好发出去。</strong></p>
+<p><strong>这将是流量解密和记录的核心工具。</strong></p>
+<ul>
+<li><p><strong>终端 3 (Kali)</strong>: 创建日志目录并以前台模式启动 <code>sslsplit</code>。</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir -p /tmp/sslsplit-mail-logs/logdir</span><br><span class="line">sudo sslsplit -l /tmp/sslsplit-mail-logs/connections.log \</span><br><span class="line">             -j /tmp/sslsplit-mail-logs/ \</span><br><span class="line">             -S /tmp/sslsplit-mail-logs/logdir/ \</span><br><span class="line">             -k ~/Desktop/ca.key \</span><br><span class="line">             -c ~/Desktop/ca.crt \</span><br><span class="line">             ssl 0.0.0.0 8993 192.168.137.133 993</span><br></pre></td></tr></table></figure>
+
+<p><code>sslsplit</code> 会“卡住”在此终端，表示它已成功启动并正在监听。<strong>保持此终端运行。</strong></p>
+<p>下面是对这段代码的解释：</p>
+</li>
+</ul>
+<p>这段命令是 <strong>启动 SSLsplit 进行攻击</strong> 的核心步骤。作为软件工程师，我们可以把它看作是在<strong>启动一个高性能的服务器后端进程</strong>，并详细配置了它的日志系统、证书凭证以及监听端口。</p>
+<p>这段代码分为两部分：创建目录和启动程序。我们逐行拆解：</p>
+<hr>
+<h3 id="第一部分：准备工作"><a href="#第一部分：准备工作" class="headerlink" title="第一部分：准备工作"></a>第一部分：准备工作</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /tmp/sslsplit-mail-logs/logdir</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><code>mkdir</code></strong>: 创建目录 (Make Directory)。</li>
+<li><strong><code>-p</code></strong>: 级联创建。意思是如果父目录 <code>/tmp/sslsplit-mail-logs</code> 不存在，就自动把它也建好，不要报错。</li>
+<li><strong>目的</strong>：为 SSLsplit 准备好存放“赃物”（截获的数据和日志）的文件夹。</li>
+</ul>
+<hr>
+<h3 id="第二部分：启动-SSLsplit"><a href="#第二部分：启动-SSLsplit" class="headerlink" title="第二部分：启动 SSLsplit"></a>第二部分：启动 SSLsplit</h3><p>这是一个长命令，通过反斜杠 <code>\</code> 换行。我们按参数拆解：</p>
+<h4 id="1-基础日志配置"><a href="#1-基础日志配置" class="headerlink" title="1. 基础日志配置"></a>1. 基础日志配置</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> sslsplit -l /tmp/sslsplit-mail-logs/connections.log \</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><code>sudo sslsplit</code></strong>: 以管理员权限运行攻击工具。</li>
+<li><strong><code>-l .../connections.log</code></strong>: <strong>连接日志 (Log)</strong>。<ul>
+<li>这里记录的是**“谁连了我”**。</li>
+<li>内容包括：时间戳、源IP、目标IP、连接是否成功等元数据。就好比是公司的“访客登记表”。</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-内容截获配置-核心功能"><a href="#2-内容截获配置-核心功能" class="headerlink" title="2. 内容截获配置 (核心功能)"></a>2. 内容截获配置 (核心功能)</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-j /tmp/sslsplit-mail-logs/ \</span><br><span class="line">-S /tmp/sslsplit-mail-logs/logdir/ \</span><br></pre></td></tr></table></figure>
+<p>这里是 SSLsplit 最强大的地方，它会把截获的内容存下来：</p>
+<ul>
+<li><strong><code>-j /path/to/dir/</code> (Jail&#x2F;chroot directory)</strong>:<ul>
+<li>虽然官方文档中 <code>-j</code> 主要是用于 <code>chroot</code> (隔离运行环境以提高安全性)，但在某些版本的上下文中，它常配合内容记录使用。不过在攻击场景中，我们更关注下面的 <code>-S</code>。</li>
+</ul>
+</li>
+<li><strong><code>-S .../logdir/</code> (Log Streams)</strong>: <strong>内容日志</strong>。<ul>
+<li><strong>含义</strong>：把每一条流经的 TCP 连接的数据内容，<strong>完整地保存成独立的文件</strong>。</li>
+<li><strong>效果</strong>：如果受害者发了邮件，邮件的正文、密码、附件，都会被写入这个目录下的文件中。这才是我们找密码要去翻的地方。</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-伪造证书配置-欺骗核心"><a href="#3-伪造证书配置-欺骗核心" class="headerlink" title="3. 伪造证书配置 (欺骗核心)"></a>3. 伪造证书配置 (欺骗核心)</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-k ~/Desktop/ca.key \</span><br><span class="line">-c ~/Desktop/ca.crt \</span><br></pre></td></tr></table></figure>
+<p>这是中间人攻击能否成功的关键：</p>
+<ul>
+<li><strong><code>-k ...ca.key</code> (Key)</strong>: 指定你的 <strong>CA 私钥</strong>。</li>
+<li><strong><code>-c ...ca.crt</code> (Certificate)</strong>: 指定你的 <strong>CA 证书</strong>。</li>
+<li><strong>原理</strong>：SSLsplit 需要在受害者和服务器之间“实时伪造”证书。它使用你提供的这个 CA（证书授权中心）的私钥，来动态签署伪造的证书。<ul>
+<li><em>注：前提是你已经想办法把这个 <code>ca.crt</code> 安装到了受害者的电脑上并建立了信任，否则受害者的浏览器会弹窗警告“证书不安全”。</em></li>
+</ul>
+</li>
+</ul>
+<h4 id="4-监听与转发配置"><a href="#4-监听与转发配置" class="headerlink" title="4. 监听与转发配置"></a>4. 监听与转发配置</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssl 0.0.0.0 8993 192.168.137.133 993</span><br></pre></td></tr></table></figure>
+<p>这一行定义了 SSLsplit 的工作模式和流量走向，格式通常是：<code>[协议] [监听地址] [监听端口] [目标IP] [目标端口]</code>。<br><em>(注意：这里你给出的命令看起来像是处于“静态转发”模式，或者是一个特定版本的用法，因为它显式指定了目标 IP 133)</em></p>
+<ul>
+<li><strong><code>ssl</code></strong>: 告诉工具，我要处理的是 SSL&#x2F;TLS 加密流量。</li>
+<li><strong><code>0.0.0.0</code></strong>: 监听本机的所有网卡接口。</li>
+<li><strong><code>8993</code></strong>: <strong>监听端口</strong>。<ul>
+<li>SSLsplit 会在这个端口等待数据。</li>
+<li><em>（这里有一个疑点：之前的 iptables 命令是转到 8443，这里却是 8993。请务必检查你的 iptables 规则是否也对应修改为了 8993，或者这是针对 IMAPS 协议的另一条规则？）</em></li>
+</ul>
+</li>
+<li><strong><code>192.168.137.133 993</code></strong>: <strong>目标转发地址</strong>。<ul>
+<li><strong>含义</strong>：凡是发到我这里的数据，解密记录后，重新加密发给 <code>133</code> (Vulnix) 的 <code>993</code> 端口。</li>
+<li><strong>993 端口</strong>：通常是 <strong>IMAPS</strong> (加密的邮件接收协议)，区别于之前的 995 (POP3S)</li>
+</ul>
+</li>
+</ul>
+<h2 id="阶段三：在受害机上触发连接-Ubuntu"><a href="#阶段三：在受害机上触发连接-Ubuntu" class="headerlink" title="阶段三：在受害机上触发连接 (Ubuntu)"></a>阶段三：在受害机上触发连接 (Ubuntu)</h2><p>现在，在 Ubuntu 受害机上模拟用户连接 IMAPS 服务。</p>
+<ol>
+<li><p><strong>打开 Ubuntu 终端</strong>。</p>
+</li>
+<li><p><strong>使用 <code>openssl s_client</code> 连接 Vulnix IMAPS 服务</strong>:<br>由于 Vulnix 使用老旧的加密算法，现代 Ubuntu 的 OpenSSL 客户端可能会因安全级别过高而拒绝连接。我们需要降低客户端的安全级别以兼容。</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">openssl s_client -connect 192.168.137.133:993 -crlf -cipher &#x27;DEFAULT:@SECLEVEL=1&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>下面是代码的详解：</p>
+<ol>
+<li><p>openssl<br> 含义：这是 Linux 下最著名的开源密码学工具包。<br> 作用：它是整个命令的入口，提供了生成证书、计算哈希、加密解密以及测试 SSL&#x2F;TLS 连接的所有功能。</p>
+</li>
+<li><p>s_client<br> 含义：这是 OpenSSL 工具包中的一个子命令 (Sub-command)。<br> 作用：它实现了一个通用的 SSL&#x2F;TLS 客户端。<br> 类比：你可以把它想象成加密版的 Telnet 或 Netcat。它负责建立 TCP 连接，然后立刻进行 SSL 握手，把连接变成加密通道。握手成功后，它允许你通过键盘输入数据发送给服务器。</p>
+</li>
+<li><p>-connect 192.168.137.133:993<br> 含义：指定目标。<br> 192.168.137.133：目标服务器的 IP 地址（你的靶机）。<br> 993：目标端口。<br> 993 是 IMAPS (IMAP over SSL) 的标准端口。<br> 如果是 143，通常是未加密的 IMAP 或 STARTTLS。<br> 这里指定 993，说明我们预期服务器一上来就会跟我们进行 SSL 握手。</p>
+</li>
+<li><p>-crlf<br> 含义：非常关键的格式转换。将换行符转换为 CR + LF。<br> 背景：<br> Linux&#x2F;Unix 系统（你的 Kali）默认按下回车键只发送 LF (\n, Line Feed)。<br> 网络协议标准（如 HTTP, SMTP, IMAP, POP3）严格要求行尾必须是 CR + LF (\r\n, Carriage Return + Line Feed)。<br> 为什么要加：如果不加这个参数，当你输入 a001 LOGIN user pass 并回车时，OpenSSL 只会发送 \n。老旧或严格的服务器（比如 Dovecot）会认为“这句话还没说完”，一直傻等着你发 \r，导致你觉得卡死或者报错。这个参数能确保你按回车时，服务器能收到正确的“结束符”。</p>
+</li>
+<li><p>-cipher ‘DEFAULT:@SECLEVEL&#x3D;1’<br> 含义：降低安全等级，允许使用弱加密算法。<br> 背景：<br> Kali (OpenSSL 3.x)：现在的 Kali Linux 使用的是很新的 OpenSSL 版本，默认的安全级别（SECLEVEL）通常是 2。它会禁止使用不安全的旧算法（如 SHA1 签名、1024位以下的 RSA 密钥、弱 DH 参数）。<br> Vulnix (靶机)：这是一个老旧的系统，它的 SSL 证书可能是很久以前生成的（比如用的是 SHA1），或者它的密钥长度只有 1024 位。<br> 冲突：如果用默认设置去连，Kali 会报错说：“对方太不安全了，我不跟它说话”（通常报错 dh key too small 或 ca md too weak）。<br> @SECLEVEL&#x3D;1 的作用：这就是在告诉你的 OpenSSL 客户端：“别那么挑剔，把安全标准降到 1 级，允许连接那些老旧、不安全的服务器。</p>
+</li>
+</ol>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205806438.png" class="" title="连接成功截图1">
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205824952.png" class="" title="连接成功截图2">
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205918185.png" class="" title="交互过程1">
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205939532.png" class="" title="交互过程2">
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-12-11%20210418.png" class="" title="最终结果">
+
+<p>这时候ssl会抓取到一些东西：</p>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211210511800.png" class="" title="抓取数据">
+
+<h2 id="阶段四：查看解密后的数据-Kali"><a href="#阶段四：查看解密后的数据-Kali" class="headerlink" title="阶段四：查看解密后的数据 (Kali)"></a>阶段四：查看解密后的数据 (Kali)</h2><p>1.查看 <code>sslsplit</code> 记录的日志文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd /tmp/sslsplit-mail-logs/logdir/</span><br><span class="line">cat $(ls -t | head -n1) # 查看最新的日志文件</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211210958399.png" class="" title="查看日志">
 ]]></content>
-  </entry>
-  <entry>
-    <title>furryCTF热身赛wp</title>
-    <url>/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/</url>
-    <content><![CDATA[<h3 id="furryCTF2025赛前热身题（misc方向）"><a href="#furryCTF2025赛前热身题（misc方向）" class="headerlink" title="furryCTF2025赛前热身题（misc方向）"></a>furryCTF2025赛前热身题（misc方向）</h3><p>比赛网站：<a href="https://furryctf.com/games/5">https://furryctf.com/games/5</a></p>
-<h3 id="1-签到题"><a href="#1-签到题" class="headerlink" title="1.签到题"></a>1.签到题</h3><p>题目描述：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">话说，你们有发现比赛平台上藏有一个flag吗？</span><br><span class="line"></span><br><span class="line">注意flag格式哦~</span><br></pre></td></tr></table></figure>
-
-<p>在赛题主页就可以找到：</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002231.png" class="" title="赛题主页截图">
-
-<p>flag为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Hack_for_fun_not_for_profit&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-新的一年，新的开始"><a href="#2-新的一年，新的开始" class="headerlink" title="2.新的一年，新的开始"></a>2.新的一年，新的开始</h3><p>题目描述：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Catch The Future</span><br><span class="line"></span><br><span class="line">Time to own 2025</span><br><span class="line"></span><br><span class="line">Forever young in hacking</span><br><span class="line"></span><br><span class="line">furryCTF&#123;h4ppY_n3w_y34r_2o25_w1th_1Ov3&#125;</span><br><span class="line"></span><br><span class="line">祝各位师傅：</span><br><span class="line"></span><br><span class="line">栈上生花，堆里藏月，逆向不秃，web不坐牢，pwn穿一切，ak全场！ 🚩🎉</span><br></pre></td></tr></table></figure>
-
-<p>这种就是问卷题</p>
-<p>flag为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;h4ppY_n3w_y34r_2o25_w1th_1Ov3&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-PassDump"><a href="#3-PassDump" class="headerlink" title="3.PassDump"></a>3.PassDump</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">作为CTFer，很多时候都会有电脑放一夜跑程序的经历。</span><br><span class="line"></span><br><span class="line">但猫猫看着跑一夜碰撞之后蓝屏的电脑，陷入了沉思……</span><br><span class="line"></span><br><span class="line">flag格式为furryCTF&#123;出现问题的文件_蓝屏错误代码_该文件的最后一次编译时间_失败事件的缩写_当时正在使用的应用程序的名称&#125;</span><br><span class="line"></span><br><span class="line">例如，这是一个合法的flag：</span><br><span class="line"></span><br><span class="line">furryCTF&#123;system.exe_0x0000001A_2024.12.31-14:00:00_DPC_Notepad&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这题需要用到windbg,这里链接就不贴了，网上一搜就有</p>
-<p>打开windbg后</p>
-<p>打开command,也就是命令行</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002913.png" class="" title="WinDbg命令行">
-
-<p>一般会有这个蓝标字体，如果没有就自己输入</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">!analyze -v</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002934.png" class="" title="分析结果">
-
-<p>这里我把输出结果放一下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">12: kd&gt; !analyze -v</span><br><span class="line">Loading Kernel Symbols</span><br><span class="line">..</span><br><span class="line"></span><br><span class="line">Press ctrl-c (cdb, kd, ntsd) or ctrl-break (windbg) to abort symbol loads that take too long.</span><br><span class="line">Run !sym noisy before .reload to track down problems loading symbols.</span><br><span class="line"></span><br><span class="line">.............................................................</span><br><span class="line">................................................................</span><br><span class="line">................................................................</span><br><span class="line">................................................................</span><br><span class="line">..............................................</span><br><span class="line">Loading User Symbols</span><br><span class="line"></span><br><span class="line">Loading unloaded module list</span><br><span class="line">.........................................</span><br><span class="line">*******************************************************************************</span><br><span class="line">*                                                                             *</span><br><span class="line">*                        Bugcheck Analysis                                    *</span><br><span class="line">*                                                                             *</span><br><span class="line">*******************************************************************************</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_FAILURE (116)</span><br><span class="line">Attempt to reset the display driver and recover from timeout failed.</span><br><span class="line">Arguments:</span><br><span class="line">Arg1: ffffe30a4b8cd010, Optional pointer to internal TDR recovery context (TDR_RECOVERY_CONTEXT).</span><br><span class="line">Arg2: fffff8035ce14790, The pointer into responsible device driver module (e.g. owner tag).</span><br><span class="line">Arg3: ffffffffc000009a, Optional error code (NTSTATUS) of the last failed operation.</span><br><span class="line">Arg4: 0000000000000004, Optional internal context dependent data.</span><br><span class="line"></span><br><span class="line">Debugging Details:</span><br><span class="line">------------------</span><br><span class="line"></span><br><span class="line">Unable to load image nvlddmkm.sys, Win32 error 0n2</span><br><span class="line">*** WARNING: Unable to verify timestamp for nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">KEY_VALUES_STRING: 1</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.CPU.mSec</span><br><span class="line">    Value: 2140</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Elapsed.mSec</span><br><span class="line">    Value: 13194</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Other.Mb</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Read.Mb</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Write.Mb</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Init.CPU.mSec</span><br><span class="line">    Value: 484</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Init.Elapsed.mSec</span><br><span class="line">    Value: 28118</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Memory.CommitPeak.Mb</span><br><span class="line">    Value: 102</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.DbgEng</span><br><span class="line">    Value: 10.0.29482.1003</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.Description</span><br><span class="line">    Value: 10.2509.29.03 amd64fre</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.Ext</span><br><span class="line">    Value: 1.2509.29.3</span><br><span class="line"></span><br><span class="line">    Key  : Bugcheck.Code.LegacyAPI</span><br><span class="line">    Value: 0x116</span><br><span class="line"></span><br><span class="line">    Key  : Bugcheck.Code.TargetModel</span><br><span class="line">    Value: 0x116</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.AsUlong</span><br><span class="line">    Value: 0x21808</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.DiagDataWrittenToHeader</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.ErrorCode</span><br><span class="line">    Value: 0x0</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.KernelGeneratedTriageDump</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.LastLine</span><br><span class="line">    Value: Dump completed successfully.</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.ProgressPercentage</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Bucket</span><br><span class="line">    Value: 0x116_IMAGE_nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Address</span><br><span class="line">    Value: 0xfffff8035ce14790</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Module</span><br><span class="line">    Value: nvlddmkm</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Offset</span><br><span class="line">    Value: 0x1854790</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Hash</span><br><span class="line">    Value: &#123;c89bfe8c-ed39-f658-ef27-f2898997fdbd&#125;</span><br><span class="line"></span><br><span class="line">    Key  : Faulting.IP.Type</span><br><span class="line">    Value: Paged</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Enlightenments.ValueHex</span><br><span class="line">    Value: 0x7417df84</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.AnyHypervisorPresent</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ApicEnlightened</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ApicVirtualizationAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.AsyncMemoryHint</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.CoreSchedulerRequested</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.CpuManager</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.DeprecateAutoEoi</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.DynamicCpuDisabled</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Epf</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ExtendedProcessorMasks</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.HardwareMbecAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.MaxBankNumber</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.MemoryZeroingControl</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.NoExtendedRangeFlush</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.NoNonArchCoreSharing</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Phase0InitDone</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.PowerSchedulerQos</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.RootScheduler</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.SynicAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.UseQpcBias</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Value</span><br><span class="line">    Value: 55185662</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ValueHex</span><br><span class="line">    Value: 0x34a10fe</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.VpAssistPage</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.VsmAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.AccessStats</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.CrashdumpEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.CreateVirtualProcessor</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.DisableHyperthreading</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.HostTimelineSync</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.HypervisorDebuggingEnabled</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.IsHyperV</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.LivedumpEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.MapDeviceInterrupt</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.MceEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.Nested</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.StartLogicalProcessor</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.Value</span><br><span class="line">    Value: 1015</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.ValueHex</span><br><span class="line">    Value: 0x3f7</span><br><span class="line"></span><br><span class="line">    Key  : WER.System.BIOSRevision</span><br><span class="line">    Value: 1.23.0.0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BUGCHECK_CODE:  116</span><br><span class="line"></span><br><span class="line">BUGCHECK_P1: ffffe30a4b8cd010</span><br><span class="line"></span><br><span class="line">BUGCHECK_P2: fffff8035ce14790</span><br><span class="line"></span><br><span class="line">BUGCHECK_P3: ffffffffc000009a</span><br><span class="line"></span><br><span class="line">BUGCHECK_P4: 4</span><br><span class="line"></span><br><span class="line">FILE_IN_CAB:  furryCTF.dmp</span><br><span class="line"></span><br><span class="line">DUMP_FILE_ATTRIBUTES: 0x21808</span><br><span class="line">  Kernel Generated Triage Dump</span><br><span class="line"></span><br><span class="line">FAULTING_THREAD:  ffffe30a86af3040</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_CONTEXT: dt dxgkrnl!_TDR_RECOVERY_CONTEXT ffffe30a4b8cd010</span><br><span class="line">Symbol dxgkrnl!_TDR_RECOVERY_CONTEXT not found.</span><br><span class="line"></span><br><span class="line">PROCESS_OBJECT: 0000000000000004</span><br><span class="line"></span><br><span class="line">BLACKBOXACPI: 1 (!blackboxacpi)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXBSD: 1 (!blackboxbsd)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXNTFS: 1 (!blackboxntfs)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXPNP: 1 (!blackboxpnp)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXWINLOGON: 1 (!blackboxwinlogon)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">PROCESS_NAME:  System</span><br><span class="line"></span><br><span class="line">IP_IN_PAGED_CODE: </span><br><span class="line">nvlddmkm+1854790</span><br><span class="line">fffff803`5ce14790 488b05b9f28dff  mov     rax,qword ptr [nvlddmkm+0x1133a50 (fffff803`5c6f3a50)]</span><br><span class="line"></span><br><span class="line">STACK_TEXT:  </span><br><span class="line">ffffc982`1c9677d8 fffff803`43a2375d     : 00000000`00000116 ffffe30a`4b8cd010 fffff803`5ce14790 ffffffff`c000009a : nt!KeBugCheckEx</span><br><span class="line">ffffc982`1c9677e0 fffff803`43c97be6     : fffff803`5ce14790 ffffe30a`5b80b5a0 00000000`00000004 ffffe30a`4b8cd010 : dxgkrnl!TdrBugcheckOnTimeout+0x101</span><br><span class="line">ffffc982`1c967820 fffff803`43a324be     : 00000000`00000000 00000000`00002000 00000000`00000004 00000000`00000004 : dxgkrnl!ADAPTER_RENDER::Reset+0x232</span><br><span class="line">ffffc982`1c967850 fffff803`43a69375     : ffffe30a`00000100 00000000`00000000 ffffc982`00000000 00000000`00000000 : dxgkrnl!DXGADAPTER::Reset+0x59a</span><br><span class="line">ffffc982`1c9678e0 fffff803`43a694d2     : fffff803`b290ce60 00000000`00000000 ffffb881`c42d1100 fffff803`b29cfbc0 : dxgkrnl!TdrResetFromTimeout+0x15</span><br><span class="line">ffffc982`1c967910 fffff803`b1c3072c     : ffffe30a`86af3040 ffffe30a`478ddae0 ffffe30a`478dda00 fffff803`44b52750 : dxgkrnl!TdrResetFromTimeoutWorkItem+0x22</span><br><span class="line">ffffc982`1c967950 fffff803`b1ea007a     : ffffe30a`86af3040 ffffe30a`86af3040 fffff803`b1c30140 ffffe30a`478ddae0 : nt!ExpWorkerThread+0x5ec</span><br><span class="line">ffffc982`1c967b30 fffff803`b20a5db4     : ffffb881`c42d1180 ffffe30a`86af3040 fffff803`b1ea0020 00000000`0e5f57dc : nt!PspSystemThreadStartup+0x5a</span><br><span class="line">ffffc982`1c967b80 00000000`00000000     : ffffc982`1c968000 ffffc982`1c961000 00000000`00000000 00000000`00000000 : nt!KiStartSystemThread+0x34</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SYMBOL_NAME:  nvlddmkm+1854790</span><br><span class="line"></span><br><span class="line">MODULE_NAME: nvlddmkm</span><br><span class="line"></span><br><span class="line">IMAGE_NAME:  nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">STACK_COMMAND: .process /r /p 0xffffe30a476cb040; .thread 0xffffe30a86af3040 ; kb</span><br><span class="line"></span><br><span class="line">FAILURE_BUCKET_ID:  0x116_IMAGE_nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">OSPLATFORM_TYPE:  x64</span><br><span class="line"></span><br><span class="line">OSNAME:  Windows 10</span><br><span class="line"></span><br><span class="line">FAILURE_ID_HASH:  &#123;c89bfe8c-ed39-f658-ef27-f2898997fdbd&#125;</span><br><span class="line"></span><br><span class="line">Followup:     MachineOwner</span><br><span class="line">---------</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>对比furryCTF{system.exe_0x0000001A_2024.12.31-14:00:00_DPC_Notepad}这个格式</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">出现问题的文件：IMAGE_NAME:  nvlddmkm.sys</span><br><span class="line">蓝屏错误代码：</span><br><span class="line">VIDEO_TDR_FAILURE (116)  &lt;--- 括号里的 116 就是十进制代码</span><br><span class="line">...</span><br><span class="line">BUGCHECK_CODE:  116      &lt;--- 这里确认</span><br><span class="line">提取结果： 116 (十进制) = 0x00000116 (十六进制)</span><br><span class="line">该文件的最后一次编译时间：lm v m nvlddmkm指令输入后运行</span><br><span class="line">Browse all global symbols  functions  data  Symbol Reload</span><br><span class="line">    Timestamp:        Tue Feb 11 13:40:16 2025 (67AAE2C0)  &lt;--- 就在这一行</span><br><span class="line">    CheckSum:         05B57FA7</span><br><span class="line">失败事件的缩写：</span><br><span class="line">*******************************************************************************</span><br><span class="line">*                        Bugcheck Analysis                                    *</span><br><span class="line">*******************************************************************************</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_FAILURE (116)  &lt;--- 这里是全名</span><br><span class="line">这里用TDR</span><br><span class="line">当时正在使用的应用程序的名称：这里有点坑，需要一点阅读理解，“当前正在使用”，根据题目场景，当前正在进行碰撞，碰撞会想到啥，hash碰撞吧，想想常用的工具，hashcat就是答案</span><br></pre></td></tr></table></figure>
-
-<p>最后整合一下，flag为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;nvlddmkm.sys_0x00000116_2025.02.11-13:40:16_TDR_hashcat&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-IIS服务器"><a href="#4-IIS服务器" class="headerlink" title="4.IIS服务器"></a>4.IIS服务器</h3><p>题目描述：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">猫猫前段时间闲着没事搭建了一个IIS服务器。</span><br><span class="line"></span><br><span class="line">不过，最近猫猫发现，服务器上好像多了个文件……？</span><br></pre></td></tr></table></figure>
-
-<p>用wireshark打开pcap文件</p>
-<p>依旧先ctrl+f搜索flag,找到了交了但是是错的因为那只是一个人登录用的password</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20004312.png" class="" title="Wireshark搜索结果">
-
-<p>确实被骗到了哈哈哈，诈骗的小曲</p>
-<p>你观察就可以发现，流量大多数是TCP和http流，所以右键追踪流</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20004955.png" class="" title="追踪HTTP流">
-
-<p>最后找到一个传了fl2g.txt的流量</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">GET /execute/f12g.txt HTTP/1.1</span><br><span class="line">Host: 26.114.202.3</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000474s</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Encoding: gzip</span><br><span class="line">Last-Modified: Wed, 10 Jul 2024 03:14:49 GMT</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">ETag: &quot;c0c41d5377d2da1:0&quot;</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Server: Microsoft-IIS/7.5</span><br><span class="line">X-Powered-By: ASP.NET</span><br><span class="line">Date: Wed, 10 Jul 2024 04:37:33 GMT</span><br><span class="line">Content-Length: 191</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000000s</span><br><span class="line">ZnVycnlDVEZ7RGlkX1lvdV9Ob3RlX1RoZV9EaWZmX0luX0Vycm9yX1BhZ2U/fQ==</span><br><span class="line">0.175592s</span><br><span class="line">GET /favicon.ico HTTP/1.1</span><br><span class="line">Host: 26.114.202.3</span><br><span class="line">Connection: keep-alive</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36</span><br><span class="line">Accept: image/avif,image/webp,image/apng,image/*,*/*;q=0.8</span><br><span class="line">Referer: http://26.114.202.3/execute/f12g.txt</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000349s</span><br><span class="line">HTTP/1.1 404 Not Found</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Server: Microsoft-IIS/7.5</span><br><span class="line">X-Powered-By: ASP.NET</span><br><span class="line">Date: Wed, 10 Jul 2024 04:37:34 GMT</span><br><span class="line">Content-Length: 1163</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000000s</span><br><span class="line">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;</span><br><span class="line">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=gb2312&quot;/&gt;</span><br><span class="line">&lt;title&gt;404 - ..................&lt;/title&gt;</span><br><span class="line">&lt;style type=&quot;text/css&quot;&gt;</span><br><span class="line">&lt;!--</span><br><span class="line">body&#123;margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;&#125;</span><br><span class="line">fieldset&#123;padding:0 15px 10px 15px;&#125; </span><br><span class="line">h1&#123;font-size:2.4em;margin:0;color:#FFF;&#125;</span><br><span class="line">h2&#123;font-size:1.7em;margin:0;color:#CC0000;&#125; </span><br><span class="line">h3&#123;font-size:1.2em;margin:10px 0 0 0;color:#000000;&#125; </span><br><span class="line">#header&#123;width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:&quot;trebuchet MS&quot;, Verdana, sans-serif;color:#FFF;</span><br><span class="line">background-color:#555555;&#125;</span><br><span class="line">#content&#123;margin:0 0 0 2%;position:relative;&#125;</span><br><span class="line">.content-container&#123;background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;&#125;</span><br><span class="line">--&gt;</span><br><span class="line">&lt;/style&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;div id=&quot;header&quot;&gt;&lt;h1&gt;..........&lt;/h1&gt;&lt;/div&gt;</span><br><span class="line">&lt;div id=&quot;content&quot;&gt;</span><br><span class="line"> &lt;div class=&quot;content-container&quot;&gt;&lt;fieldset&gt;</span><br><span class="line">  &lt;h2&gt;404 - ..................&lt;/h2&gt;</span><br><span class="line">  &lt;h3&gt;......................................................&lt;/h3&gt;</span><br><span class="line"> &lt;/fieldset&gt;&lt;/div&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>这个是不是很像base64啊，虽然不是Zmxh这种标准开头</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0.000000s</span><br><span class="line">ZnVycnlDVEZ7RGlkX1lvdV9Ob3RlX1RoZV9EaWZmX0luX0Vycm9yX1BhZ2U/fQ==</span><br></pre></td></tr></table></figure>
-
-<p>解密之后得到flag(这里用随波逐流)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Did_You_Note_The_Diff_In_Error_Page?&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-盲盒"><a href="#5-盲盒" class="headerlink" title="5.盲盒"></a>5.盲盒</h3><p>题目描述：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">来开盲盒吧~nwn</span><br><span class="line"></span><br><span class="line">注：本题原本的flag格式为flag&#123;&#125;，因为懒得改附件了，所以找到flag后请将里面的“flag”修改为“furryCTF”</span><br><span class="line"></span><br><span class="line">比如flag&#123;Hi&#125;修改为furryCTF&#123;Hi&#125;即为正确答案。</span><br></pre></td></tr></table></figure>
-
-<p>像这种word,excel,ppt这种题目，这种隐写的一般的处理方式就是把文件当压缩包去看</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005452.png" class="" title="文件解压分析">
-
-
-<p>直接用随波逐流的binwalk工具去分离</p>
-<p>一个一个文件找啊找，看有没有和flag相关的</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005630.png" class="" title="Binwalk分离结果">
-
-<p>在sharedStrings里</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;</span><br><span class="line">&lt;sst xmlns=&quot;http://schemas.openxmlformats.org/spreadsheetml/2006/main&quot; count=&quot;762826&quot; uniqueCount=&quot;2&quot;&gt;&lt;si&gt;&lt;t&gt;来开盲盒吧~&lt;/t&gt;&lt;phoneticPr fontId=&quot;1&quot; type=&quot;noConversion&quot;/&gt;&lt;/si&gt;&lt;si&gt;&lt;t&gt;flag        不在这&lt;/t&gt;&lt;phoneticPr fontId=&quot;1&quot; type=&quot;noConversion&quot;/&gt;&lt;/si&gt;&lt;/sst&gt;</span><br><span class="line">&lt;!-- ‬‌‬﻿﻿﻿‍‬‍‍‍‬‌﻿﻿﻿﻿﻿﻿﻿‌‌﻿‌‍‌﻿﻿‍‬‌‌‬‌﻿﻿﻿‍‬‌‍‍‌‬‌‬‬﻿‬‌‬﻿﻿﻿‍‌‍‌﻿‬﻿‍‍‬‬‌﻿﻿﻿‍‬‌‍﻿‍﻿‌‍﻿﻿‍‍﻿‌‌﻿‌‍‍‍‍﻿‌‬‬‌‬‌﻿﻿﻿‍‬‍‬‍‌‍﻿‌﻿‌‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿‍﻿‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿﻿‬‌‌‌‌‌‌‬‬‌‌‌‌‍‬‍‬‌‌‌‌‍‬﻿‌‌‌‌‌‍‬‌‍‌‌‌‌‍‬‍﻿‌‌‌‌‍﻿‬﻿‌‌‌‌‍‍‬‬我也没说‌‌‌‌‌﻿‌‍‌‌‌‌‌﻿‬‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‍‌‌‌‌‌‍‬‬‌‌‌‌‌‍‬‍‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‌﻿‌‌‌‌‍﻿‍‌‌‌‌‌‍﻿‌‬‌‌‌‌‌﻿‌‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‬‍﻿‌‌‌‌‍‍﻿﻿flag‌‌‌‌‍‌‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌在这呀‌‌‌‌‍‬‌﻿‌‌‌‌‌﻿‬‍nwn‌‌‌‌‍‬﻿‌‌‌‌‌‍﻿﻿‍，你不会想在这里找到flag叭~ --&gt;</span><br></pre></td></tr></table></figure>
-
-<p>是不是很明显的零宽隐写</p>
-<p>‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌<!-- ‬‌‬﻿﻿﻿‍‬‍‍‍‬‌﻿﻿﻿﻿﻿﻿﻿‌‌﻿‌‍‌﻿﻿‍‬‌‌‬‌﻿﻿﻿‍‬‌‍‍‌‬‌‬‬﻿‬‌‬﻿﻿﻿‍‌‍‌﻿‬﻿‍‍‬‬‌﻿﻿﻿‍‬‌‍﻿‍﻿‌‍﻿﻿‍‍﻿‌‌﻿‌‍‍‍‍﻿‌‬‬‌‬‌﻿﻿﻿‍‬‍‬‍‌‍﻿‌﻿‌‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿‍﻿‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿﻿‬‌‌‌‌‌‌‬‬‌‌‌‌‍‬‍‬‌‌‌‌‍‬﻿‌‌‌‌‌‍‬‌‍‌‌‌‌‍‬‍﻿‌‌‌‌‍﻿‬﻿‌‌‌‌‍‍‬‬我也没说‌‌‌‌‌﻿‌‍‌‌‌‌‌﻿‬‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‍‌‌‌‌‌‍‬‬‌‌‌‌‌‍‬‍‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‌﻿‌‌‌‌‍﻿‍‌‌‌‌‌‍﻿‌‬‌‌‌‌‌﻿‌‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‬‍﻿‌‌‌‌‍‍﻿﻿flag‌‌‌‌‍‌‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌在这呀‌‌‌‌‍‬‌﻿‌‌‌‌‌﻿‬‍nwn‌‌‌‌‍‬﻿‌‌‌‌‌‍﻿﻿‍，你不会想在这里找到flag叭~ --></p>
-<p>到网站里，随波逐流的就可以</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005847.png" class="" title="零宽字符解密工具">
-
-<p>然后你就看到flag了</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005942.png" class="" title="解密后的Flag">
-
-<p>flag为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">flag&#123;Z19_The_Str1ng_In_Exc9l&#125;</span><br></pre></td></tr></table></figure>]]></content>
   </entry>
   <entry>
     <title>vulnix常用靶机用testssl扫描结果</title>
@@ -419,212 +524,107 @@
 ]]></content>
   </entry>
   <entry>
-    <title>CVE-2014-0224复现流程</title>
-    <url>/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><h3 id="什么是CCS注入漏洞？"><a href="#什么是CCS注入漏洞？" class="headerlink" title="什么是CCS注入漏洞？"></a>什么是CCS注入漏洞？</h3><p>  CCS注入漏洞（CVE-2014-0224这是流行的 OpenSSL 加密软件库中的一个严重漏洞。OpenSSL 是 SSL&#x2F;TLS 加密协议的实现，用于保护互联网通信的隐私。许多网站和其他应用程序（例如电子邮件、即时通讯和 VPN）都使用 OpenSSL。</p>
-<p>  在某些版本的 OpenSSL 中，攻击者可以利用精心构造的握手协议，强制 OpenSSL SSL&#x2F;TLS 客户端和服务器使用弱密钥材料。这可被中间人 (MITM) 攻击利用，攻击者可以解密并篡改来自受攻击客户端和服务器的流量。</p>
-<h3 id="CCS注入漏洞会影响哪些人？"><a href="#CCS注入漏洞会影响哪些人？" class="headerlink" title="CCS注入漏洞会影响哪些人？"></a>CCS注入漏洞会影响哪些人？</h3><p>  最近的报告显示，该漏洞至少存在了十年，但直到最近才被发现。由于许多组织部署了运行 OpenSSL 的服务器，因此，那些关注或受到最近 Heartbleed 漏洞影响的公司可能也应该认真考虑这个漏洞。</p>
-<p>影响版本：OpenSSL 0.9.8za 之前的版本、1.0.0m 之前的 1.0.0 版本以及 1.0.1h 之前的 1.0.1 版本</p>
-<h4 id="攻击条件"><a href="#攻击条件" class="headerlink" title="攻击条件"></a>攻击条件</h4><p>要利用此漏洞，通常需要满足以下条件：</p>
-<ul>
-<li><strong>客户端和服务器都必须易受攻击</strong>：即双方都运行着受影响版本的 OpenSSL。如果仅有一方受影响，握手通常会失败。</li>
-<li><strong>中间人位置</strong>：攻击者必须处于能够拦截和修改网络流量的位置。</li>
-</ul>
-<p>网络拓扑图：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">        [ 虚拟交换机 / 网关 ]</span><br><span class="line">        (Virtual Switch / Gateway)</span><br><span class="line">      (通常是 .1 或 .2, 负责流量转发)</span><br><span class="line">                 |</span><br><span class="line">    +------------+----------------------+----------------------+</span><br><span class="line">    |                                   |                      |</span><br><span class="line">[ Ubuntu (客户端) ]               [ Kali (攻击者) ]        [ Vulnix (靶机/服务端) ]</span><br><span class="line">IP: 192.168.137.129             IP: 192.168.137.132      IP: 192.168.137.133</span><br><span class="line">MAC: AA:BB:CC:..:..             MAC: 攻击者MAC           MAC: 目标MAC</span><br><span class="line">(高版本 OS)                      (运行 Ettercap)          (存在 OpenSSL 漏洞)</span><br></pre></td></tr></table></figure>
+    <title>furryCTF热身赛wp</title>
+    <url>/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/</url>
+    <content><![CDATA[<h3 id="furryCTF2025赛前热身题（misc方向）"><a href="#furryCTF2025赛前热身题（misc方向）" class="headerlink" title="furryCTF2025赛前热身题（misc方向）"></a>furryCTF2025赛前热身题（misc方向）</h3><p>比赛网站：<a href="https://furryctf.com/games/5">https://furryctf.com/games/5</a></p>
+<h3 id="1-签到题"><a href="#1-签到题" class="headerlink" title="1.签到题"></a>1.签到题</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">话说，你们有发现比赛平台上藏有一个flag吗？</span><br><span class="line"></span><br><span class="line">注意flag格式哦~</span><br></pre></td></tr></table></figure>
+
+<p>在赛题主页就可以找到：</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002231.png" class="" title="赛题主页截图">
+
+<p>flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Hack_for_fun_not_for_profit&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-新的一年，新的开始"><a href="#2-新的一年，新的开始" class="headerlink" title="2.新的一年，新的开始"></a>2.新的一年，新的开始</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Catch The Future</span><br><span class="line"></span><br><span class="line">Time to own 2025</span><br><span class="line"></span><br><span class="line">Forever young in hacking</span><br><span class="line"></span><br><span class="line">furryCTF&#123;h4ppY_n3w_y34r_2o25_w1th_1Ov3&#125;</span><br><span class="line"></span><br><span class="line">祝各位师傅：</span><br><span class="line"></span><br><span class="line">栈上生花，堆里藏月，逆向不秃，web不坐牢，pwn穿一切，ak全场！ 🚩🎉</span><br></pre></td></tr></table></figure>
+
+<p>这种就是问卷题</p>
+<p>flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;h4ppY_n3w_y34r_2o25_w1th_1Ov3&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-PassDump"><a href="#3-PassDump" class="headerlink" title="3.PassDump"></a>3.PassDump</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">作为CTFer，很多时候都会有电脑放一夜跑程序的经历。</span><br><span class="line"></span><br><span class="line">但猫猫看着跑一夜碰撞之后蓝屏的电脑，陷入了沉思……</span><br><span class="line"></span><br><span class="line">flag格式为furryCTF&#123;出现问题的文件_蓝屏错误代码_该文件的最后一次编译时间_失败事件的缩写_当时正在使用的应用程序的名称&#125;</span><br><span class="line"></span><br><span class="line">例如，这是一个合法的flag：</span><br><span class="line"></span><br><span class="line">furryCTF&#123;system.exe_0x0000001A_2024.12.31-14:00:00_DPC_Notepad&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这题需要用到windbg,这里链接就不贴了，网上一搜就有</p>
+<p>打开windbg后</p>
+<p>打开command,也就是命令行</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002913.png" class="" title="WinDbg命令行">
+
+<p>一般会有这个蓝标字体，如果没有就自己输入</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">!analyze -v</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002934.png" class="" title="分析结果">
+
+<p>这里我把输出结果放一下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">12: kd&gt; !analyze -v</span><br><span class="line">Loading Kernel Symbols</span><br><span class="line">..</span><br><span class="line"></span><br><span class="line">Press ctrl-c (cdb, kd, ntsd) or ctrl-break (windbg) to abort symbol loads that take too long.</span><br><span class="line">Run !sym noisy before .reload to track down problems loading symbols.</span><br><span class="line"></span><br><span class="line">.............................................................</span><br><span class="line">................................................................</span><br><span class="line">................................................................</span><br><span class="line">................................................................</span><br><span class="line">..............................................</span><br><span class="line">Loading User Symbols</span><br><span class="line"></span><br><span class="line">Loading unloaded module list</span><br><span class="line">.........................................</span><br><span class="line">*******************************************************************************</span><br><span class="line">*                                                                             *</span><br><span class="line">*                        Bugcheck Analysis                                    *</span><br><span class="line">*                                                                             *</span><br><span class="line">*******************************************************************************</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_FAILURE (116)</span><br><span class="line">Attempt to reset the display driver and recover from timeout failed.</span><br><span class="line">Arguments:</span><br><span class="line">Arg1: ffffe30a4b8cd010, Optional pointer to internal TDR recovery context (TDR_RECOVERY_CONTEXT).</span><br><span class="line">Arg2: fffff8035ce14790, The pointer into responsible device driver module (e.g. owner tag).</span><br><span class="line">Arg3: ffffffffc000009a, Optional error code (NTSTATUS) of the last failed operation.</span><br><span class="line">Arg4: 0000000000000004, Optional internal context dependent data.</span><br><span class="line"></span><br><span class="line">Debugging Details:</span><br><span class="line">------------------</span><br><span class="line"></span><br><span class="line">Unable to load image nvlddmkm.sys, Win32 error 0n2</span><br><span class="line">*** WARNING: Unable to verify timestamp for nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">KEY_VALUES_STRING: 1</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.CPU.mSec</span><br><span class="line">    Value: 2140</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Elapsed.mSec</span><br><span class="line">    Value: 13194</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Other.Mb</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Read.Mb</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Write.Mb</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Init.CPU.mSec</span><br><span class="line">    Value: 484</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Init.Elapsed.mSec</span><br><span class="line">    Value: 28118</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Memory.CommitPeak.Mb</span><br><span class="line">    Value: 102</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.DbgEng</span><br><span class="line">    Value: 10.0.29482.1003</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.Description</span><br><span class="line">    Value: 10.2509.29.03 amd64fre</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.Ext</span><br><span class="line">    Value: 1.2509.29.3</span><br><span class="line"></span><br><span class="line">    Key  : Bugcheck.Code.LegacyAPI</span><br><span class="line">    Value: 0x116</span><br><span class="line"></span><br><span class="line">    Key  : Bugcheck.Code.TargetModel</span><br><span class="line">    Value: 0x116</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.AsUlong</span><br><span class="line">    Value: 0x21808</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.DiagDataWrittenToHeader</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.ErrorCode</span><br><span class="line">    Value: 0x0</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.KernelGeneratedTriageDump</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.LastLine</span><br><span class="line">    Value: Dump completed successfully.</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.ProgressPercentage</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Bucket</span><br><span class="line">    Value: 0x116_IMAGE_nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Address</span><br><span class="line">    Value: 0xfffff8035ce14790</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Module</span><br><span class="line">    Value: nvlddmkm</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Offset</span><br><span class="line">    Value: 0x1854790</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Hash</span><br><span class="line">    Value: &#123;c89bfe8c-ed39-f658-ef27-f2898997fdbd&#125;</span><br><span class="line"></span><br><span class="line">    Key  : Faulting.IP.Type</span><br><span class="line">    Value: Paged</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Enlightenments.ValueHex</span><br><span class="line">    Value: 0x7417df84</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.AnyHypervisorPresent</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ApicEnlightened</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ApicVirtualizationAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.AsyncMemoryHint</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.CoreSchedulerRequested</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.CpuManager</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.DeprecateAutoEoi</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.DynamicCpuDisabled</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Epf</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ExtendedProcessorMasks</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.HardwareMbecAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.MaxBankNumber</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.MemoryZeroingControl</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.NoExtendedRangeFlush</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.NoNonArchCoreSharing</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Phase0InitDone</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.PowerSchedulerQos</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.RootScheduler</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.SynicAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.UseQpcBias</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Value</span><br><span class="line">    Value: 55185662</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ValueHex</span><br><span class="line">    Value: 0x34a10fe</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.VpAssistPage</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.VsmAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.AccessStats</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.CrashdumpEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.CreateVirtualProcessor</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.DisableHyperthreading</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.HostTimelineSync</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.HypervisorDebuggingEnabled</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.IsHyperV</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.LivedumpEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.MapDeviceInterrupt</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.MceEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.Nested</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.StartLogicalProcessor</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.Value</span><br><span class="line">    Value: 1015</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.ValueHex</span><br><span class="line">    Value: 0x3f7</span><br><span class="line"></span><br><span class="line">    Key  : WER.System.BIOSRevision</span><br><span class="line">    Value: 1.23.0.0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BUGCHECK_CODE:  116</span><br><span class="line"></span><br><span class="line">BUGCHECK_P1: ffffe30a4b8cd010</span><br><span class="line"></span><br><span class="line">BUGCHECK_P2: fffff8035ce14790</span><br><span class="line"></span><br><span class="line">BUGCHECK_P3: ffffffffc000009a</span><br><span class="line"></span><br><span class="line">BUGCHECK_P4: 4</span><br><span class="line"></span><br><span class="line">FILE_IN_CAB:  furryCTF.dmp</span><br><span class="line"></span><br><span class="line">DUMP_FILE_ATTRIBUTES: 0x21808</span><br><span class="line">  Kernel Generated Triage Dump</span><br><span class="line"></span><br><span class="line">FAULTING_THREAD:  ffffe30a86af3040</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_CONTEXT: dt dxgkrnl!_TDR_RECOVERY_CONTEXT ffffe30a4b8cd010</span><br><span class="line">Symbol dxgkrnl!_TDR_RECOVERY_CONTEXT not found.</span><br><span class="line"></span><br><span class="line">PROCESS_OBJECT: 0000000000000004</span><br><span class="line"></span><br><span class="line">BLACKBOXACPI: 1 (!blackboxacpi)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXBSD: 1 (!blackboxbsd)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXNTFS: 1 (!blackboxntfs)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXPNP: 1 (!blackboxpnp)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXWINLOGON: 1 (!blackboxwinlogon)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">PROCESS_NAME:  System</span><br><span class="line"></span><br><span class="line">IP_IN_PAGED_CODE: </span><br><span class="line">nvlddmkm+1854790</span><br><span class="line">fffff803`5ce14790 488b05b9f28dff  mov     rax,qword ptr [nvlddmkm+0x1133a50 (fffff803`5c6f3a50)]</span><br><span class="line"></span><br><span class="line">STACK_TEXT:  </span><br><span class="line">ffffc982`1c9677d8 fffff803`43a2375d     : 00000000`00000116 ffffe30a`4b8cd010 fffff803`5ce14790 ffffffff`c000009a : nt!KeBugCheckEx</span><br><span class="line">ffffc982`1c9677e0 fffff803`43c97be6     : fffff803`5ce14790 ffffe30a`5b80b5a0 00000000`00000004 ffffe30a`4b8cd010 : dxgkrnl!TdrBugcheckOnTimeout+0x101</span><br><span class="line">ffffc982`1c967820 fffff803`43a324be     : 00000000`00000000 00000000`00002000 00000000`00000004 00000000`00000004 : dxgkrnl!ADAPTER_RENDER::Reset+0x232</span><br><span class="line">ffffc982`1c967850 fffff803`43a69375     : ffffe30a`00000100 00000000`00000000 ffffc982`00000000 00000000`00000000 : dxgkrnl!DXGADAPTER::Reset+0x59a</span><br><span class="line">ffffc982`1c9678e0 fffff803`43a694d2     : fffff803`b290ce60 00000000`00000000 ffffb881`c42d1100 fffff803`b29cfbc0 : dxgkrnl!TdrResetFromTimeout+0x15</span><br><span class="line">ffffc982`1c967910 fffff803`b1c3072c     : ffffe30a`86af3040 ffffe30a`478ddae0 ffffe30a`478dda00 fffff803`44b52750 : dxgkrnl!TdrResetFromTimeoutWorkItem+0x22</span><br><span class="line">ffffc982`1c967950 fffff803`b1ea007a     : ffffe30a`86af3040 ffffe30a`86af3040 fffff803`b1c30140 ffffe30a`478ddae0 : nt!ExpWorkerThread+0x5ec</span><br><span class="line">ffffc982`1c967b30 fffff803`b20a5db4     : ffffb881`c42d1180 ffffe30a`86af3040 fffff803`b1ea0020 00000000`0e5f57dc : nt!PspSystemThreadStartup+0x5a</span><br><span class="line">ffffc982`1c967b80 00000000`00000000     : ffffc982`1c968000 ffffc982`1c961000 00000000`00000000 00000000`00000000 : nt!KiStartSystemThread+0x34</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SYMBOL_NAME:  nvlddmkm+1854790</span><br><span class="line"></span><br><span class="line">MODULE_NAME: nvlddmkm</span><br><span class="line"></span><br><span class="line">IMAGE_NAME:  nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">STACK_COMMAND: .process /r /p 0xffffe30a476cb040; .thread 0xffffe30a86af3040 ; kb</span><br><span class="line"></span><br><span class="line">FAILURE_BUCKET_ID:  0x116_IMAGE_nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">OSPLATFORM_TYPE:  x64</span><br><span class="line"></span><br><span class="line">OSNAME:  Windows 10</span><br><span class="line"></span><br><span class="line">FAILURE_ID_HASH:  &#123;c89bfe8c-ed39-f658-ef27-f2898997fdbd&#125;</span><br><span class="line"></span><br><span class="line">Followup:     MachineOwner</span><br><span class="line">---------</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>对比furryCTF{system.exe_0x0000001A_2024.12.31-14:00:00_DPC_Notepad}这个格式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">出现问题的文件：IMAGE_NAME:  nvlddmkm.sys</span><br><span class="line">蓝屏错误代码：</span><br><span class="line">VIDEO_TDR_FAILURE (116)  &lt;--- 括号里的 116 就是十进制代码</span><br><span class="line">...</span><br><span class="line">BUGCHECK_CODE:  116      &lt;--- 这里确认</span><br><span class="line">提取结果： 116 (十进制) = 0x00000116 (十六进制)</span><br><span class="line">该文件的最后一次编译时间：lm v m nvlddmkm指令输入后运行</span><br><span class="line">Browse all global symbols  functions  data  Symbol Reload</span><br><span class="line">    Timestamp:        Tue Feb 11 13:40:16 2025 (67AAE2C0)  &lt;--- 就在这一行</span><br><span class="line">    CheckSum:         05B57FA7</span><br><span class="line">失败事件的缩写：</span><br><span class="line">*******************************************************************************</span><br><span class="line">*                        Bugcheck Analysis                                    *</span><br><span class="line">*******************************************************************************</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_FAILURE (116)  &lt;--- 这里是全名</span><br><span class="line">这里用TDR</span><br><span class="line">当时正在使用的应用程序的名称：这里有点坑，需要一点阅读理解，“当前正在使用”，根据题目场景，当前正在进行碰撞，碰撞会想到啥，hash碰撞吧，想想常用的工具，hashcat就是答案</span><br></pre></td></tr></table></figure>
+
+<p>最后整合一下，flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;nvlddmkm.sys_0x00000116_2025.02.11-13:40:16_TDR_hashcat&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-IIS服务器"><a href="#4-IIS服务器" class="headerlink" title="4.IIS服务器"></a>4.IIS服务器</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">猫猫前段时间闲着没事搭建了一个IIS服务器。</span><br><span class="line"></span><br><span class="line">不过，最近猫猫发现，服务器上好像多了个文件……？</span><br></pre></td></tr></table></figure>
+
+<p>用wireshark打开pcap文件</p>
+<p>依旧先ctrl+f搜索flag,找到了交了但是是错的因为那只是一个人登录用的password</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20004312.png" class="" title="Wireshark搜索结果">
+
+<p>确实被骗到了哈哈哈，诈骗的小曲</p>
+<p>你观察就可以发现，流量大多数是TCP和http流，所以右键追踪流</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20004955.png" class="" title="追踪HTTP流">
+
+<p>最后找到一个传了fl2g.txt的流量</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">GET /execute/f12g.txt HTTP/1.1</span><br><span class="line">Host: 26.114.202.3</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000474s</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Encoding: gzip</span><br><span class="line">Last-Modified: Wed, 10 Jul 2024 03:14:49 GMT</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">ETag: &quot;c0c41d5377d2da1:0&quot;</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Server: Microsoft-IIS/7.5</span><br><span class="line">X-Powered-By: ASP.NET</span><br><span class="line">Date: Wed, 10 Jul 2024 04:37:33 GMT</span><br><span class="line">Content-Length: 191</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000000s</span><br><span class="line">ZnVycnlDVEZ7RGlkX1lvdV9Ob3RlX1RoZV9EaWZmX0luX0Vycm9yX1BhZ2U/fQ==</span><br><span class="line">0.175592s</span><br><span class="line">GET /favicon.ico HTTP/1.1</span><br><span class="line">Host: 26.114.202.3</span><br><span class="line">Connection: keep-alive</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36</span><br><span class="line">Accept: image/avif,image/webp,image/apng,image/*,*/*;q=0.8</span><br><span class="line">Referer: http://26.114.202.3/execute/f12g.txt</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000349s</span><br><span class="line">HTTP/1.1 404 Not Found</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Server: Microsoft-IIS/7.5</span><br><span class="line">X-Powered-By: ASP.NET</span><br><span class="line">Date: Wed, 10 Jul 2024 04:37:34 GMT</span><br><span class="line">Content-Length: 1163</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000000s</span><br><span class="line">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;</span><br><span class="line">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=gb2312&quot;/&gt;</span><br><span class="line">&lt;title&gt;404 - ..................&lt;/title&gt;</span><br><span class="line">&lt;style type=&quot;text/css&quot;&gt;</span><br><span class="line">&lt;!--</span><br><span class="line">body&#123;margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;&#125;</span><br><span class="line">fieldset&#123;padding:0 15px 10px 15px;&#125; </span><br><span class="line">h1&#123;font-size:2.4em;margin:0;color:#FFF;&#125;</span><br><span class="line">h2&#123;font-size:1.7em;margin:0;color:#CC0000;&#125; </span><br><span class="line">h3&#123;font-size:1.2em;margin:10px 0 0 0;color:#000000;&#125; </span><br><span class="line">#header&#123;width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:&quot;trebuchet MS&quot;, Verdana, sans-serif;color:#FFF;</span><br><span class="line">background-color:#555555;&#125;</span><br><span class="line">#content&#123;margin:0 0 0 2%;position:relative;&#125;</span><br><span class="line">.content-container&#123;background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;&#125;</span><br><span class="line">--&gt;</span><br><span class="line">&lt;/style&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;div id=&quot;header&quot;&gt;&lt;h1&gt;..........&lt;/h1&gt;&lt;/div&gt;</span><br><span class="line">&lt;div id=&quot;content&quot;&gt;</span><br><span class="line"> &lt;div class=&quot;content-container&quot;&gt;&lt;fieldset&gt;</span><br><span class="line">  &lt;h2&gt;404 - ..................&lt;/h2&gt;</span><br><span class="line">  &lt;h3&gt;......................................................&lt;/h3&gt;</span><br><span class="line"> &lt;/fieldset&gt;&lt;/div&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个是不是很像base64啊，虽然不是Zmxh这种标准开头</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0.000000s</span><br><span class="line">ZnVycnlDVEZ7RGlkX1lvdV9Ob3RlX1RoZV9EaWZmX0luX0Vycm9yX1BhZ2U/fQ==</span><br></pre></td></tr></table></figure>
+
+<p>解密之后得到flag(这里用随波逐流)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Did_You_Note_The_Diff_In_Error_Page?&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-盲盒"><a href="#5-盲盒" class="headerlink" title="5.盲盒"></a>5.盲盒</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">来开盲盒吧~nwn</span><br><span class="line"></span><br><span class="line">注：本题原本的flag格式为flag&#123;&#125;，因为懒得改附件了，所以找到flag后请将里面的“flag”修改为“furryCTF”</span><br><span class="line"></span><br><span class="line">比如flag&#123;Hi&#125;修改为furryCTF&#123;Hi&#125;即为正确答案。</span><br></pre></td></tr></table></figure>
+
+<p>像这种word,excel,ppt这种题目，这种隐写的一般的处理方式就是把文件当压缩包去看</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005452.png" class="" title="文件解压分析">
 
 
+<p>直接用随波逐流的binwalk工具去分离</p>
+<p>一个一个文件找啊找，看有没有和flag相关的</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005630.png" class="" title="Binwalk分离结果">
 
-<h1 id="中间人攻击过程演示"><a href="#中间人攻击过程演示" class="headerlink" title="中间人攻击过程演示"></a>中间人攻击过程演示</h1><h2 id="第-1-阶段：环境初始化（物理层）"><a href="#第-1-阶段：环境初始化（物理层）" class="headerlink" title="第 1 阶段：环境初始化（物理层）"></a>第 1 阶段：环境初始化（物理层）</h2><p><strong>目标：</strong> 确保三台机器在同一个纯净的局域网内，且 IP 互通。</p>
-<h3 id="1-1-虚拟机网络设置"><a href="#1-1-虚拟机网络设置" class="headerlink" title="1.1 虚拟机网络设置"></a>1.1 虚拟机网络设置</h3><ul>
-<li><p><strong>操作：</strong> 打开 VMware，将 Kali、Ubuntu、Vulnix 三台虚拟机的网络适配器<strong>全部设置为「NAT 模式」</strong>。</p>
-</li>
-<li><p><strong>原因：</strong> 桥接模式受路由器影响太大，NAT 模式能提供最稳定的实验环境。</p>
-</li>
-<li><h3 id="1-2-确认-IP-地址"><a href="#1-2-确认-IP-地址" class="headerlink" title="1.2 确认 IP 地址"></a>1.2 确认 IP 地址</h3><p>在kali和ubuntu和vulnix机器终端分别输入 <code>ip addr</code>。请记下你的 IP</p>
-<ul>
-<li><p><strong>Kali (攻击者):</strong> <code>192.168.137.132</code></p>
-</li>
-<li><p><strong>Ubuntu (受害者):</strong> <code>192.168.137.129</code></p>
-</li>
-<li><p><strong>vulnix</strong> <strong>(服务端)</strong>：192.168.137.133</p>
-</li>
-<li><p>首先三台机子是ping 通的因为在同一网关下</p>
-<p>在实验开始之前，我要确定服务端是否有这个漏洞,先扫这个靶机有ccs这个漏洞的端口</p>
-<p>输入指令：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -sV -p- 192.168.137.133</span><br></pre></td></tr></table></figure>
+<p>在sharedStrings里</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;</span><br><span class="line">&lt;sst xmlns=&quot;http://schemas.openxmlformats.org/spreadsheetml/2006/main&quot; count=&quot;762826&quot; uniqueCount=&quot;2&quot;&gt;&lt;si&gt;&lt;t&gt;来开盲盒吧~&lt;/t&gt;&lt;phoneticPr fontId=&quot;1&quot; type=&quot;noConversion&quot;/&gt;&lt;/si&gt;&lt;si&gt;&lt;t&gt;flag        不在这&lt;/t&gt;&lt;phoneticPr fontId=&quot;1&quot; type=&quot;noConversion&quot;/&gt;&lt;/si&gt;&lt;/sst&gt;</span><br><span class="line">&lt;!-- ‬‌‬﻿﻿﻿‍‬‍‍‍‬‌﻿﻿﻿﻿﻿﻿﻿‌‌﻿‌‍‌﻿﻿‍‬‌‌‬‌﻿﻿﻿‍‬‌‍‍‌‬‌‬‬﻿‬‌‬﻿﻿﻿‍‌‍‌﻿‬﻿‍‍‬‬‌﻿﻿﻿‍‬‌‍﻿‍﻿‌‍﻿﻿‍‍﻿‌‌﻿‌‍‍‍‍﻿‌‬‬‌‬‌﻿﻿﻿‍‬‍‬‍‌‍﻿‌﻿‌‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿‍﻿‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿﻿‬‌‌‌‌‌‌‬‬‌‌‌‌‍‬‍‬‌‌‌‌‍‬﻿‌‌‌‌‌‍‬‌‍‌‌‌‌‍‬‍﻿‌‌‌‌‍﻿‬﻿‌‌‌‌‍‍‬‬我也没说‌‌‌‌‌﻿‌‍‌‌‌‌‌﻿‬‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‍‌‌‌‌‌‍‬‬‌‌‌‌‌‍‬‍‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‌﻿‌‌‌‌‍﻿‍‌‌‌‌‌‍﻿‌‬‌‌‌‌‌﻿‌‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‬‍﻿‌‌‌‌‍‍﻿﻿flag‌‌‌‌‍‌‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌在这呀‌‌‌‌‍‬‌﻿‌‌‌‌‌﻿‬‍nwn‌‌‌‌‍‬﻿‌‌‌‌‌‍﻿﻿‍，你不会想在这里找到flag叭~ --&gt;</span><br></pre></td></tr></table></figure>
 
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251209211011957.png" class="" title="nmap扫描结果"></li>
-</ul>
-</li>
-</ul>
-<p>因为ccs漏洞是tls上的，可以看到端口995，993可能会有这个漏洞，所以这两个端口都要扫一下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -p 993,995 --script ssl-ccs-injection 192.168.137.133</span><br></pre></td></tr></table></figure>
+<p>是不是很明显的零宽隐写</p>
+<p>‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌<!-- ‬‌‬﻿﻿﻿‍‬‍‍‍‬‌﻿﻿﻿﻿﻿﻿﻿‌‌﻿‌‍‌﻿﻿‍‬‌‌‬‌﻿﻿﻿‍‬‌‍‍‌‬‌‬‬﻿‬‌‬﻿﻿﻿‍‌‍‌﻿‬﻿‍‍‬‬‌﻿﻿﻿‍‬‌‍﻿‍﻿‌‍﻿﻿‍‍﻿‌‌﻿‌‍‍‍‍﻿‌‬‬‌‬‌﻿﻿﻿‍‬‍‬‍‌‍﻿‌﻿‌‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿‍﻿‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿﻿‬‌‌‌‌‌‌‬‬‌‌‌‌‍‬‍‬‌‌‌‌‍‬﻿‌‌‌‌‌‍‬‌‍‌‌‌‌‍‬‍﻿‌‌‌‌‍﻿‬﻿‌‌‌‌‍‍‬‬我也没说‌‌‌‌‌﻿‌‍‌‌‌‌‌﻿‬‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‍‌‌‌‌‌‍‬‬‌‌‌‌‌‍‬‍‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‌﻿‌‌‌‌‍﻿‍‌‌‌‌‌‍﻿‌‬‌‌‌‌‌﻿‌‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‬‍﻿‌‌‌‌‍‍﻿﻿flag‌‌‌‌‍‌‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌在这呀‌‌‌‌‍‬‌﻿‌‌‌‌‌﻿‬‍nwn‌‌‌‌‍‬﻿‌‌‌‌‌‍﻿﻿‍，你不会想在这里找到flag叭~ --></p>
+<p>到网站里，随波逐流的就可以</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005847.png" class="" title="零宽字符解密工具">
 
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251209211454223.png" class="" title="nmap漏洞脚本扫描">
+<p>然后你就看到flag了</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005942.png" class="" title="解密后的Flag">
 
-<p>可以发现: Vulnix 靶机 (192.168.137.133) 上的 IMAPS 服务 (端口 993) 和 POP3S 服务 (端口 995) 确定存在 CCS 注入漏洞 (CVE-2014-0224)。</p>
-<h2 id="第-2-阶段：实现中间人欺骗环境"><a href="#第-2-阶段：实现中间人欺骗环境" class="headerlink" title="第 2 阶段：实现中间人欺骗环境"></a>第 2 阶段：实现中间人欺骗环境</h2><h3 id="启动-Ettercap"><a href="#启动-Ettercap" class="headerlink" title="启动 Ettercap"></a>启动 Ettercap</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo ettercap -G</span><br></pre></td></tr></table></figure>
+<p>flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">flag&#123;Z19_The_Str1ng_In_Exc9l&#125;</span><br></pre></td></tr></table></figure>]]></content>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2025/12/26/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
 
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251129145138663.png" class="" title="启动Ettercap">
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
 
-<p>这里我选择默认的网段eth0,按上面的对勾就是启动了服务</p>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251129145311864.png" class="" title="Ettercap界面">
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
 
-<p>1.<strong>扫描主机：</strong> 点击左上角的 <strong>放大镜图标</strong> (Scan for hosts)。他会扫描一切主机</p>
-<p>2.按放大镜右边那个Host List，可以看到我的网关和客户端和服务端两台主机（这个列表默认是没有本机：kali）</p>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211181711093.png" class="" title="HostList">
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 
-<p>3.<strong>选定目标：</strong></p>
-<ul>
-<li><p>选中 <strong>192.168.137.129</strong> (Ubuntu)，点击下方的 <strong>Add to Target 1</strong>。</p>
-</li>
-<li><p>选中 <strong>192.168.137.133</strong> (Vulnix)，点击下方的 <strong>Add to Target 2</strong>。</p>
-<p>为什么这么选呢？</p>
-<p>之所以要这样设置 Target 1 和 Target 2，是因为 Ettercap 需要明确“我们要在这个双向通信的链路中欺骗谁和谁”。只是一个指定目标的意思。</p>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182439066.png" class="" title="设置Target"></li>
-</ul>
-<p>从下面输出的可以看出已经指定目标了</p>
-<p>4.开始arp欺骗:</p>
-<ul>
-<li><p>点击右上角的 <strong>地球图标</strong> (MITM Menu)。</p>
-</li>
-<li><p>选择 <strong>ARP poisoning</strong>。</p>
-</li>
-<li><p><strong>关键：</strong> 勾选 <strong>Sniff remote connections</strong> -&gt; 点击 <strong>OK</strong>。</p>
-</li>
-</ul>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182746240.png" class="" title="选择ARP欺骗">
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182819879.png" class="" title="勾选Sniff">
-
-<p>ARP Poisoning  :arp欺骗</p>
-<p>Sniff remote connections：嗅探远程连接，监听那些仅仅是“路过”我电脑的流量。</p>
-<p>但是我们所用的监听工具是sslsplit后面会提到。</p>
-<p>5.这是展现的是流量转发，使客户端可以上网</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211183852053.png" class="" title="开启转发">
-<p>6.<strong>创建伪造的 CA 证书</strong>:<br><code>sslsplit</code> 需要使用自签名的证书来欺骗客户端，假装自己是真正的服务器。<br>在 Kali 的 <code>~/Desktop</code> 目录下执行：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd ~/Desktop</span><br><span class="line">openssl genrsa -out ca.key 2048 # 生成私钥</span><br><span class="line"># 生成自签名证书，一路回车接受默认值，或自定义 Common Name (CN)</span><br><span class="line">openssl req -new -x509 -days 365 -key ca.key -out ca.crt</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211184732478.png" class="" title="生成证书">
-
-<p>这里我把原来以前生成过的删掉了，重新生成了一次，可以看到桌面上的ca.crt和ca.key,因为只是测试，所以证书随便填。</p>
-<p>7.<strong>配置 <code>iptables</code> 规则</strong>:<br>将目标为 Vulnix IMAPS (993) 端口（有漏洞的端口）的流量重定向到 Kali 本地 <code>sslsplit</code> 监听的端口 (例如 8993)。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo iptables -t nat -F # 清除所有旧的 NAT 规则</span><br><span class="line">sudo iptables -t nat -A PREROUTING -p tcp --destination-port 993 -j REDIRECT --to-port 8993</span><br></pre></td></tr></table></figure>
-
-<p>8.<strong>启动 <code>sslsplit</code></strong>:</p>
-<p><strong>SSLsplit 是什么？</strong><br><strong>SSLsplit 是一个透明的 SSL&#x2F;TLS 中间人攻击（MitM）工具。</strong></p>
-<p><strong>它的角色：它就像一个“伪装的翻译官”。</strong><br><strong>它的工作原理：</strong><br><strong>当受害者（Ubuntu）想和服务器（Vulnix）建立加密连接（SSL握手）时，流量被 iptables 强行转给了 SSLsplit。</strong><br><strong>对内欺骗：SSLsplit 假装自己是服务器，拿出一个（伪造的）证书和受害者建立连接。</strong><br><strong>对外连接：SSLsplit 同时作为客户端，真正去连接远程服务器。</strong><br><strong>中间操作：受害者发来的加密数据，SSLsplit 解密成明文（记录下来），然后再加密发给真正的服务器。</strong><br><strong>简单来说：SSLsplit 负责把“加密的信封”拆开，看完内容后，再换个新信封封好发出去。</strong></p>
-<p><strong>这将是流量解密和记录的核心工具。</strong></p>
-<ul>
-<li><p><strong>终端 3 (Kali)</strong>: 创建日志目录并以前台模式启动 <code>sslsplit</code>。</p>
-</li>
-<li><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir -p /tmp/sslsplit-mail-logs/logdir</span><br><span class="line">sudo sslsplit -l /tmp/sslsplit-mail-logs/connections.log \</span><br><span class="line">             -j /tmp/sslsplit-mail-logs/ \</span><br><span class="line">             -S /tmp/sslsplit-mail-logs/logdir/ \</span><br><span class="line">             -k ~/Desktop/ca.key \</span><br><span class="line">             -c ~/Desktop/ca.crt \</span><br><span class="line">             ssl 0.0.0.0 8993 192.168.137.133 993</span><br></pre></td></tr></table></figure>
-
-<p><code>sslsplit</code> 会“卡住”在此终端，表示它已成功启动并正在监听。<strong>保持此终端运行。</strong></p>
-<p>下面是对这段代码的解释：</p>
-</li>
-</ul>
-<p>这段命令是 <strong>启动 SSLsplit 进行攻击</strong> 的核心步骤。作为软件工程师，我们可以把它看作是在<strong>启动一个高性能的服务器后端进程</strong>，并详细配置了它的日志系统、证书凭证以及监听端口。</p>
-<p>这段代码分为两部分：创建目录和启动程序。我们逐行拆解：</p>
-<hr>
-<h3 id="第一部分：准备工作"><a href="#第一部分：准备工作" class="headerlink" title="第一部分：准备工作"></a>第一部分：准备工作</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /tmp/sslsplit-mail-logs/logdir</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong><code>mkdir</code></strong>: 创建目录 (Make Directory)。</li>
-<li><strong><code>-p</code></strong>: 级联创建。意思是如果父目录 <code>/tmp/sslsplit-mail-logs</code> 不存在，就自动把它也建好，不要报错。</li>
-<li><strong>目的</strong>：为 SSLsplit 准备好存放“赃物”（截获的数据和日志）的文件夹。</li>
-</ul>
-<hr>
-<h3 id="第二部分：启动-SSLsplit"><a href="#第二部分：启动-SSLsplit" class="headerlink" title="第二部分：启动 SSLsplit"></a>第二部分：启动 SSLsplit</h3><p>这是一个长命令，通过反斜杠 <code>\</code> 换行。我们按参数拆解：</p>
-<h4 id="1-基础日志配置"><a href="#1-基础日志配置" class="headerlink" title="1. 基础日志配置"></a>1. 基础日志配置</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> sslsplit -l /tmp/sslsplit-mail-logs/connections.log \</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong><code>sudo sslsplit</code></strong>: 以管理员权限运行攻击工具。</li>
-<li><strong><code>-l .../connections.log</code></strong>: <strong>连接日志 (Log)</strong>。<ul>
-<li>这里记录的是**“谁连了我”**。</li>
-<li>内容包括：时间戳、源IP、目标IP、连接是否成功等元数据。就好比是公司的“访客登记表”。</li>
-</ul>
-</li>
-</ul>
-<h4 id="2-内容截获配置-核心功能"><a href="#2-内容截获配置-核心功能" class="headerlink" title="2. 内容截获配置 (核心功能)"></a>2. 内容截获配置 (核心功能)</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-j /tmp/sslsplit-mail-logs/ \</span><br><span class="line">-S /tmp/sslsplit-mail-logs/logdir/ \</span><br></pre></td></tr></table></figure>
-<p>这里是 SSLsplit 最强大的地方，它会把截获的内容存下来：</p>
-<ul>
-<li><strong><code>-j /path/to/dir/</code> (Jail&#x2F;chroot directory)</strong>:<ul>
-<li>虽然官方文档中 <code>-j</code> 主要是用于 <code>chroot</code> (隔离运行环境以提高安全性)，但在某些版本的上下文中，它常配合内容记录使用。不过在攻击场景中，我们更关注下面的 <code>-S</code>。</li>
-</ul>
-</li>
-<li><strong><code>-S .../logdir/</code> (Log Streams)</strong>: <strong>内容日志</strong>。<ul>
-<li><strong>含义</strong>：把每一条流经的 TCP 连接的数据内容，<strong>完整地保存成独立的文件</strong>。</li>
-<li><strong>效果</strong>：如果受害者发了邮件，邮件的正文、密码、附件，都会被写入这个目录下的文件中。这才是我们找密码要去翻的地方。</li>
-</ul>
-</li>
-</ul>
-<h4 id="3-伪造证书配置-欺骗核心"><a href="#3-伪造证书配置-欺骗核心" class="headerlink" title="3. 伪造证书配置 (欺骗核心)"></a>3. 伪造证书配置 (欺骗核心)</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-k ~/Desktop/ca.key \</span><br><span class="line">-c ~/Desktop/ca.crt \</span><br></pre></td></tr></table></figure>
-<p>这是中间人攻击能否成功的关键：</p>
-<ul>
-<li><strong><code>-k ...ca.key</code> (Key)</strong>: 指定你的 <strong>CA 私钥</strong>。</li>
-<li><strong><code>-c ...ca.crt</code> (Certificate)</strong>: 指定你的 <strong>CA 证书</strong>。</li>
-<li><strong>原理</strong>：SSLsplit 需要在受害者和服务器之间“实时伪造”证书。它使用你提供的这个 CA（证书授权中心）的私钥，来动态签署伪造的证书。<ul>
-<li><em>注：前提是你已经想办法把这个 <code>ca.crt</code> 安装到了受害者的电脑上并建立了信任，否则受害者的浏览器会弹窗警告“证书不安全”。</em></li>
-</ul>
-</li>
-</ul>
-<h4 id="4-监听与转发配置"><a href="#4-监听与转发配置" class="headerlink" title="4. 监听与转发配置"></a>4. 监听与转发配置</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssl 0.0.0.0 8993 192.168.137.133 993</span><br></pre></td></tr></table></figure>
-<p>这一行定义了 SSLsplit 的工作模式和流量走向，格式通常是：<code>[协议] [监听地址] [监听端口] [目标IP] [目标端口]</code>。<br><em>(注意：这里你给出的命令看起来像是处于“静态转发”模式，或者是一个特定版本的用法，因为它显式指定了目标 IP 133)</em></p>
-<ul>
-<li><strong><code>ssl</code></strong>: 告诉工具，我要处理的是 SSL&#x2F;TLS 加密流量。</li>
-<li><strong><code>0.0.0.0</code></strong>: 监听本机的所有网卡接口。</li>
-<li><strong><code>8993</code></strong>: <strong>监听端口</strong>。<ul>
-<li>SSLsplit 会在这个端口等待数据。</li>
-<li><em>（这里有一个疑点：之前的 iptables 命令是转到 8443，这里却是 8993。请务必检查你的 iptables 规则是否也对应修改为了 8993，或者这是针对 IMAPS 协议的另一条规则？）</em></li>
-</ul>
-</li>
-<li><strong><code>192.168.137.133 993</code></strong>: <strong>目标转发地址</strong>。<ul>
-<li><strong>含义</strong>：凡是发到我这里的数据，解密记录后，重新加密发给 <code>133</code> (Vulnix) 的 <code>993</code> 端口。</li>
-<li><strong>993 端口</strong>：通常是 <strong>IMAPS</strong> (加密的邮件接收协议)，区别于之前的 995 (POP3S)</li>
-</ul>
-</li>
-</ul>
-<h2 id="阶段三：在受害机上触发连接-Ubuntu"><a href="#阶段三：在受害机上触发连接-Ubuntu" class="headerlink" title="阶段三：在受害机上触发连接 (Ubuntu)"></a>阶段三：在受害机上触发连接 (Ubuntu)</h2><p>现在，在 Ubuntu 受害机上模拟用户连接 IMAPS 服务。</p>
-<ol>
-<li><p><strong>打开 Ubuntu 终端</strong>。</p>
-</li>
-<li><p><strong>使用 <code>openssl s_client</code> 连接 Vulnix IMAPS 服务</strong>:<br>由于 Vulnix 使用老旧的加密算法，现代 Ubuntu 的 OpenSSL 客户端可能会因安全级别过高而拒绝连接。我们需要降低客户端的安全级别以兼容。</p>
-</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">openssl s_client -connect 192.168.137.133:993 -crlf -cipher &#x27;DEFAULT:@SECLEVEL=1&#x27;</span><br></pre></td></tr></table></figure>
-
-<p>下面是代码的详解：</p>
-<ol>
-<li><p>openssl<br> 含义：这是 Linux 下最著名的开源密码学工具包。<br> 作用：它是整个命令的入口，提供了生成证书、计算哈希、加密解密以及测试 SSL&#x2F;TLS 连接的所有功能。</p>
-</li>
-<li><p>s_client<br> 含义：这是 OpenSSL 工具包中的一个子命令 (Sub-command)。<br> 作用：它实现了一个通用的 SSL&#x2F;TLS 客户端。<br> 类比：你可以把它想象成加密版的 Telnet 或 Netcat。它负责建立 TCP 连接，然后立刻进行 SSL 握手，把连接变成加密通道。握手成功后，它允许你通过键盘输入数据发送给服务器。</p>
-</li>
-<li><p>-connect 192.168.137.133:993<br> 含义：指定目标。<br> 192.168.137.133：目标服务器的 IP 地址（你的靶机）。<br> 993：目标端口。<br> 993 是 IMAPS (IMAP over SSL) 的标准端口。<br> 如果是 143，通常是未加密的 IMAP 或 STARTTLS。<br> 这里指定 993，说明我们预期服务器一上来就会跟我们进行 SSL 握手。</p>
-</li>
-<li><p>-crlf<br> 含义：非常关键的格式转换。将换行符转换为 CR + LF。<br> 背景：<br> Linux&#x2F;Unix 系统（你的 Kali）默认按下回车键只发送 LF (\n, Line Feed)。<br> 网络协议标准（如 HTTP, SMTP, IMAP, POP3）严格要求行尾必须是 CR + LF (\r\n, Carriage Return + Line Feed)。<br> 为什么要加：如果不加这个参数，当你输入 a001 LOGIN user pass 并回车时，OpenSSL 只会发送 \n。老旧或严格的服务器（比如 Dovecot）会认为“这句话还没说完”，一直傻等着你发 \r，导致你觉得卡死或者报错。这个参数能确保你按回车时，服务器能收到正确的“结束符”。</p>
-</li>
-<li><p>-cipher ‘DEFAULT:@SECLEVEL&#x3D;1’<br> 含义：降低安全等级，允许使用弱加密算法。<br> 背景：<br> Kali (OpenSSL 3.x)：现在的 Kali Linux 使用的是很新的 OpenSSL 版本，默认的安全级别（SECLEVEL）通常是 2。它会禁止使用不安全的旧算法（如 SHA1 签名、1024位以下的 RSA 密钥、弱 DH 参数）。<br> Vulnix (靶机)：这是一个老旧的系统，它的 SSL 证书可能是很久以前生成的（比如用的是 SHA1），或者它的密钥长度只有 1024 位。<br> 冲突：如果用默认设置去连，Kali 会报错说：“对方太不安全了，我不跟它说话”（通常报错 dh key too small 或 ca md too weak）。<br> @SECLEVEL&#x3D;1 的作用：这就是在告诉你的 OpenSSL 客户端：“别那么挑剔，把安全标准降到 1 级，允许连接那些老旧、不安全的服务器。</p>
-</li>
-</ol>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205806438.png" class="" title="连接成功截图1">
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205824952.png" class="" title="连接成功截图2">
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205918185.png" class="" title="交互过程1">
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205939532.png" class="" title="交互过程2">
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-12-11%20210418.png" class="" title="最终结果">
-
-<p>这时候ssl会抓取到一些东西：</p>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211210511800.png" class="" title="抓取数据">
-
-<h2 id="阶段四：查看解密后的数据-Kali"><a href="#阶段四：查看解密后的数据-Kali" class="headerlink" title="阶段四：查看解密后的数据 (Kali)"></a>阶段四：查看解密后的数据 (Kali)</h2><p>1.查看 <code>sslsplit</code> 记录的日志文件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd /tmp/sslsplit-mail-logs/logdir/</span><br><span class="line">cat $(ls -t | head -n1) # 查看最新的日志文件</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211210958399.png" class="" title="查看日志">
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
   </entry>
 </search>
