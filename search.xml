@@ -1,6 +1,542 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CVE-2014-0224复现流程</title>
+    <url>/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/</url>
+    <content><![CDATA[<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><h3 id="什么是CCS注入漏洞？"><a href="#什么是CCS注入漏洞？" class="headerlink" title="什么是CCS注入漏洞？"></a>什么是CCS注入漏洞？</h3><p>  CCS注入漏洞（CVE-2014-0224这是流行的 OpenSSL 加密软件库中的一个严重漏洞。OpenSSL 是 SSL&#x2F;TLS 加密协议的实现，用于保护互联网通信的隐私。许多网站和其他应用程序（例如电子邮件、即时通讯和 VPN）都使用 OpenSSL。</p>
+<p>  在某些版本的 OpenSSL 中，攻击者可以利用精心构造的握手协议，强制 OpenSSL SSL&#x2F;TLS 客户端和服务器使用弱密钥材料。这可被中间人 (MITM) 攻击利用，攻击者可以解密并篡改来自受攻击客户端和服务器的流量。</p>
+<h3 id="CCS注入漏洞会影响哪些人？"><a href="#CCS注入漏洞会影响哪些人？" class="headerlink" title="CCS注入漏洞会影响哪些人？"></a>CCS注入漏洞会影响哪些人？</h3><p>  最近的报告显示，该漏洞至少存在了十年，但直到最近才被发现。由于许多组织部署了运行 OpenSSL 的服务器，因此，那些关注或受到最近 Heartbleed 漏洞影响的公司可能也应该认真考虑这个漏洞。</p>
+<p>影响版本：OpenSSL 0.9.8za 之前的版本、1.0.0m 之前的 1.0.0 版本以及 1.0.1h 之前的 1.0.1 版本</p>
+<h4 id="攻击条件"><a href="#攻击条件" class="headerlink" title="攻击条件"></a>攻击条件</h4><p>要利用此漏洞，通常需要满足以下条件：</p>
+<ul>
+<li><strong>客户端和服务器都必须易受攻击</strong>：即双方都运行着受影响版本的 OpenSSL。如果仅有一方受影响，握手通常会失败。</li>
+<li><strong>中间人位置</strong>：攻击者必须处于能够拦截和修改网络流量的位置。</li>
+</ul>
+<p>网络拓扑图：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">        [ 虚拟交换机 / 网关 ]</span><br><span class="line">        (Virtual Switch / Gateway)</span><br><span class="line">      (通常是 .1 或 .2, 负责流量转发)</span><br><span class="line">                 |</span><br><span class="line">    +------------+----------------------+----------------------+</span><br><span class="line">    |                                   |                      |</span><br><span class="line">[ Ubuntu (客户端) ]               [ Kali (攻击者) ]        [ Vulnix (靶机/服务端) ]</span><br><span class="line">IP: 192.168.137.129             IP: 192.168.137.132      IP: 192.168.137.133</span><br><span class="line">MAC: AA:BB:CC:..:..             MAC: 攻击者MAC           MAC: 目标MAC</span><br><span class="line">(高版本 OS)                      (运行 Ettercap)          (存在 OpenSSL 漏洞)</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="中间人攻击过程演示"><a href="#中间人攻击过程演示" class="headerlink" title="中间人攻击过程演示"></a>中间人攻击过程演示</h1><h2 id="第-1-阶段：环境初始化（物理层）"><a href="#第-1-阶段：环境初始化（物理层）" class="headerlink" title="第 1 阶段：环境初始化（物理层）"></a>第 1 阶段：环境初始化（物理层）</h2><p><strong>目标：</strong> 确保三台机器在同一个纯净的局域网内，且 IP 互通。</p>
+<h3 id="1-1-虚拟机网络设置"><a href="#1-1-虚拟机网络设置" class="headerlink" title="1.1 虚拟机网络设置"></a>1.1 虚拟机网络设置</h3><ul>
+<li><p><strong>操作：</strong> 打开 VMware，将 Kali、Ubuntu、Vulnix 三台虚拟机的网络适配器<strong>全部设置为「NAT 模式」</strong>。</p>
+</li>
+<li><p><strong>原因：</strong> 桥接模式受路由器影响太大，NAT 模式能提供最稳定的实验环境。</p>
+</li>
+<li><h3 id="1-2-确认-IP-地址"><a href="#1-2-确认-IP-地址" class="headerlink" title="1.2 确认 IP 地址"></a>1.2 确认 IP 地址</h3><p>在kali和ubuntu和vulnix机器终端分别输入 <code>ip addr</code>。请记下你的 IP</p>
+<ul>
+<li><p><strong>Kali (攻击者):</strong> <code>192.168.137.132</code></p>
+</li>
+<li><p><strong>Ubuntu (受害者):</strong> <code>192.168.137.129</code></p>
+</li>
+<li><p><strong>vulnix</strong> <strong>(服务端)</strong>：192.168.137.133</p>
+</li>
+<li><p>首先三台机子是ping 通的因为在同一网关下</p>
+<p>在实验开始之前，我要确定服务端是否有这个漏洞,先扫这个靶机有ccs这个漏洞的端口</p>
+<p>输入指令：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -sV -p- 192.168.137.133</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251209211011957.png" class="" title="nmap扫描结果"></li>
+</ul>
+</li>
+</ul>
+<p>因为ccs漏洞是tls上的，可以看到端口995，993可能会有这个漏洞，所以这两个端口都要扫一下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -p 993,995 --script ssl-ccs-injection 192.168.137.133</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251209211454223.png" class="" title="nmap漏洞脚本扫描">
+
+<p>可以发现: Vulnix 靶机 (192.168.137.133) 上的 IMAPS 服务 (端口 993) 和 POP3S 服务 (端口 995) 确定存在 CCS 注入漏洞 (CVE-2014-0224)。</p>
+<h2 id="第-2-阶段：实现中间人欺骗环境"><a href="#第-2-阶段：实现中间人欺骗环境" class="headerlink" title="第 2 阶段：实现中间人欺骗环境"></a>第 2 阶段：实现中间人欺骗环境</h2><h3 id="启动-Ettercap"><a href="#启动-Ettercap" class="headerlink" title="启动 Ettercap"></a>启动 Ettercap</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo ettercap -G</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251129145138663.png" class="" title="启动Ettercap">
+
+<p>这里我选择默认的网段eth0,按上面的对勾就是启动了服务</p>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251129145311864.png" class="" title="Ettercap界面">
+
+<p>1.<strong>扫描主机：</strong> 点击左上角的 <strong>放大镜图标</strong> (Scan for hosts)。他会扫描一切主机</p>
+<p>2.按放大镜右边那个Host List，可以看到我的网关和客户端和服务端两台主机（这个列表默认是没有本机：kali）</p>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211181711093.png" class="" title="HostList">
+
+<p>3.<strong>选定目标：</strong></p>
+<ul>
+<li><p>选中 <strong>192.168.137.129</strong> (Ubuntu)，点击下方的 <strong>Add to Target 1</strong>。</p>
+</li>
+<li><p>选中 <strong>192.168.137.133</strong> (Vulnix)，点击下方的 <strong>Add to Target 2</strong>。</p>
+<p>为什么这么选呢？</p>
+<p>之所以要这样设置 Target 1 和 Target 2，是因为 Ettercap 需要明确“我们要在这个双向通信的链路中欺骗谁和谁”。只是一个指定目标的意思。</p>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182439066.png" class="" title="设置Target"></li>
+</ul>
+<p>从下面输出的可以看出已经指定目标了</p>
+<p>4.开始arp欺骗:</p>
+<ul>
+<li><p>点击右上角的 <strong>地球图标</strong> (MITM Menu)。</p>
+</li>
+<li><p>选择 <strong>ARP poisoning</strong>。</p>
+</li>
+<li><p><strong>关键：</strong> 勾选 <strong>Sniff remote connections</strong> -&gt; 点击 <strong>OK</strong>。</p>
+</li>
+</ul>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182746240.png" class="" title="选择ARP欺骗">
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182819879.png" class="" title="勾选Sniff">
+
+<p>ARP Poisoning  :arp欺骗</p>
+<p>Sniff remote connections：嗅探远程连接，监听那些仅仅是“路过”我电脑的流量。</p>
+<p>但是我们所用的监听工具是sslsplit后面会提到。</p>
+<p>5.这是展现的是流量转发，使客户端可以上网</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211183852053.png" class="" title="开启转发">
+<p>6.<strong>创建伪造的 CA 证书</strong>:<br><code>sslsplit</code> 需要使用自签名的证书来欺骗客户端，假装自己是真正的服务器。<br>在 Kali 的 <code>~/Desktop</code> 目录下执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd ~/Desktop</span><br><span class="line">openssl genrsa -out ca.key 2048 # 生成私钥</span><br><span class="line"># 生成自签名证书，一路回车接受默认值，或自定义 Common Name (CN)</span><br><span class="line">openssl req -new -x509 -days 365 -key ca.key -out ca.crt</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211184732478.png" class="" title="生成证书">
+
+<p>这里我把原来以前生成过的删掉了，重新生成了一次，可以看到桌面上的ca.crt和ca.key,因为只是测试，所以证书随便填。</p>
+<p>7.<strong>配置 <code>iptables</code> 规则</strong>:<br>将目标为 Vulnix IMAPS (993) 端口（有漏洞的端口）的流量重定向到 Kali 本地 <code>sslsplit</code> 监听的端口 (例如 8993)。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo iptables -t nat -F # 清除所有旧的 NAT 规则</span><br><span class="line">sudo iptables -t nat -A PREROUTING -p tcp --destination-port 993 -j REDIRECT --to-port 8993</span><br></pre></td></tr></table></figure>
+
+<p>8.<strong>启动 <code>sslsplit</code></strong>:</p>
+<p><strong>SSLsplit 是什么？</strong><br><strong>SSLsplit 是一个透明的 SSL&#x2F;TLS 中间人攻击（MitM）工具。</strong></p>
+<p><strong>它的角色：它就像一个“伪装的翻译官”。</strong><br><strong>它的工作原理：</strong><br><strong>当受害者（Ubuntu）想和服务器（Vulnix）建立加密连接（SSL握手）时，流量被 iptables 强行转给了 SSLsplit。</strong><br><strong>对内欺骗：SSLsplit 假装自己是服务器，拿出一个（伪造的）证书和受害者建立连接。</strong><br><strong>对外连接：SSLsplit 同时作为客户端，真正去连接远程服务器。</strong><br><strong>中间操作：受害者发来的加密数据，SSLsplit 解密成明文（记录下来），然后再加密发给真正的服务器。</strong><br><strong>简单来说：SSLsplit 负责把“加密的信封”拆开，看完内容后，再换个新信封封好发出去。</strong></p>
+<p><strong>这将是流量解密和记录的核心工具。</strong></p>
+<ul>
+<li><p><strong>终端 3 (Kali)</strong>: 创建日志目录并以前台模式启动 <code>sslsplit</code>。</p>
+</li>
+<li><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir -p /tmp/sslsplit-mail-logs/logdir</span><br><span class="line">sudo sslsplit -l /tmp/sslsplit-mail-logs/connections.log \</span><br><span class="line">             -j /tmp/sslsplit-mail-logs/ \</span><br><span class="line">             -S /tmp/sslsplit-mail-logs/logdir/ \</span><br><span class="line">             -k ~/Desktop/ca.key \</span><br><span class="line">             -c ~/Desktop/ca.crt \</span><br><span class="line">             ssl 0.0.0.0 8993 192.168.137.133 993</span><br></pre></td></tr></table></figure>
+
+<p><code>sslsplit</code> 会“卡住”在此终端，表示它已成功启动并正在监听。<strong>保持此终端运行。</strong></p>
+<p>下面是对这段代码的解释：</p>
+</li>
+</ul>
+<p>这段命令是 <strong>启动 SSLsplit 进行攻击</strong> 的核心步骤。作为软件工程师，我们可以把它看作是在<strong>启动一个高性能的服务器后端进程</strong>，并详细配置了它的日志系统、证书凭证以及监听端口。</p>
+<p>这段代码分为两部分：创建目录和启动程序。我们逐行拆解：</p>
+<hr>
+<h3 id="第一部分：准备工作"><a href="#第一部分：准备工作" class="headerlink" title="第一部分：准备工作"></a>第一部分：准备工作</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /tmp/sslsplit-mail-logs/logdir</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><code>mkdir</code></strong>: 创建目录 (Make Directory)。</li>
+<li><strong><code>-p</code></strong>: 级联创建。意思是如果父目录 <code>/tmp/sslsplit-mail-logs</code> 不存在，就自动把它也建好，不要报错。</li>
+<li><strong>目的</strong>：为 SSLsplit 准备好存放“赃物”（截获的数据和日志）的文件夹。</li>
+</ul>
+<hr>
+<h3 id="第二部分：启动-SSLsplit"><a href="#第二部分：启动-SSLsplit" class="headerlink" title="第二部分：启动 SSLsplit"></a>第二部分：启动 SSLsplit</h3><p>这是一个长命令，通过反斜杠 <code>\</code> 换行。我们按参数拆解：</p>
+<h4 id="1-基础日志配置"><a href="#1-基础日志配置" class="headerlink" title="1. 基础日志配置"></a>1. 基础日志配置</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> sslsplit -l /tmp/sslsplit-mail-logs/connections.log \</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong><code>sudo sslsplit</code></strong>: 以管理员权限运行攻击工具。</li>
+<li><strong><code>-l .../connections.log</code></strong>: <strong>连接日志 (Log)</strong>。<ul>
+<li>这里记录的是**“谁连了我”**。</li>
+<li>内容包括：时间戳、源IP、目标IP、连接是否成功等元数据。就好比是公司的“访客登记表”。</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-内容截获配置-核心功能"><a href="#2-内容截获配置-核心功能" class="headerlink" title="2. 内容截获配置 (核心功能)"></a>2. 内容截获配置 (核心功能)</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-j /tmp/sslsplit-mail-logs/ \</span><br><span class="line">-S /tmp/sslsplit-mail-logs/logdir/ \</span><br></pre></td></tr></table></figure>
+<p>这里是 SSLsplit 最强大的地方，它会把截获的内容存下来：</p>
+<ul>
+<li><strong><code>-j /path/to/dir/</code> (Jail&#x2F;chroot directory)</strong>:<ul>
+<li>虽然官方文档中 <code>-j</code> 主要是用于 <code>chroot</code> (隔离运行环境以提高安全性)，但在某些版本的上下文中，它常配合内容记录使用。不过在攻击场景中，我们更关注下面的 <code>-S</code>。</li>
+</ul>
+</li>
+<li><strong><code>-S .../logdir/</code> (Log Streams)</strong>: <strong>内容日志</strong>。<ul>
+<li><strong>含义</strong>：把每一条流经的 TCP 连接的数据内容，<strong>完整地保存成独立的文件</strong>。</li>
+<li><strong>效果</strong>：如果受害者发了邮件，邮件的正文、密码、附件，都会被写入这个目录下的文件中。这才是我们找密码要去翻的地方。</li>
+</ul>
+</li>
+</ul>
+<h4 id="3-伪造证书配置-欺骗核心"><a href="#3-伪造证书配置-欺骗核心" class="headerlink" title="3. 伪造证书配置 (欺骗核心)"></a>3. 伪造证书配置 (欺骗核心)</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-k ~/Desktop/ca.key \</span><br><span class="line">-c ~/Desktop/ca.crt \</span><br></pre></td></tr></table></figure>
+<p>这是中间人攻击能否成功的关键：</p>
+<ul>
+<li><strong><code>-k ...ca.key</code> (Key)</strong>: 指定你的 <strong>CA 私钥</strong>。</li>
+<li><strong><code>-c ...ca.crt</code> (Certificate)</strong>: 指定你的 <strong>CA 证书</strong>。</li>
+<li><strong>原理</strong>：SSLsplit 需要在受害者和服务器之间“实时伪造”证书。它使用你提供的这个 CA（证书授权中心）的私钥，来动态签署伪造的证书。<ul>
+<li><em>注：前提是你已经想办法把这个 <code>ca.crt</code> 安装到了受害者的电脑上并建立了信任，否则受害者的浏览器会弹窗警告“证书不安全”。</em></li>
+</ul>
+</li>
+</ul>
+<h4 id="4-监听与转发配置"><a href="#4-监听与转发配置" class="headerlink" title="4. 监听与转发配置"></a>4. 监听与转发配置</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssl 0.0.0.0 8993 192.168.137.133 993</span><br></pre></td></tr></table></figure>
+<p>这一行定义了 SSLsplit 的工作模式和流量走向，格式通常是：<code>[协议] [监听地址] [监听端口] [目标IP] [目标端口]</code>。<br><em>(注意：这里你给出的命令看起来像是处于“静态转发”模式，或者是一个特定版本的用法，因为它显式指定了目标 IP 133)</em></p>
+<ul>
+<li><strong><code>ssl</code></strong>: 告诉工具，我要处理的是 SSL&#x2F;TLS 加密流量。</li>
+<li><strong><code>0.0.0.0</code></strong>: 监听本机的所有网卡接口。</li>
+<li><strong><code>8993</code></strong>: <strong>监听端口</strong>。<ul>
+<li>SSLsplit 会在这个端口等待数据。</li>
+<li><em>（这里有一个疑点：之前的 iptables 命令是转到 8443，这里却是 8993。请务必检查你的 iptables 规则是否也对应修改为了 8993，或者这是针对 IMAPS 协议的另一条规则？）</em></li>
+</ul>
+</li>
+<li><strong><code>192.168.137.133 993</code></strong>: <strong>目标转发地址</strong>。<ul>
+<li><strong>含义</strong>：凡是发到我这里的数据，解密记录后，重新加密发给 <code>133</code> (Vulnix) 的 <code>993</code> 端口。</li>
+<li><strong>993 端口</strong>：通常是 <strong>IMAPS</strong> (加密的邮件接收协议)，区别于之前的 995 (POP3S)</li>
+</ul>
+</li>
+</ul>
+<h2 id="阶段三：在受害机上触发连接-Ubuntu"><a href="#阶段三：在受害机上触发连接-Ubuntu" class="headerlink" title="阶段三：在受害机上触发连接 (Ubuntu)"></a>阶段三：在受害机上触发连接 (Ubuntu)</h2><p>现在，在 Ubuntu 受害机上模拟用户连接 IMAPS 服务。</p>
+<ol>
+<li><p><strong>打开 Ubuntu 终端</strong>。</p>
+</li>
+<li><p><strong>使用 <code>openssl s_client</code> 连接 Vulnix IMAPS 服务</strong>:<br>由于 Vulnix 使用老旧的加密算法，现代 Ubuntu 的 OpenSSL 客户端可能会因安全级别过高而拒绝连接。我们需要降低客户端的安全级别以兼容。</p>
+</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">openssl s_client -connect 192.168.137.133:993 -crlf -cipher &#x27;DEFAULT:@SECLEVEL=1&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>下面是代码的详解：</p>
+<ol>
+<li><p>openssl<br> 含义：这是 Linux 下最著名的开源密码学工具包。<br> 作用：它是整个命令的入口，提供了生成证书、计算哈希、加密解密以及测试 SSL&#x2F;TLS 连接的所有功能。</p>
+</li>
+<li><p>s_client<br> 含义：这是 OpenSSL 工具包中的一个子命令 (Sub-command)。<br> 作用：它实现了一个通用的 SSL&#x2F;TLS 客户端。<br> 类比：你可以把它想象成加密版的 Telnet 或 Netcat。它负责建立 TCP 连接，然后立刻进行 SSL 握手，把连接变成加密通道。握手成功后，它允许你通过键盘输入数据发送给服务器。</p>
+</li>
+<li><p>-connect 192.168.137.133:993<br> 含义：指定目标。<br> 192.168.137.133：目标服务器的 IP 地址（你的靶机）。<br> 993：目标端口。<br> 993 是 IMAPS (IMAP over SSL) 的标准端口。<br> 如果是 143，通常是未加密的 IMAP 或 STARTTLS。<br> 这里指定 993，说明我们预期服务器一上来就会跟我们进行 SSL 握手。</p>
+</li>
+<li><p>-crlf<br> 含义：非常关键的格式转换。将换行符转换为 CR + LF。<br> 背景：<br> Linux&#x2F;Unix 系统（你的 Kali）默认按下回车键只发送 LF (\n, Line Feed)。<br> 网络协议标准（如 HTTP, SMTP, IMAP, POP3）严格要求行尾必须是 CR + LF (\r\n, Carriage Return + Line Feed)。<br> 为什么要加：如果不加这个参数，当你输入 a001 LOGIN user pass 并回车时，OpenSSL 只会发送 \n。老旧或严格的服务器（比如 Dovecot）会认为“这句话还没说完”，一直傻等着你发 \r，导致你觉得卡死或者报错。这个参数能确保你按回车时，服务器能收到正确的“结束符”。</p>
+</li>
+<li><p>-cipher ‘DEFAULT:@SECLEVEL&#x3D;1’<br> 含义：降低安全等级，允许使用弱加密算法。<br> 背景：<br> Kali (OpenSSL 3.x)：现在的 Kali Linux 使用的是很新的 OpenSSL 版本，默认的安全级别（SECLEVEL）通常是 2。它会禁止使用不安全的旧算法（如 SHA1 签名、1024位以下的 RSA 密钥、弱 DH 参数）。<br> Vulnix (靶机)：这是一个老旧的系统，它的 SSL 证书可能是很久以前生成的（比如用的是 SHA1），或者它的密钥长度只有 1024 位。<br> 冲突：如果用默认设置去连，Kali 会报错说：“对方太不安全了，我不跟它说话”（通常报错 dh key too small 或 ca md too weak）。<br> @SECLEVEL&#x3D;1 的作用：这就是在告诉你的 OpenSSL 客户端：“别那么挑剔，把安全标准降到 1 级，允许连接那些老旧、不安全的服务器。</p>
+</li>
+</ol>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205806438.png" class="" title="连接成功截图1">
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205824952.png" class="" title="连接成功截图2">
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205918185.png" class="" title="交互过程1">
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205939532.png" class="" title="交互过程2">
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-12-11%20210418.png" class="" title="最终结果">
+
+<p>这时候ssl会抓取到一些东西：</p>
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211210511800.png" class="" title="抓取数据">
+
+<h2 id="阶段四：查看解密后的数据-Kali"><a href="#阶段四：查看解密后的数据-Kali" class="headerlink" title="阶段四：查看解密后的数据 (Kali)"></a>阶段四：查看解密后的数据 (Kali)</h2><p>1.查看 <code>sslsplit</code> 记录的日志文件</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd /tmp/sslsplit-mail-logs/logdir/</span><br><span class="line">cat $(ls -t | head -n1) # 查看最新的日志文件</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211210958399.png" class="" title="查看日志">
+]]></content>
+      <categories>
+        <category>漏洞</category>
+      </categories>
+      <tags>
+        <tag>CVE-2014-0224</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vulnix常用靶机用testssl扫描结果</title>
+    <url>/2026/01/01/Vulnix%20993%20SSLTLS%20%E5%AE%89%E5%85%A8%E6%89%AB%E6%8F%8F%E7%BB%93%E6%9E%9C%E6%B1%87%E6%80%BB/</url>
+    <content><![CDATA[<think>
+
+</think>
+使用了testssl.sh-3.3
+参照网址：https://github.com/testssl/testssl.sh
+
+<hr>
+<h3 id="Vulnix-192-168-137-133-993-SSL-TLS-安全扫描结果汇总"><a href="#Vulnix-192-168-137-133-993-SSL-TLS-安全扫描结果汇总" class="headerlink" title="Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总"></a>Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总</h3><p><strong>扫描时间:</strong> 2025-12-03 08:10:02 - 08:10:57 (总耗时 56s)<br><strong>目标服务:</strong> IMAP<br><strong>OpenSSL版本 (客户端检测):</strong> OpenSSL 1.0.2-bad (Mar 28 2025)<br><strong>总体评级:</strong> T (信任问题)</p>
+<hr>
+<h3 id="表格一：支持的-SSL-TLS-协议和密码套件-协议和Cipher-Categories部分"><a href="#表格一：支持的-SSL-TLS-协议和密码套件-协议和Cipher-Categories部分" class="headerlink" title="表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)"></a>表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)</h3><table>
+<thead>
+<tr>
+<th align="left">类别</th>
+<th align="left">项目</th>
+<th align="left">状态 &#x2F; 结果</th>
+<th align="left">严重性 &#x2F; 建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>协议支持</strong></td>
+<td align="left">SSLv2</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">SSLv3</td>
+<td align="left"><code>offered (NOT ok)</code> (已提供)</td>
+<td align="left"><strong>高危</strong>。完全过时，存在 POODLE 漏洞风险，应立即禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.0</td>
+<td align="left"><code>offered (deprecated)</code> (已提供，已弃用)</td>
+<td align="left"><strong>中危</strong>。已过时，存在已知缺陷，应禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.1</td>
+<td align="left"><code>offered (deprecated)</code> (已提供，已弃用)</td>
+<td align="left"><strong>中危</strong>。已过时，存在已知缺陷，应禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.2</td>
+<td align="left"><code>offered (OK)</code> (已提供)</td>
+<td align="left">正常，目前建议支持。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.3</td>
+<td align="left"><code>not offered and downgraded to a weaker protocol</code> (未提供)</td>
+<td align="left"><strong>低危</strong>。不支持最新、最安全的协议。建议升级支持 TLS 1.3 以提高安全性。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">NPN&#x2F;SPDY</td>
+<td align="left"><code>not offered</code> (未提供)</td>
+<td align="left">正常，与 HTTP&#x2F;2&#x2F;3 相关，不影响 IMAP。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">ALPN&#x2F;HTTP2</td>
+<td align="left"><code>not offered</code> (未提供)</td>
+<td align="left">正常，与 HTTP&#x2F;2&#x2F;3 相关，不影响 IMAP。</td>
+</tr>
+<tr>
+<td align="left"><strong>密码套件类别</strong></td>
+<td align="left">NULL ciphers</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全（无加密）。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Anonymous NULL</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全（无认证）。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Export ciphers</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全（导出级弱加密）。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">LOW: 64 Bit + DES, RC[2,4], MD5</td>
+<td align="left"><code>offered (NOT ok)</code> (已提供)</td>
+<td align="left"><strong>高危</strong>。提供低强度（64位、DES、RC4、MD5）密码套件。极易被暴力破解，应立即禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Triple DES &#x2F; IDEA</td>
+<td align="left"><code>offered</code> (已提供)</td>
+<td align="left"><strong>中危</strong>。提供 3DES&#x2F;IDEA 密码套件。这些算法存在性能问题且易受 SWEET32 攻击。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Obsoleted CBC</td>
+<td align="left"><code>offered</code> (已提供)</td>
+<td align="left"><strong>中危</strong>。提供已过时的 CBC 模式密码套件。易受 BEAST、POODLE、LUCKY13 攻击。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Strong (AEAD) no FS</td>
+<td align="left"><code>offered (OK)</code> (已提供)</td>
+<td align="left">正常，提供强加密（AEAD）密码套件。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Strong (AEAD) FS</td>
+<td align="left"><code>offered (OK)</code> (已提供)</td>
+<td align="left">正常，提供强加密（AEAD）和前向保密（FS）密码套件。</td>
+</tr>
+<tr>
+<td align="left"><strong>密码套件偏好</strong></td>
+<td align="left">服务器密码顺序</td>
+<td align="left"><code>no (NOT ok)</code> (无)</td>
+<td align="left"><strong>中危</strong>。服务器未强制自己的密码套件顺序，可能导致客户端选择弱密码套件。应配置服务器强制使用安全密码套件的优先顺序。</td>
+</tr>
+<tr>
+<td align="left"><strong>证书信息</strong></td>
+<td align="left">签名算法</td>
+<td align="left"><code>SHA1 with RSA</code></td>
+<td align="left"><strong>高危</strong>。SHA1 哈希算法已不安全，存在碰撞风险，主流浏览器已不信任 SHA1 证书。应使用 SHA256 或更强的算法。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">SAN</td>
+<td align="left"><code>missing -- no SAN is deprecated</code></td>
+<td align="left"><strong>中危</strong>。缺少主题备用名称 (SAN) 字段。SAN 是现代证书匹配域名的标准，缺失会导致客户端警告。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">信任链</td>
+<td align="left"><code>NOT ok (self signed)</code> (自签名)</td>
+<td align="left"><strong>严重</strong>。证书是自签名的，不被任何公共信任机构认可。导致所有客户端都会警告连接不安全，且易受中间人攻击。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">证书有效期</td>
+<td align="left"><code>expired (2012-09-02 --&gt; 2022-09-02)</code> (已过期)</td>
+<td align="left"><strong>严重</strong>。证书已过期。任何客户端都会拒绝连接或发出严重警告。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">证书有效期长度</td>
+<td align="left"><code>&gt;= 10 years is way too long</code> (10年以上)</td>
+<td align="left"><strong>策略问题</strong>。证书有效期过长，与当前安全最佳实践（1-2年）不符，增加了长期风险。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">OCSP &#x2F; CRL</td>
+<td align="left"><code>NOT ok -- neither CRL nor OCSP URI provided</code> (未提供)</td>
+<td align="left"><strong>中危</strong>。未提供证书吊销信息。无法及时检查证书是否已被吊销，可能导致已泄露或滥用的证书仍被信任。</td>
+</tr>
+<tr>
+<td align="left"><strong>密钥信息</strong></td>
+<td align="left">服务器密钥大小</td>
+<td align="left"><code>RSA 2048 bits</code> (2048位)</td>
+<td align="left">正常，目前普遍接受的密钥大小。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">DH 组</td>
+<td align="left"><code>Unknown DH group (1024 bits)</code> (未知DH组，1024位)</td>
+<td align="left"><strong>中危</strong>。DH组长度为1024位，强度偏弱，易受 Logjam 攻击。建议使用 2048位或更大的 DH 参数。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="表格二：检测到的漏洞-Vulnerabilities部分"><a href="#表格二：检测到的漏洞-Vulnerabilities部分" class="headerlink" title="表格二：检测到的漏洞 (Vulnerabilities部分)"></a>表格二：检测到的漏洞 (Vulnerabilities部分)</h3><table>
+<thead>
+<tr>
+<th align="left">漏洞名称</th>
+<th align="left">CVE ID</th>
+<th align="left">状态 &#x2F; 结果</th>
+<th align="left">严重性 &#x2F; 影响</th>
+<th align="left">建议修复</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>Heartbleed</strong></td>
+<td align="left">CVE-2014-0160</td>
+<td align="left"><code>VULNERABLE (NOT ok)</code></td>
+<td align="left"><strong>严重</strong>。服务器内存泄露，攻击者可窃取私钥、用户名、密码等敏感信息。</td>
+<td align="left">升级 OpenSSL 到无此漏洞的版本 (1.0.1g 或更高)。</td>
+</tr>
+<tr>
+<td align="left"><strong>CCS Injection</strong></td>
+<td align="left">CVE-2014-0224</td>
+<td align="left"><code>VULNERABLE (NOT ok)</code></td>
+<td align="left"><strong>严重</strong>。中间人攻击者可解密和篡改TLS连接。</td>
+<td align="left">升级 OpenSSL 到无此漏洞的版本 (1.0.1h 或更高)。</td>
+</tr>
+<tr>
+<td align="left">Ticketbleed</td>
+<td align="left">CVE-2016-9244</td>
+<td align="left"><code>(applicable only for HTTP service)</code> (仅适用于HTTP服务)</td>
+<td align="left">不适用于IMAP服务。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">Opossum</td>
+<td align="left">CVE-2025-49812</td>
+<td align="left"><code>(implemented currently for HTTP only)</code> (当前仅适用于HTTP)</td>
+<td align="left">不适用于IMAP服务。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">ROBOT</td>
+<td align="left"></td>
+<td align="left"><code>not vulnerable (OK)</code></td>
+<td align="left">正常，不受 ROBOT 攻击影响。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">Secure Renegotiation</td>
+<td align="left">RFC 5746</td>
+<td align="left"><code>supported (OK)</code></td>
+<td align="left">正常，支持安全重新协商。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">Secure Client-Initiated Renegotiation</td>
+<td align="left"></td>
+<td align="left"><code>VULNERABLE (NOT ok), potential DoS threat</code></td>
+<td align="left"><strong>中危</strong>。可能被恶意客户端利用进行拒绝服务 (DoS) 攻击。</td>
+<td align="left">配置服务器禁用客户端发起的重新协商。</td>
+</tr>
+<tr>
+<td align="left"><strong>CRIME, TLS</strong></td>
+<td align="left">CVE-2012-4929</td>
+<td align="left"><code>VULNERABLE but not using HTTP: probably no exploit known</code></td>
+<td align="left"><strong>中危</strong>。存在 CRIME 漏洞。在非HTTP服务上直接利用较难，但仍是安全缺陷。</td>
+<td align="left">禁用 TLS 压缩。</td>
+</tr>
+<tr>
+<td align="left"><strong>POODLE, SSL</strong></td>
+<td align="left">CVE-2014-3566</td>
+<td align="left"><code>VULNERABLE (NOT ok)</code></td>
+<td align="left"><strong>高危</strong>。攻击者可利用 SSLv3 和 CBC 密码套件解密敏感数据。</td>
+<td align="left">禁用 SSLv3 协议。</td>
+</tr>
+<tr>
+<td align="left">TLS_FALLBACK_SCSV</td>
+<td align="left">RFC 7507</td>
+<td align="left"><code>Downgrade attack prevention NOT supported and vulnerable to POODLE SSL</code></td>
+<td align="left"><strong>高危</strong>。不支持 SCSV，使得中间人攻击者可强制降级到不安全的 SSLv3，再利用 POODLE 攻击。</td>
+<td align="left">升级 OpenSSL 并启用 SCSV 保护。</td>
+</tr>
+<tr>
+<td align="left"><strong>SWEET32</strong></td>
+<td align="left">CVE-2016-2183, CVE-2016-6329</td>
+<td align="left"><code>VULNERABLE, uses 64 bit block ciphers</code></td>
+<td align="left"><strong>中危</strong>。使用 64 位块密码（如 3DES），可能导致在长时间连接下信息泄露。</td>
+<td align="left">禁用 64 位块密码（如 3DES、IDEA）。</td>
+</tr>
+<tr>
+<td align="left">FREAK</td>
+<td align="left">CVE-2015-0204</td>
+<td align="left"><code>not vulnerable (OK)</code></td>
+<td align="left">正常，不受 FREAK 攻击影响。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">DROWN</td>
+<td align="left">CVE-2016-0800, CVE-2016-0703</td>
+<td align="left"><code>not vulnerable on this host and port (OK)</code></td>
+<td align="left">正常，不受 DROWN 攻击影响。<strong>注意</strong>：如果此证书在其他启用 SSLv2 的服务上使用，仍可能易受攻击。</td>
+<td align="left">N&#x2F;A (此服务不受影响)</td>
+</tr>
+<tr>
+<td align="left">LOGJAM</td>
+<td align="left">CVE-2015-4000</td>
+<td align="left"><code>not vulnerable (OK): no DH EXPORT ciphers. But: Unknown DH group (1024 bits)</code></td>
+<td align="left">正常，不受 Logjam 攻击直接影响。但使用的 DH 组强度偏弱（1024位），存在潜在风险。</td>
+<td align="left">使用 2048位或更大的 DH 参数。</td>
+</tr>
+<tr>
+<td align="left"><strong>BEAST</strong></td>
+<td align="left">CVE-2011-3389</td>
+<td align="left"><code>VULNERABLE -- but also supports higher protocols TLSv1.1 TLSv1.2 (likely mitigated)</code></td>
+<td align="left"><strong>中危</strong>。TLS 1.0 使用 CBC 模式，存在 BEAST 攻击条件。虽然有更高协议，但仍可能受影响。</td>
+<td align="left">禁用 TLS 1.0，优先使用 TLS 1.2 及以上协议。</td>
+</tr>
+<tr>
+<td align="left">LUCKY13</td>
+<td align="left">CVE-2013-0169</td>
+<td align="left"><code>potentially VULNERABLE, uses cipher block chaining (CBC) ciphers with TLS. Check patches</code></td>
+<td align="left"><strong>低危</strong>。TLS 中使用 CBC 密码套件，存在定时攻击的可能性。</td>
+<td align="left">更新相关补丁，禁用存在漏洞的 CBC 密码套件。</td>
+</tr>
+<tr>
+<td align="left">Winshock</td>
+<td align="left">CVE-2014-6321</td>
+<td align="left"><code>not vulnerable (OK)</code></td>
+<td align="left">正常，不受 Winshock 攻击影响。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left"><strong>RC4</strong></td>
+<td align="left">CVE-2013-2566, CVE-2015-2808</td>
+<td align="left"><code>VULNERABLE (NOT ok): RC4-SHA, RC4-MD5</code></td>
+<td align="left"><strong>高危</strong>。使用 RC4 流密码。RC4 已被证明存在严重缺陷，容易被攻击者破解。</td>
+<td align="left">禁用所有 RC4 密码套件。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这份详尽的表格清晰地展示了 Vulnix 靶机在 SSL&#x2F;TLS 配置方面存在的<strong>大量且严重的漏洞和配置缺陷</strong>。从协议、密码套件到证书管理，几乎每个环节都存在问题。这使得该服务极易受到多种已知攻击的影响，是一个典型的存在“开放大门”的靶机。</p>
+]]></content>
+      <categories>
+        <category>渗透测试</category>
+      </categories>
+      <tags>
+        <tag>vulnix靶机</tag>
+        <tag>web</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)</title>
     <url>/2026/01/04/CTFSHOW-2026%E5%85%83%E6%97%A6%E8%B7%A8%E5%B9%B4%E6%AC%A2%E4%B9%90%E8%B5%9B-CS2026-%E4%B8%AA%E4%BA%BA%E5%86%99%E7%9A%84%E9%83%A8%E5%88%86wp/</url>
     <content><![CDATA[<h3 id="二-CTFSHOW-2026元旦跨年欢乐赛-CS2026-个人写的部分wp"><a href="#二-CTFSHOW-2026元旦跨年欢乐赛-CS2026-个人写的部分wp" class="headerlink" title="二.CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)"></a>二.CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)</h3><p>比赛网址：<a href="https://ctf.show/competitions/cs2026">https://ctf.show/competitions/cs2026</a></p>
@@ -635,546 +1171,10 @@
         <category>ctf-wp</category>
       </categories>
       <tags>
-        <tag>ctfshow</tag>
         <tag>web</tag>
+        <tag>ctfshow</tag>
         <tag>misc</tag>
         <tag>ctf</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CVE-2014-0224复现流程</title>
-    <url>/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/</url>
-    <content><![CDATA[<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><h3 id="什么是CCS注入漏洞？"><a href="#什么是CCS注入漏洞？" class="headerlink" title="什么是CCS注入漏洞？"></a>什么是CCS注入漏洞？</h3><p>  CCS注入漏洞（CVE-2014-0224这是流行的 OpenSSL 加密软件库中的一个严重漏洞。OpenSSL 是 SSL&#x2F;TLS 加密协议的实现，用于保护互联网通信的隐私。许多网站和其他应用程序（例如电子邮件、即时通讯和 VPN）都使用 OpenSSL。</p>
-<p>  在某些版本的 OpenSSL 中，攻击者可以利用精心构造的握手协议，强制 OpenSSL SSL&#x2F;TLS 客户端和服务器使用弱密钥材料。这可被中间人 (MITM) 攻击利用，攻击者可以解密并篡改来自受攻击客户端和服务器的流量。</p>
-<h3 id="CCS注入漏洞会影响哪些人？"><a href="#CCS注入漏洞会影响哪些人？" class="headerlink" title="CCS注入漏洞会影响哪些人？"></a>CCS注入漏洞会影响哪些人？</h3><p>  最近的报告显示，该漏洞至少存在了十年，但直到最近才被发现。由于许多组织部署了运行 OpenSSL 的服务器，因此，那些关注或受到最近 Heartbleed 漏洞影响的公司可能也应该认真考虑这个漏洞。</p>
-<p>影响版本：OpenSSL 0.9.8za 之前的版本、1.0.0m 之前的 1.0.0 版本以及 1.0.1h 之前的 1.0.1 版本</p>
-<h4 id="攻击条件"><a href="#攻击条件" class="headerlink" title="攻击条件"></a>攻击条件</h4><p>要利用此漏洞，通常需要满足以下条件：</p>
-<ul>
-<li><strong>客户端和服务器都必须易受攻击</strong>：即双方都运行着受影响版本的 OpenSSL。如果仅有一方受影响，握手通常会失败。</li>
-<li><strong>中间人位置</strong>：攻击者必须处于能够拦截和修改网络流量的位置。</li>
-</ul>
-<p>网络拓扑图：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">        [ 虚拟交换机 / 网关 ]</span><br><span class="line">        (Virtual Switch / Gateway)</span><br><span class="line">      (通常是 .1 或 .2, 负责流量转发)</span><br><span class="line">                 |</span><br><span class="line">    +------------+----------------------+----------------------+</span><br><span class="line">    |                                   |                      |</span><br><span class="line">[ Ubuntu (客户端) ]               [ Kali (攻击者) ]        [ Vulnix (靶机/服务端) ]</span><br><span class="line">IP: 192.168.137.129             IP: 192.168.137.132      IP: 192.168.137.133</span><br><span class="line">MAC: AA:BB:CC:..:..             MAC: 攻击者MAC           MAC: 目标MAC</span><br><span class="line">(高版本 OS)                      (运行 Ettercap)          (存在 OpenSSL 漏洞)</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="中间人攻击过程演示"><a href="#中间人攻击过程演示" class="headerlink" title="中间人攻击过程演示"></a>中间人攻击过程演示</h1><h2 id="第-1-阶段：环境初始化（物理层）"><a href="#第-1-阶段：环境初始化（物理层）" class="headerlink" title="第 1 阶段：环境初始化（物理层）"></a>第 1 阶段：环境初始化（物理层）</h2><p><strong>目标：</strong> 确保三台机器在同一个纯净的局域网内，且 IP 互通。</p>
-<h3 id="1-1-虚拟机网络设置"><a href="#1-1-虚拟机网络设置" class="headerlink" title="1.1 虚拟机网络设置"></a>1.1 虚拟机网络设置</h3><ul>
-<li><p><strong>操作：</strong> 打开 VMware，将 Kali、Ubuntu、Vulnix 三台虚拟机的网络适配器<strong>全部设置为「NAT 模式」</strong>。</p>
-</li>
-<li><p><strong>原因：</strong> 桥接模式受路由器影响太大，NAT 模式能提供最稳定的实验环境。</p>
-</li>
-<li><h3 id="1-2-确认-IP-地址"><a href="#1-2-确认-IP-地址" class="headerlink" title="1.2 确认 IP 地址"></a>1.2 确认 IP 地址</h3><p>在kali和ubuntu和vulnix机器终端分别输入 <code>ip addr</code>。请记下你的 IP</p>
-<ul>
-<li><p><strong>Kali (攻击者):</strong> <code>192.168.137.132</code></p>
-</li>
-<li><p><strong>Ubuntu (受害者):</strong> <code>192.168.137.129</code></p>
-</li>
-<li><p><strong>vulnix</strong> <strong>(服务端)</strong>：192.168.137.133</p>
-</li>
-<li><p>首先三台机子是ping 通的因为在同一网关下</p>
-<p>在实验开始之前，我要确定服务端是否有这个漏洞,先扫这个靶机有ccs这个漏洞的端口</p>
-<p>输入指令：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -sV -p- 192.168.137.133</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251209211011957.png" class="" title="nmap扫描结果"></li>
-</ul>
-</li>
-</ul>
-<p>因为ccs漏洞是tls上的，可以看到端口995，993可能会有这个漏洞，所以这两个端口都要扫一下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">nmap -p 993,995 --script ssl-ccs-injection 192.168.137.133</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251209211454223.png" class="" title="nmap漏洞脚本扫描">
-
-<p>可以发现: Vulnix 靶机 (192.168.137.133) 上的 IMAPS 服务 (端口 993) 和 POP3S 服务 (端口 995) 确定存在 CCS 注入漏洞 (CVE-2014-0224)。</p>
-<h2 id="第-2-阶段：实现中间人欺骗环境"><a href="#第-2-阶段：实现中间人欺骗环境" class="headerlink" title="第 2 阶段：实现中间人欺骗环境"></a>第 2 阶段：实现中间人欺骗环境</h2><h3 id="启动-Ettercap"><a href="#启动-Ettercap" class="headerlink" title="启动 Ettercap"></a>启动 Ettercap</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo ettercap -G</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251129145138663.png" class="" title="启动Ettercap">
-
-<p>这里我选择默认的网段eth0,按上面的对勾就是启动了服务</p>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251129145311864.png" class="" title="Ettercap界面">
-
-<p>1.<strong>扫描主机：</strong> 点击左上角的 <strong>放大镜图标</strong> (Scan for hosts)。他会扫描一切主机</p>
-<p>2.按放大镜右边那个Host List，可以看到我的网关和客户端和服务端两台主机（这个列表默认是没有本机：kali）</p>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211181711093.png" class="" title="HostList">
-
-<p>3.<strong>选定目标：</strong></p>
-<ul>
-<li><p>选中 <strong>192.168.137.129</strong> (Ubuntu)，点击下方的 <strong>Add to Target 1</strong>。</p>
-</li>
-<li><p>选中 <strong>192.168.137.133</strong> (Vulnix)，点击下方的 <strong>Add to Target 2</strong>。</p>
-<p>为什么这么选呢？</p>
-<p>之所以要这样设置 Target 1 和 Target 2，是因为 Ettercap 需要明确“我们要在这个双向通信的链路中欺骗谁和谁”。只是一个指定目标的意思。</p>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182439066.png" class="" title="设置Target"></li>
-</ul>
-<p>从下面输出的可以看出已经指定目标了</p>
-<p>4.开始arp欺骗:</p>
-<ul>
-<li><p>点击右上角的 <strong>地球图标</strong> (MITM Menu)。</p>
-</li>
-<li><p>选择 <strong>ARP poisoning</strong>。</p>
-</li>
-<li><p><strong>关键：</strong> 勾选 <strong>Sniff remote connections</strong> -&gt; 点击 <strong>OK</strong>。</p>
-</li>
-</ul>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182746240.png" class="" title="选择ARP欺骗">
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211182819879.png" class="" title="勾选Sniff">
-
-<p>ARP Poisoning  :arp欺骗</p>
-<p>Sniff remote connections：嗅探远程连接，监听那些仅仅是“路过”我电脑的流量。</p>
-<p>但是我们所用的监听工具是sslsplit后面会提到。</p>
-<p>5.这是展现的是流量转发，使客户端可以上网</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211183852053.png" class="" title="开启转发">
-<p>6.<strong>创建伪造的 CA 证书</strong>:<br><code>sslsplit</code> 需要使用自签名的证书来欺骗客户端，假装自己是真正的服务器。<br>在 Kali 的 <code>~/Desktop</code> 目录下执行：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd ~/Desktop</span><br><span class="line">openssl genrsa -out ca.key 2048 # 生成私钥</span><br><span class="line"># 生成自签名证书，一路回车接受默认值，或自定义 Common Name (CN)</span><br><span class="line">openssl req -new -x509 -days 365 -key ca.key -out ca.crt</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211184732478.png" class="" title="生成证书">
-
-<p>这里我把原来以前生成过的删掉了，重新生成了一次，可以看到桌面上的ca.crt和ca.key,因为只是测试，所以证书随便填。</p>
-<p>7.<strong>配置 <code>iptables</code> 规则</strong>:<br>将目标为 Vulnix IMAPS (993) 端口（有漏洞的端口）的流量重定向到 Kali 本地 <code>sslsplit</code> 监听的端口 (例如 8993)。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">sudo iptables -t nat -F # 清除所有旧的 NAT 规则</span><br><span class="line">sudo iptables -t nat -A PREROUTING -p tcp --destination-port 993 -j REDIRECT --to-port 8993</span><br></pre></td></tr></table></figure>
-
-<p>8.<strong>启动 <code>sslsplit</code></strong>:</p>
-<p><strong>SSLsplit 是什么？</strong><br><strong>SSLsplit 是一个透明的 SSL&#x2F;TLS 中间人攻击（MitM）工具。</strong></p>
-<p><strong>它的角色：它就像一个“伪装的翻译官”。</strong><br><strong>它的工作原理：</strong><br><strong>当受害者（Ubuntu）想和服务器（Vulnix）建立加密连接（SSL握手）时，流量被 iptables 强行转给了 SSLsplit。</strong><br><strong>对内欺骗：SSLsplit 假装自己是服务器，拿出一个（伪造的）证书和受害者建立连接。</strong><br><strong>对外连接：SSLsplit 同时作为客户端，真正去连接远程服务器。</strong><br><strong>中间操作：受害者发来的加密数据，SSLsplit 解密成明文（记录下来），然后再加密发给真正的服务器。</strong><br><strong>简单来说：SSLsplit 负责把“加密的信封”拆开，看完内容后，再换个新信封封好发出去。</strong></p>
-<p><strong>这将是流量解密和记录的核心工具。</strong></p>
-<ul>
-<li><p><strong>终端 3 (Kali)</strong>: 创建日志目录并以前台模式启动 <code>sslsplit</code>。</p>
-</li>
-<li><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">mkdir -p /tmp/sslsplit-mail-logs/logdir</span><br><span class="line">sudo sslsplit -l /tmp/sslsplit-mail-logs/connections.log \</span><br><span class="line">             -j /tmp/sslsplit-mail-logs/ \</span><br><span class="line">             -S /tmp/sslsplit-mail-logs/logdir/ \</span><br><span class="line">             -k ~/Desktop/ca.key \</span><br><span class="line">             -c ~/Desktop/ca.crt \</span><br><span class="line">             ssl 0.0.0.0 8993 192.168.137.133 993</span><br></pre></td></tr></table></figure>
-
-<p><code>sslsplit</code> 会“卡住”在此终端，表示它已成功启动并正在监听。<strong>保持此终端运行。</strong></p>
-<p>下面是对这段代码的解释：</p>
-</li>
-</ul>
-<p>这段命令是 <strong>启动 SSLsplit 进行攻击</strong> 的核心步骤。作为软件工程师，我们可以把它看作是在<strong>启动一个高性能的服务器后端进程</strong>，并详细配置了它的日志系统、证书凭证以及监听端口。</p>
-<p>这段代码分为两部分：创建目录和启动程序。我们逐行拆解：</p>
-<hr>
-<h3 id="第一部分：准备工作"><a href="#第一部分：准备工作" class="headerlink" title="第一部分：准备工作"></a>第一部分：准备工作</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p /tmp/sslsplit-mail-logs/logdir</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong><code>mkdir</code></strong>: 创建目录 (Make Directory)。</li>
-<li><strong><code>-p</code></strong>: 级联创建。意思是如果父目录 <code>/tmp/sslsplit-mail-logs</code> 不存在，就自动把它也建好，不要报错。</li>
-<li><strong>目的</strong>：为 SSLsplit 准备好存放“赃物”（截获的数据和日志）的文件夹。</li>
-</ul>
-<hr>
-<h3 id="第二部分：启动-SSLsplit"><a href="#第二部分：启动-SSLsplit" class="headerlink" title="第二部分：启动 SSLsplit"></a>第二部分：启动 SSLsplit</h3><p>这是一个长命令，通过反斜杠 <code>\</code> 换行。我们按参数拆解：</p>
-<h4 id="1-基础日志配置"><a href="#1-基础日志配置" class="headerlink" title="1. 基础日志配置"></a>1. 基础日志配置</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">sudo</span> sslsplit -l /tmp/sslsplit-mail-logs/connections.log \</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong><code>sudo sslsplit</code></strong>: 以管理员权限运行攻击工具。</li>
-<li><strong><code>-l .../connections.log</code></strong>: <strong>连接日志 (Log)</strong>。<ul>
-<li>这里记录的是**“谁连了我”**。</li>
-<li>内容包括：时间戳、源IP、目标IP、连接是否成功等元数据。就好比是公司的“访客登记表”。</li>
-</ul>
-</li>
-</ul>
-<h4 id="2-内容截获配置-核心功能"><a href="#2-内容截获配置-核心功能" class="headerlink" title="2. 内容截获配置 (核心功能)"></a>2. 内容截获配置 (核心功能)</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-j /tmp/sslsplit-mail-logs/ \</span><br><span class="line">-S /tmp/sslsplit-mail-logs/logdir/ \</span><br></pre></td></tr></table></figure>
-<p>这里是 SSLsplit 最强大的地方，它会把截获的内容存下来：</p>
-<ul>
-<li><strong><code>-j /path/to/dir/</code> (Jail&#x2F;chroot directory)</strong>:<ul>
-<li>虽然官方文档中 <code>-j</code> 主要是用于 <code>chroot</code> (隔离运行环境以提高安全性)，但在某些版本的上下文中，它常配合内容记录使用。不过在攻击场景中，我们更关注下面的 <code>-S</code>。</li>
-</ul>
-</li>
-<li><strong><code>-S .../logdir/</code> (Log Streams)</strong>: <strong>内容日志</strong>。<ul>
-<li><strong>含义</strong>：把每一条流经的 TCP 连接的数据内容，<strong>完整地保存成独立的文件</strong>。</li>
-<li><strong>效果</strong>：如果受害者发了邮件，邮件的正文、密码、附件，都会被写入这个目录下的文件中。这才是我们找密码要去翻的地方。</li>
-</ul>
-</li>
-</ul>
-<h4 id="3-伪造证书配置-欺骗核心"><a href="#3-伪造证书配置-欺骗核心" class="headerlink" title="3. 伪造证书配置 (欺骗核心)"></a>3. 伪造证书配置 (欺骗核心)</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">-k ~/Desktop/ca.key \</span><br><span class="line">-c ~/Desktop/ca.crt \</span><br></pre></td></tr></table></figure>
-<p>这是中间人攻击能否成功的关键：</p>
-<ul>
-<li><strong><code>-k ...ca.key</code> (Key)</strong>: 指定你的 <strong>CA 私钥</strong>。</li>
-<li><strong><code>-c ...ca.crt</code> (Certificate)</strong>: 指定你的 <strong>CA 证书</strong>。</li>
-<li><strong>原理</strong>：SSLsplit 需要在受害者和服务器之间“实时伪造”证书。它使用你提供的这个 CA（证书授权中心）的私钥，来动态签署伪造的证书。<ul>
-<li><em>注：前提是你已经想办法把这个 <code>ca.crt</code> 安装到了受害者的电脑上并建立了信任，否则受害者的浏览器会弹窗警告“证书不安全”。</em></li>
-</ul>
-</li>
-</ul>
-<h4 id="4-监听与转发配置"><a href="#4-监听与转发配置" class="headerlink" title="4. 监听与转发配置"></a>4. 监听与转发配置</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssl 0.0.0.0 8993 192.168.137.133 993</span><br></pre></td></tr></table></figure>
-<p>这一行定义了 SSLsplit 的工作模式和流量走向，格式通常是：<code>[协议] [监听地址] [监听端口] [目标IP] [目标端口]</code>。<br><em>(注意：这里你给出的命令看起来像是处于“静态转发”模式，或者是一个特定版本的用法，因为它显式指定了目标 IP 133)</em></p>
-<ul>
-<li><strong><code>ssl</code></strong>: 告诉工具，我要处理的是 SSL&#x2F;TLS 加密流量。</li>
-<li><strong><code>0.0.0.0</code></strong>: 监听本机的所有网卡接口。</li>
-<li><strong><code>8993</code></strong>: <strong>监听端口</strong>。<ul>
-<li>SSLsplit 会在这个端口等待数据。</li>
-<li><em>（这里有一个疑点：之前的 iptables 命令是转到 8443，这里却是 8993。请务必检查你的 iptables 规则是否也对应修改为了 8993，或者这是针对 IMAPS 协议的另一条规则？）</em></li>
-</ul>
-</li>
-<li><strong><code>192.168.137.133 993</code></strong>: <strong>目标转发地址</strong>。<ul>
-<li><strong>含义</strong>：凡是发到我这里的数据，解密记录后，重新加密发给 <code>133</code> (Vulnix) 的 <code>993</code> 端口。</li>
-<li><strong>993 端口</strong>：通常是 <strong>IMAPS</strong> (加密的邮件接收协议)，区别于之前的 995 (POP3S)</li>
-</ul>
-</li>
-</ul>
-<h2 id="阶段三：在受害机上触发连接-Ubuntu"><a href="#阶段三：在受害机上触发连接-Ubuntu" class="headerlink" title="阶段三：在受害机上触发连接 (Ubuntu)"></a>阶段三：在受害机上触发连接 (Ubuntu)</h2><p>现在，在 Ubuntu 受害机上模拟用户连接 IMAPS 服务。</p>
-<ol>
-<li><p><strong>打开 Ubuntu 终端</strong>。</p>
-</li>
-<li><p><strong>使用 <code>openssl s_client</code> 连接 Vulnix IMAPS 服务</strong>:<br>由于 Vulnix 使用老旧的加密算法，现代 Ubuntu 的 OpenSSL 客户端可能会因安全级别过高而拒绝连接。我们需要降低客户端的安全级别以兼容。</p>
-</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">openssl s_client -connect 192.168.137.133:993 -crlf -cipher &#x27;DEFAULT:@SECLEVEL=1&#x27;</span><br></pre></td></tr></table></figure>
-
-<p>下面是代码的详解：</p>
-<ol>
-<li><p>openssl<br> 含义：这是 Linux 下最著名的开源密码学工具包。<br> 作用：它是整个命令的入口，提供了生成证书、计算哈希、加密解密以及测试 SSL&#x2F;TLS 连接的所有功能。</p>
-</li>
-<li><p>s_client<br> 含义：这是 OpenSSL 工具包中的一个子命令 (Sub-command)。<br> 作用：它实现了一个通用的 SSL&#x2F;TLS 客户端。<br> 类比：你可以把它想象成加密版的 Telnet 或 Netcat。它负责建立 TCP 连接，然后立刻进行 SSL 握手，把连接变成加密通道。握手成功后，它允许你通过键盘输入数据发送给服务器。</p>
-</li>
-<li><p>-connect 192.168.137.133:993<br> 含义：指定目标。<br> 192.168.137.133：目标服务器的 IP 地址（你的靶机）。<br> 993：目标端口。<br> 993 是 IMAPS (IMAP over SSL) 的标准端口。<br> 如果是 143，通常是未加密的 IMAP 或 STARTTLS。<br> 这里指定 993，说明我们预期服务器一上来就会跟我们进行 SSL 握手。</p>
-</li>
-<li><p>-crlf<br> 含义：非常关键的格式转换。将换行符转换为 CR + LF。<br> 背景：<br> Linux&#x2F;Unix 系统（你的 Kali）默认按下回车键只发送 LF (\n, Line Feed)。<br> 网络协议标准（如 HTTP, SMTP, IMAP, POP3）严格要求行尾必须是 CR + LF (\r\n, Carriage Return + Line Feed)。<br> 为什么要加：如果不加这个参数，当你输入 a001 LOGIN user pass 并回车时，OpenSSL 只会发送 \n。老旧或严格的服务器（比如 Dovecot）会认为“这句话还没说完”，一直傻等着你发 \r，导致你觉得卡死或者报错。这个参数能确保你按回车时，服务器能收到正确的“结束符”。</p>
-</li>
-<li><p>-cipher ‘DEFAULT:@SECLEVEL&#x3D;1’<br> 含义：降低安全等级，允许使用弱加密算法。<br> 背景：<br> Kali (OpenSSL 3.x)：现在的 Kali Linux 使用的是很新的 OpenSSL 版本，默认的安全级别（SECLEVEL）通常是 2。它会禁止使用不安全的旧算法（如 SHA1 签名、1024位以下的 RSA 密钥、弱 DH 参数）。<br> Vulnix (靶机)：这是一个老旧的系统，它的 SSL 证书可能是很久以前生成的（比如用的是 SHA1），或者它的密钥长度只有 1024 位。<br> 冲突：如果用默认设置去连，Kali 会报错说：“对方太不安全了，我不跟它说话”（通常报错 dh key too small 或 ca md too weak）。<br> @SECLEVEL&#x3D;1 的作用：这就是在告诉你的 OpenSSL 客户端：“别那么挑剔，把安全标准降到 1 级，允许连接那些老旧、不安全的服务器。</p>
-</li>
-</ol>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205806438.png" class="" title="连接成功截图1">
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205824952.png" class="" title="连接成功截图2">
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205918185.png" class="" title="交互过程1">
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211205939532.png" class="" title="交互过程2">
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202025-12-11%20210418.png" class="" title="最终结果">
-
-<p>这时候ssl会抓取到一些东西：</p>
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211210511800.png" class="" title="抓取数据">
-
-<h2 id="阶段四：查看解密后的数据-Kali"><a href="#阶段四：查看解密后的数据-Kali" class="headerlink" title="阶段四：查看解密后的数据 (Kali)"></a>阶段四：查看解密后的数据 (Kali)</h2><p>1.查看 <code>sslsplit</code> 记录的日志文件</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">cd /tmp/sslsplit-mail-logs/logdir/</span><br><span class="line">cat $(ls -t | head -n1) # 查看最新的日志文件</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/01/CVE-2014-0224%E5%A4%8D%E7%8E%B0%E6%B5%81%E7%A8%8B/image-20251211210958399.png" class="" title="查看日志">
-]]></content>
-      <categories>
-        <category>漏洞</category>
-      </categories>
-      <tags>
-        <tag>CVE-2014-0224</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vulnix常用靶机用testssl扫描结果</title>
-    <url>/2026/01/01/Vulnix%20993%20SSLTLS%20%E5%AE%89%E5%85%A8%E6%89%AB%E6%8F%8F%E7%BB%93%E6%9E%9C%E6%B1%87%E6%80%BB/</url>
-    <content><![CDATA[<think>
-
-</think>
-使用了testssl.sh-3.3
-参照网址：https://github.com/testssl/testssl.sh
-
-<hr>
-<h3 id="Vulnix-192-168-137-133-993-SSL-TLS-安全扫描结果汇总"><a href="#Vulnix-192-168-137-133-993-SSL-TLS-安全扫描结果汇总" class="headerlink" title="Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总"></a>Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总</h3><p><strong>扫描时间:</strong> 2025-12-03 08:10:02 - 08:10:57 (总耗时 56s)<br><strong>目标服务:</strong> IMAP<br><strong>OpenSSL版本 (客户端检测):</strong> OpenSSL 1.0.2-bad (Mar 28 2025)<br><strong>总体评级:</strong> T (信任问题)</p>
-<hr>
-<h3 id="表格一：支持的-SSL-TLS-协议和密码套件-协议和Cipher-Categories部分"><a href="#表格一：支持的-SSL-TLS-协议和密码套件-协议和Cipher-Categories部分" class="headerlink" title="表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)"></a>表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)</h3><table>
-<thead>
-<tr>
-<th align="left">类别</th>
-<th align="left">项目</th>
-<th align="left">状态 &#x2F; 结果</th>
-<th align="left">严重性 &#x2F; 建议</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left"><strong>协议支持</strong></td>
-<td align="left">SSLv2</td>
-<td align="left"><code>not offered (OK)</code> (未提供)</td>
-<td align="left">正常，安全。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">SSLv3</td>
-<td align="left"><code>offered (NOT ok)</code> (已提供)</td>
-<td align="left"><strong>高危</strong>。完全过时，存在 POODLE 漏洞风险，应立即禁用。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">TLS 1.0</td>
-<td align="left"><code>offered (deprecated)</code> (已提供，已弃用)</td>
-<td align="left"><strong>中危</strong>。已过时，存在已知缺陷，应禁用。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">TLS 1.1</td>
-<td align="left"><code>offered (deprecated)</code> (已提供，已弃用)</td>
-<td align="left"><strong>中危</strong>。已过时，存在已知缺陷，应禁用。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">TLS 1.2</td>
-<td align="left"><code>offered (OK)</code> (已提供)</td>
-<td align="left">正常，目前建议支持。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">TLS 1.3</td>
-<td align="left"><code>not offered and downgraded to a weaker protocol</code> (未提供)</td>
-<td align="left"><strong>低危</strong>。不支持最新、最安全的协议。建议升级支持 TLS 1.3 以提高安全性。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">NPN&#x2F;SPDY</td>
-<td align="left"><code>not offered</code> (未提供)</td>
-<td align="left">正常，与 HTTP&#x2F;2&#x2F;3 相关，不影响 IMAP。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">ALPN&#x2F;HTTP2</td>
-<td align="left"><code>not offered</code> (未提供)</td>
-<td align="left">正常，与 HTTP&#x2F;2&#x2F;3 相关，不影响 IMAP。</td>
-</tr>
-<tr>
-<td align="left"><strong>密码套件类别</strong></td>
-<td align="left">NULL ciphers</td>
-<td align="left"><code>not offered (OK)</code> (未提供)</td>
-<td align="left">正常，安全（无加密）。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Anonymous NULL</td>
-<td align="left"><code>not offered (OK)</code> (未提供)</td>
-<td align="left">正常，安全（无认证）。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Export ciphers</td>
-<td align="left"><code>not offered (OK)</code> (未提供)</td>
-<td align="left">正常，安全（导出级弱加密）。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">LOW: 64 Bit + DES, RC[2,4], MD5</td>
-<td align="left"><code>offered (NOT ok)</code> (已提供)</td>
-<td align="left"><strong>高危</strong>。提供低强度（64位、DES、RC4、MD5）密码套件。极易被暴力破解，应立即禁用。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Triple DES &#x2F; IDEA</td>
-<td align="left"><code>offered</code> (已提供)</td>
-<td align="left"><strong>中危</strong>。提供 3DES&#x2F;IDEA 密码套件。这些算法存在性能问题且易受 SWEET32 攻击。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Obsoleted CBC</td>
-<td align="left"><code>offered</code> (已提供)</td>
-<td align="left"><strong>中危</strong>。提供已过时的 CBC 模式密码套件。易受 BEAST、POODLE、LUCKY13 攻击。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Strong (AEAD) no FS</td>
-<td align="left"><code>offered (OK)</code> (已提供)</td>
-<td align="left">正常，提供强加密（AEAD）密码套件。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Strong (AEAD) FS</td>
-<td align="left"><code>offered (OK)</code> (已提供)</td>
-<td align="left">正常，提供强加密（AEAD）和前向保密（FS）密码套件。</td>
-</tr>
-<tr>
-<td align="left"><strong>密码套件偏好</strong></td>
-<td align="left">服务器密码顺序</td>
-<td align="left"><code>no (NOT ok)</code> (无)</td>
-<td align="left"><strong>中危</strong>。服务器未强制自己的密码套件顺序，可能导致客户端选择弱密码套件。应配置服务器强制使用安全密码套件的优先顺序。</td>
-</tr>
-<tr>
-<td align="left"><strong>证书信息</strong></td>
-<td align="left">签名算法</td>
-<td align="left"><code>SHA1 with RSA</code></td>
-<td align="left"><strong>高危</strong>。SHA1 哈希算法已不安全，存在碰撞风险，主流浏览器已不信任 SHA1 证书。应使用 SHA256 或更强的算法。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">SAN</td>
-<td align="left"><code>missing -- no SAN is deprecated</code></td>
-<td align="left"><strong>中危</strong>。缺少主题备用名称 (SAN) 字段。SAN 是现代证书匹配域名的标准，缺失会导致客户端警告。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">信任链</td>
-<td align="left"><code>NOT ok (self signed)</code> (自签名)</td>
-<td align="left"><strong>严重</strong>。证书是自签名的，不被任何公共信任机构认可。导致所有客户端都会警告连接不安全，且易受中间人攻击。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">证书有效期</td>
-<td align="left"><code>expired (2012-09-02 --&gt; 2022-09-02)</code> (已过期)</td>
-<td align="left"><strong>严重</strong>。证书已过期。任何客户端都会拒绝连接或发出严重警告。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">证书有效期长度</td>
-<td align="left"><code>&gt;= 10 years is way too long</code> (10年以上)</td>
-<td align="left"><strong>策略问题</strong>。证书有效期过长，与当前安全最佳实践（1-2年）不符，增加了长期风险。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">OCSP &#x2F; CRL</td>
-<td align="left"><code>NOT ok -- neither CRL nor OCSP URI provided</code> (未提供)</td>
-<td align="left"><strong>中危</strong>。未提供证书吊销信息。无法及时检查证书是否已被吊销，可能导致已泄露或滥用的证书仍被信任。</td>
-</tr>
-<tr>
-<td align="left"><strong>密钥信息</strong></td>
-<td align="left">服务器密钥大小</td>
-<td align="left"><code>RSA 2048 bits</code> (2048位)</td>
-<td align="left">正常，目前普遍接受的密钥大小。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">DH 组</td>
-<td align="left"><code>Unknown DH group (1024 bits)</code> (未知DH组，1024位)</td>
-<td align="left"><strong>中危</strong>。DH组长度为1024位，强度偏弱，易受 Logjam 攻击。建议使用 2048位或更大的 DH 参数。</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="表格二：检测到的漏洞-Vulnerabilities部分"><a href="#表格二：检测到的漏洞-Vulnerabilities部分" class="headerlink" title="表格二：检测到的漏洞 (Vulnerabilities部分)"></a>表格二：检测到的漏洞 (Vulnerabilities部分)</h3><table>
-<thead>
-<tr>
-<th align="left">漏洞名称</th>
-<th align="left">CVE ID</th>
-<th align="left">状态 &#x2F; 结果</th>
-<th align="left">严重性 &#x2F; 影响</th>
-<th align="left">建议修复</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left"><strong>Heartbleed</strong></td>
-<td align="left">CVE-2014-0160</td>
-<td align="left"><code>VULNERABLE (NOT ok)</code></td>
-<td align="left"><strong>严重</strong>。服务器内存泄露，攻击者可窃取私钥、用户名、密码等敏感信息。</td>
-<td align="left">升级 OpenSSL 到无此漏洞的版本 (1.0.1g 或更高)。</td>
-</tr>
-<tr>
-<td align="left"><strong>CCS Injection</strong></td>
-<td align="left">CVE-2014-0224</td>
-<td align="left"><code>VULNERABLE (NOT ok)</code></td>
-<td align="left"><strong>严重</strong>。中间人攻击者可解密和篡改TLS连接。</td>
-<td align="left">升级 OpenSSL 到无此漏洞的版本 (1.0.1h 或更高)。</td>
-</tr>
-<tr>
-<td align="left">Ticketbleed</td>
-<td align="left">CVE-2016-9244</td>
-<td align="left"><code>(applicable only for HTTP service)</code> (仅适用于HTTP服务)</td>
-<td align="left">不适用于IMAP服务。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left">Opossum</td>
-<td align="left">CVE-2025-49812</td>
-<td align="left"><code>(implemented currently for HTTP only)</code> (当前仅适用于HTTP)</td>
-<td align="left">不适用于IMAP服务。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left">ROBOT</td>
-<td align="left"></td>
-<td align="left"><code>not vulnerable (OK)</code></td>
-<td align="left">正常，不受 ROBOT 攻击影响。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left">Secure Renegotiation</td>
-<td align="left">RFC 5746</td>
-<td align="left"><code>supported (OK)</code></td>
-<td align="left">正常，支持安全重新协商。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left">Secure Client-Initiated Renegotiation</td>
-<td align="left"></td>
-<td align="left"><code>VULNERABLE (NOT ok), potential DoS threat</code></td>
-<td align="left"><strong>中危</strong>。可能被恶意客户端利用进行拒绝服务 (DoS) 攻击。</td>
-<td align="left">配置服务器禁用客户端发起的重新协商。</td>
-</tr>
-<tr>
-<td align="left"><strong>CRIME, TLS</strong></td>
-<td align="left">CVE-2012-4929</td>
-<td align="left"><code>VULNERABLE but not using HTTP: probably no exploit known</code></td>
-<td align="left"><strong>中危</strong>。存在 CRIME 漏洞。在非HTTP服务上直接利用较难，但仍是安全缺陷。</td>
-<td align="left">禁用 TLS 压缩。</td>
-</tr>
-<tr>
-<td align="left"><strong>POODLE, SSL</strong></td>
-<td align="left">CVE-2014-3566</td>
-<td align="left"><code>VULNERABLE (NOT ok)</code></td>
-<td align="left"><strong>高危</strong>。攻击者可利用 SSLv3 和 CBC 密码套件解密敏感数据。</td>
-<td align="left">禁用 SSLv3 协议。</td>
-</tr>
-<tr>
-<td align="left">TLS_FALLBACK_SCSV</td>
-<td align="left">RFC 7507</td>
-<td align="left"><code>Downgrade attack prevention NOT supported and vulnerable to POODLE SSL</code></td>
-<td align="left"><strong>高危</strong>。不支持 SCSV，使得中间人攻击者可强制降级到不安全的 SSLv3，再利用 POODLE 攻击。</td>
-<td align="left">升级 OpenSSL 并启用 SCSV 保护。</td>
-</tr>
-<tr>
-<td align="left"><strong>SWEET32</strong></td>
-<td align="left">CVE-2016-2183, CVE-2016-6329</td>
-<td align="left"><code>VULNERABLE, uses 64 bit block ciphers</code></td>
-<td align="left"><strong>中危</strong>。使用 64 位块密码（如 3DES），可能导致在长时间连接下信息泄露。</td>
-<td align="left">禁用 64 位块密码（如 3DES、IDEA）。</td>
-</tr>
-<tr>
-<td align="left">FREAK</td>
-<td align="left">CVE-2015-0204</td>
-<td align="left"><code>not vulnerable (OK)</code></td>
-<td align="left">正常，不受 FREAK 攻击影响。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left">DROWN</td>
-<td align="left">CVE-2016-0800, CVE-2016-0703</td>
-<td align="left"><code>not vulnerable on this host and port (OK)</code></td>
-<td align="left">正常，不受 DROWN 攻击影响。<strong>注意</strong>：如果此证书在其他启用 SSLv2 的服务上使用，仍可能易受攻击。</td>
-<td align="left">N&#x2F;A (此服务不受影响)</td>
-</tr>
-<tr>
-<td align="left">LOGJAM</td>
-<td align="left">CVE-2015-4000</td>
-<td align="left"><code>not vulnerable (OK): no DH EXPORT ciphers. But: Unknown DH group (1024 bits)</code></td>
-<td align="left">正常，不受 Logjam 攻击直接影响。但使用的 DH 组强度偏弱（1024位），存在潜在风险。</td>
-<td align="left">使用 2048位或更大的 DH 参数。</td>
-</tr>
-<tr>
-<td align="left"><strong>BEAST</strong></td>
-<td align="left">CVE-2011-3389</td>
-<td align="left"><code>VULNERABLE -- but also supports higher protocols TLSv1.1 TLSv1.2 (likely mitigated)</code></td>
-<td align="left"><strong>中危</strong>。TLS 1.0 使用 CBC 模式，存在 BEAST 攻击条件。虽然有更高协议，但仍可能受影响。</td>
-<td align="left">禁用 TLS 1.0，优先使用 TLS 1.2 及以上协议。</td>
-</tr>
-<tr>
-<td align="left">LUCKY13</td>
-<td align="left">CVE-2013-0169</td>
-<td align="left"><code>potentially VULNERABLE, uses cipher block chaining (CBC) ciphers with TLS. Check patches</code></td>
-<td align="left"><strong>低危</strong>。TLS 中使用 CBC 密码套件，存在定时攻击的可能性。</td>
-<td align="left">更新相关补丁，禁用存在漏洞的 CBC 密码套件。</td>
-</tr>
-<tr>
-<td align="left">Winshock</td>
-<td align="left">CVE-2014-6321</td>
-<td align="left"><code>not vulnerable (OK)</code></td>
-<td align="left">正常，不受 Winshock 攻击影响。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left"><strong>RC4</strong></td>
-<td align="left">CVE-2013-2566, CVE-2015-2808</td>
-<td align="left"><code>VULNERABLE (NOT ok): RC4-SHA, RC4-MD5</code></td>
-<td align="left"><strong>高危</strong>。使用 RC4 流密码。RC4 已被证明存在严重缺陷，容易被攻击者破解。</td>
-<td align="left">禁用所有 RC4 密码套件。</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这份详尽的表格清晰地展示了 Vulnix 靶机在 SSL&#x2F;TLS 配置方面存在的<strong>大量且严重的漏洞和配置缺陷</strong>。从协议、密码套件到证书管理，几乎每个环节都存在问题。这使得该服务极易受到多种已知攻击的影响，是一个典型的存在“开放大门”的靶机。</p>
-]]></content>
-      <categories>
-        <category>渗透测试</category>
-      </categories>
-      <tags>
-        <tag>web</tag>
-        <tag>vulnix靶机</tag>
       </tags>
   </entry>
   <entry>
@@ -1261,7 +1261,136 @@
 <img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005942.png" class="" title="解密后的Flag">
 
 <p>flag为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">flag&#123;Z19_The_Str1ng_In_Exc9l&#125;</span><br></pre></td></tr></table></figure>]]></content>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">flag&#123;Z19_The_Str1ng_In_Exc9l&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-丢失的文档"><a href="#6-丢失的文档" class="headerlink" title="6.丢失的文档"></a>6.丢失的文档</h3><p>题目描述</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">因为一场停电，猫猫刚写了一半的小说无了……</span><br></pre></td></tr></table></figure>
+
+<p>附件是一个asd文件其实我的第一想法就是改后缀，因为asd是一个不好处理陌生的格式，而这本来就应该是word文件，所以把后缀改为.docx打开，然后发现flag出了</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">对应的flag为：</span><br><span class="line">furryCTF&#123;How_To_F1x_This_Wor6_D0cument&#125;</span><br><span class="line">123</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-大伙儿好像太无聊了那就整点无聊的东西（？"><a href="#7-大伙儿好像太无聊了那就整点无聊的东西（？" class="headerlink" title="7.大伙儿好像太无聊了那就整点无聊的东西（？"></a>7.大伙儿好像太无聊了那就整点无聊的东西（？</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">大概是一些无聊的产物（？</span><br><span class="line"></span><br><span class="line">猫猫的一点PS：有谁想读一遍这个玩意喵owo</span><br></pre></td></tr></table></figure>
+
+<p>附件内容是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">REOREREREREREOREREREREREREOOOREOREREREREOREREREOREREREOOREOREREREREOREREREREREOREOREREREREOOREOREOREOOREREOOREOOREOREOREREREREOOREOREREREREREOREOOOREOREREREOREOOOOREREOREOREOOOREOREREREREREOREOOREOOREREOOREREREREREOREOREOOOOREREOOREREREOREREOOREREREOREREOREOOOOREREOREREREOREOREOREREOREREREREOOREREOOOREOOOREOREOREOREREOOOOREOREOOREREREREOOREOOREREREOOREOOREREREOREOREOREREREOOREREOOREREO</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="第一部分：把“贪心切分”聊得明明白白"><a href="#第一部分：把“贪心切分”聊得明明白白" class="headerlink" title="第一部分：把“贪心切分”聊得明明白白"></a>第一部分：把“贪心切分”聊得明明白白</h3><p>咱们把“贪心切分”这个词拆开，用大白话和生活中的例子来理解。</p>
+<h4 id="1-什么是“切分”-Tokenization-？"><a href="#1-什么是“切分”-Tokenization-？" class="headerlink" title="1. 什么是“切分” (Tokenization)？"></a>1. 什么是“切分” (Tokenization)？</h4><p><strong>通俗解释：</strong><br>“切分”就是把一长串看起来乱糟糟的东西，按照某种规则，切成一个个有意义的“小块”。这个“小块”就叫 <strong>Token</strong>（记号）。</p>
+<p><strong>生活中的例子：</strong><br>想象一下你读英文句子：<code>thisisasentence</code>。<br>你的大脑不会把它看成一堆字母，而是自动“切分”成单词：<code>this</code>, <code>is</code>, <code>a</code>, <code>sentence</code>。这里的每个单词，就是一个 Token。</p>
+<p><strong>在这道题里：</strong><br>原始密文 <code>REORERER...</code> 就是那串长长的、没空格的句子。<br>通过观察，我们发现它好像不是由单个字母 <code>R, E, O</code> 构成的，而是由 <code>O</code> 和 <code>RE</code> 这两种“单词”拼起来的。<br>所以，“切分”就是要把 <code>REORER...</code> 切成 <code>[&#39;RE&#39;, &#39;O&#39;, &#39;RE&#39;, ...]</code> 这样一个“单词列表”。</p>
+<h4 id="2-什么是“贪心”-Greedy-？"><a href="#2-什么是“贪心”-Greedy-？" class="headerlink" title="2. 什么是“贪心” (Greedy)？"></a>2. 什么是“贪心” (Greedy)？</h4><p><strong>通俗解释：</strong><br>“贪心”是一种非常直白、简单的做事策略，就是“<strong>只顾眼前，不看长远</strong>”。每一步都做出当下看起来最好的选择。</p>
+<p><strong>生活中的例子：</strong><br>假设你要找零钱 87 分，你手头有面值为 25, 10, 5, 1 的硬币。<br>“贪心”的做法是：</p>
+<ol>
+<li>先拿出能用的最大面额：25分，还差 62 分。</li>
+<li>再拿一个 25分，还差 37 分。</li>
+<li>再拿一个 25分，还差 12 分。</li>
+<li>25的用不了了，用下一个最大的：10分，还差 2 分。</li>
+<li>10和5的都用不了，用 1分，还差 1 分。</li>
+<li>再用 1分，找零完成。<br>你每一步都“贪心地”选了当前能用的最大面额，这就是贪心算法。</li>
+</ol>
+<p><strong>在这道题里：</strong><br>我们从字符串的开头 <code>s = &quot;REORER...&quot;</code> 开始切分：</p>
+<ol>
+<li><strong>指针在第 0 位 (<code>R</code>)</strong>：<ul>
+<li>往前看 1 位是 <code>R</code>，它不是一个完整的“单词”（Token）。</li>
+<li>往前看 2 位是 <code>RE</code>，它是一个完整的“单词”！</li>
+<li><strong>贪心选择</strong>：我们选择匹配最长的那个，也就是 <code>RE</code>。</li>
+<li>于是，第一个 Token 就是 <code>RE</code>。指针向后移动 2 位。</li>
+</ul>
+</li>
+<li><strong>指针现在在第 2 位 (<code>O</code>)</strong>：<ul>
+<li>往前看 1 位是 <code>O</code>，它是一个完整的“单词”。</li>
+<li>往前看 2 位是 <code>OR</code>，它不是一个合法的“单词”。</li>
+<li><strong>贪心选择</strong>：我们选择匹配 <code>O</code>。</li>
+<li>第二个 Token 就是 <code>O</code>。指针向后移动 1 位。</li>
+</ul>
+</li>
+<li><strong>如此循环…</strong> 直到把整个字符串切完。</li>
+</ol>
+<h4 id="3-什么情况下我能想到用“贪心切分”？"><a href="#3-什么情况下我能想到用“贪心切分”？" class="headerlink" title="3. 什么情况下我能想到用“贪心切分”？"></a>3. 什么情况下我能想到用“贪心切分”？</h4><p>这是解决问题的关键。你可以通过以下几点来判断：</p>
+<ol>
+<li><p><strong>特征一：由有限的几种“构件”组成。</strong><br>当你看到一长串文本，但翻来覆去就那么几种固定的“模式”或“片段”在重复出现时。比如这道题，看几眼就发现，除了 <code>O</code>，就是 <code>RE</code> 粘在一起。这强烈暗示了基本构件（Token）就是 <code>O</code> 和 <code>RE</code>。</p>
+</li>
+<li><p><strong>特征二：构件之间没有明显的“分隔符”。</strong><br>像摩斯电码，点划之间有短停顿，字母之间有长停顿。但这道题的 <code>RE</code> 和 <code>O</code> 是紧挨着的，<code>REO</code>、<code>ORE</code> 这样，没有空格或特殊符号隔开。这就逼着我们必须自己想办法把它们切开。</p>
+</li>
+<li><p><strong>特征三：构件之间没有“歧义”。</strong><br>“贪心”策略能成功，是因为它不会“切错”。比如，如果我们的“单词”是 <code>A</code> 和 <code>AB</code>，那么遇到 <code>AB</code> 时，如果贪心切了 <code>A</code>，剩下的 <code>B</code> 就无法处理了。<br>但在本题中，<code>O</code> 和 <code>RE</code> 这两个 Token 非常完美：</p>
+<ul>
+<li>一个以 <code>O</code> 开头。</li>
+<li>一个以 <code>R</code> 开头。<br>它们的首字母完全不同，所以从任何位置开始，<strong>匹配哪个是唯一的，不存在二选一的困惑</strong>。这种没有歧义的情况，就是使用贪心切分最理想的场景。</li>
+</ul>
+</li>
+</ol>
+<p><strong>一句话总结：当你发现一个长字符串可以被一小组“没有歧义的、固定的小模式”完全拼成时，就应该立刻想到用“贪心切分”把它转换成一个“小模式”的序列，为后续解码铺路。</strong></p>
+<hr>
+<h3 id="第二部分：CyberChef-复现超详细步骤（带中间结果）"><a href="#第二部分：CyberChef-复现超详细步骤（带中间结果）" class="headerlink" title="第二部分：CyberChef 复现超详细步骤（带中间结果）"></a>第二部分：CyberChef 复现超详细步骤（带中间结果）</h3><p>下面我们一步步来，每一步都告诉你为什么这么做，以及做完后输出应该是什么样子。</p>
+<p><strong>准备工作</strong>：打开 CyberChef 网站，把你的密文原文粘贴到右上角的 <strong>Input</strong> 框里。</p>
+<p>网站地址：<a href="https://cyberchef.org/">https://cyberchef.org/</a></p>
+<h4 id="步骤-1：Find-Replace-把-RE-换成-1"><a href="#步骤-1：Find-Replace-把-RE-换成-1" class="headerlink" title="步骤 1：Find &#x2F; Replace (把 RE 换成 1)"></a>步骤 1：Find &#x2F; Replace (把 <code>RE</code> 换成 <code>1</code>)</h4><ul>
+<li><p><strong>操作</strong>：在左侧 <code>Operations</code> 搜索框里输入 <code>Find</code>，找到 <code>Find / Replace</code>，把它拖到中间的 <code>Recipe</code> 区域。</p>
+</li>
+<li><p><strong>配置</strong>：</p>
+<ul>
+<li>在 <code>Find</code> 框里，填入 <code>RE</code>。</li>
+<li>在 <code>Replace</code> 框里，填入 <code>1</code>。</li>
+<li>选项中，Global match,Case insensitive,Multiline matching全部打开就行</li>
+</ul>
+</li>
+<li><p><strong>目的</strong>：这一步是执行我们的“映射”规则，把我们认定的第一个 Token <code>RE</code> 转换成二进制里的 <code>1</code>。</p>
+</li>
+<li><p><strong>中间结果</strong>：此时，右下角 <code>Output</code> 框的内容会变成：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1O11111O111111OOO1O1111O111O111OO1O1111O11111O1O1111OO1O1O1OO11OO1OO1O1O1111OO1O11111O1OOO1O111O1OOOO11O1O1OOO1O11111O1OO1OO11OO11111O1O1OOOO11OO111O11OO111O11O1OOOO11O111O1O1O11O1111OO11OOO1OOO1O1O1O11OOOO1O1OO1111OO1OO111OO1OO111O1O1O111OO11OO11O</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="步骤-2：Find-Replace-把-字母-O-换成-0"><a href="#步骤-2：Find-Replace-把-字母-O-换成-0" class="headerlink" title="步骤 2：Find &#x2F; Replace (把 字母 O 换成 0)"></a>步骤 2：Find &#x2F; Replace (把 字母 <code>O</code> 换成 <code>0</code>)</h4><ul>
+<li><p><strong>操作</strong>：再拖动一个 <code>Find / Replace</code> 到 <code>Recipe</code> 区域，放在刚才那一步的下面。</p>
+</li>
+<li><p><strong>配置</strong>：</p>
+<ul>
+<li>在 <code>Find</code> 框里，填入 <code>O</code>。</li>
+<li>在 <code>Replace</code> 框里，填入 <code>0</code>。</li>
+</ul>
+</li>
+<li><p><strong>目的</strong>：完成映射的另一半，把 Token <code>O</code> 转换成二进制里的 <code>0</code>。</p>
+</li>
+<li><p><strong>中间结果</strong>：现在，<code>Output</code> 框里的内容就是一串纯粹的 <code>0</code> 和 <code>1</code> 了，也就是我们需要的比特流：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">10111110111111000101111011101110010111101111101011110010101001100100101011110010111110100010111010000110101000101111101001001100111110101000011001110110011101101000011011101010110111100110001000101010110000101001111001001110010011101010111001100110</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="步骤-3：Reverse-反转"><a href="#步骤-3：Reverse-反转" class="headerlink" title="步骤 3：Reverse (反转)"></a>步骤 3：Reverse (反转)</h4><ul>
+<li><strong>操作</strong>：在左侧搜索 <code>Reverse</code>，拖到 <code>Recipe</code> 中，放在第二步之后。</li>
+<li><strong>配置</strong>：保持默认选项 <code>Mode: Standard (character)</code> 即可。</li>
+<li><strong>目的</strong>：这是解题的关键一步。直接把二进制转文本会是乱码，我们猜测可能存在“整体倒序”的混淆。这一步就是把整条比特流从头到尾反转过来。</li>
+<li><strong>中间结果</strong>：<code>Output</code> 框里的比特流现在是倒序的了：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">01100110011101010111001001110010011110010100001101010100010001100111101101010111011000010110111001101110011000010101111100110010010111110100010101100001011101000101111101001111010100100110010101001111010111110111101001110111011110100011111101111101</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="步骤-4：From-Binary-从二进制转换"><a href="#步骤-4：From-Binary-从二进制转换" class="headerlink" title="步骤 4：From Binary (从二进制转换)"></a>步骤 4：From Binary (从二进制转换)</h4><ul>
+<li><p><strong>操作</strong>：在左侧搜索 <code>From Binary</code>，拖到 <code>Recipe</code> 的最后。</p>
+</li>
+<li><p><strong>配置</strong>：</p>
+<ul>
+<li>在下面的选项中，确保 <code>Data format</code> 是 <code>Binary</code>，并且 <code>Length</code> 是 <code>8</code>。</li>
+<li>其他选项默认就行。</li>
+</ul>
+</li>
+<li><p><strong>目的</strong>：将反转后的比特流，按照每 8 位一个字节的标准，翻译成 ASCII 字符。</p>
+</li>
+<li><p><strong>最终结果</strong>：<code>Output</code> 框里会清晰地显示出 flag：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Wanna_2_Eat_OReO_zwz?&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>最后总结一下像这种有很多重复字符的字符串，你其实应该想到把重复字符看做0和1,只不过字符的整体需要一点经验，比如本题的RE和O，你只要想到O很像0其实就能联想到RE可能是1了。</p>
+<p>当然可能还有另一种情况就是摩斯电码，这题很好有这个小彩蛋，但算个迷惑项。</p>
+<ul>
+<li><strong>RE</strong> &#x3D; <strong><code>.</code></strong> (点)</li>
+<li><strong>O</strong> &#x3D; <strong><code>-</code></strong> (划)</li>
+<li><strong>OO</strong> &#x3D; <strong>字母之间的分隔符</strong> (我用单个空格<code> </code>表示)</li>
+<li><strong>OOO</strong> &#x3D; <strong>单词之间的分隔符</strong> (我用斜杠<code>/</code>表示)</li>
+</ul>
+<p>根据这个规则，得到下面的标准摩尔斯电码：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-. . ...- . .-. / --. --- -. -. . / --. .. ...- . / -.-- --- ..- / ..- .--. / -. . ...- . .-. / --. --- -. -. . / .-.. . - / -.-- --- ..- / -.. --- .-- -.</span><br></pre></td></tr></table></figure>
+
+<p>你拖进随波逐流解密一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">NEVERGONNEGIVEYOUUPNEVERGONNELETYOUDOWN</span><br></pre></td></tr></table></figure>
+
+<p>又是经典诈骗。</p>
+]]></content>
       <categories>
         <category>ctf</category>
         <category>ctf-wp</category>
