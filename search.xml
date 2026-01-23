@@ -216,557 +216,6 @@
       </tags>
   </entry>
   <entry>
-    <title>vulnix常用靶机用testssl扫描结果</title>
-    <url>/2026/01/01/Vulnix%20993%20SSLTLS%20%E5%AE%89%E5%85%A8%E6%89%AB%E6%8F%8F%E7%BB%93%E6%9E%9C%E6%B1%87%E6%80%BB/</url>
-    <content><![CDATA[<think>
-
-</think>
-使用了testssl.sh-3.3
-参照网址：https://github.com/testssl/testssl.sh
-
-<hr>
-<h3 id="Vulnix-192-168-137-133-993-SSL-TLS-安全扫描结果汇总"><a href="#Vulnix-192-168-137-133-993-SSL-TLS-安全扫描结果汇总" class="headerlink" title="Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总"></a>Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总</h3><p><strong>扫描时间:</strong> 2025-12-03 08:10:02 - 08:10:57 (总耗时 56s)<br><strong>目标服务:</strong> IMAP<br><strong>OpenSSL版本 (客户端检测):</strong> OpenSSL 1.0.2-bad (Mar 28 2025)<br><strong>总体评级:</strong> T (信任问题)</p>
-<hr>
-<h3 id="表格一：支持的-SSL-TLS-协议和密码套件-协议和Cipher-Categories部分"><a href="#表格一：支持的-SSL-TLS-协议和密码套件-协议和Cipher-Categories部分" class="headerlink" title="表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)"></a>表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)</h3><table>
-<thead>
-<tr>
-<th align="left">类别</th>
-<th align="left">项目</th>
-<th align="left">状态 &#x2F; 结果</th>
-<th align="left">严重性 &#x2F; 建议</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left"><strong>协议支持</strong></td>
-<td align="left">SSLv2</td>
-<td align="left"><code>not offered (OK)</code> (未提供)</td>
-<td align="left">正常，安全。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">SSLv3</td>
-<td align="left"><code>offered (NOT ok)</code> (已提供)</td>
-<td align="left"><strong>高危</strong>。完全过时，存在 POODLE 漏洞风险，应立即禁用。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">TLS 1.0</td>
-<td align="left"><code>offered (deprecated)</code> (已提供，已弃用)</td>
-<td align="left"><strong>中危</strong>。已过时，存在已知缺陷，应禁用。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">TLS 1.1</td>
-<td align="left"><code>offered (deprecated)</code> (已提供，已弃用)</td>
-<td align="left"><strong>中危</strong>。已过时，存在已知缺陷，应禁用。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">TLS 1.2</td>
-<td align="left"><code>offered (OK)</code> (已提供)</td>
-<td align="left">正常，目前建议支持。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">TLS 1.3</td>
-<td align="left"><code>not offered and downgraded to a weaker protocol</code> (未提供)</td>
-<td align="left"><strong>低危</strong>。不支持最新、最安全的协议。建议升级支持 TLS 1.3 以提高安全性。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">NPN&#x2F;SPDY</td>
-<td align="left"><code>not offered</code> (未提供)</td>
-<td align="left">正常，与 HTTP&#x2F;2&#x2F;3 相关，不影响 IMAP。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">ALPN&#x2F;HTTP2</td>
-<td align="left"><code>not offered</code> (未提供)</td>
-<td align="left">正常，与 HTTP&#x2F;2&#x2F;3 相关，不影响 IMAP。</td>
-</tr>
-<tr>
-<td align="left"><strong>密码套件类别</strong></td>
-<td align="left">NULL ciphers</td>
-<td align="left"><code>not offered (OK)</code> (未提供)</td>
-<td align="left">正常，安全（无加密）。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Anonymous NULL</td>
-<td align="left"><code>not offered (OK)</code> (未提供)</td>
-<td align="left">正常，安全（无认证）。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Export ciphers</td>
-<td align="left"><code>not offered (OK)</code> (未提供)</td>
-<td align="left">正常，安全（导出级弱加密）。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">LOW: 64 Bit + DES, RC[2,4], MD5</td>
-<td align="left"><code>offered (NOT ok)</code> (已提供)</td>
-<td align="left"><strong>高危</strong>。提供低强度（64位、DES、RC4、MD5）密码套件。极易被暴力破解，应立即禁用。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Triple DES &#x2F; IDEA</td>
-<td align="left"><code>offered</code> (已提供)</td>
-<td align="left"><strong>中危</strong>。提供 3DES&#x2F;IDEA 密码套件。这些算法存在性能问题且易受 SWEET32 攻击。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Obsoleted CBC</td>
-<td align="left"><code>offered</code> (已提供)</td>
-<td align="left"><strong>中危</strong>。提供已过时的 CBC 模式密码套件。易受 BEAST、POODLE、LUCKY13 攻击。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Strong (AEAD) no FS</td>
-<td align="left"><code>offered (OK)</code> (已提供)</td>
-<td align="left">正常，提供强加密（AEAD）密码套件。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">Strong (AEAD) FS</td>
-<td align="left"><code>offered (OK)</code> (已提供)</td>
-<td align="left">正常，提供强加密（AEAD）和前向保密（FS）密码套件。</td>
-</tr>
-<tr>
-<td align="left"><strong>密码套件偏好</strong></td>
-<td align="left">服务器密码顺序</td>
-<td align="left"><code>no (NOT ok)</code> (无)</td>
-<td align="left"><strong>中危</strong>。服务器未强制自己的密码套件顺序，可能导致客户端选择弱密码套件。应配置服务器强制使用安全密码套件的优先顺序。</td>
-</tr>
-<tr>
-<td align="left"><strong>证书信息</strong></td>
-<td align="left">签名算法</td>
-<td align="left"><code>SHA1 with RSA</code></td>
-<td align="left"><strong>高危</strong>。SHA1 哈希算法已不安全，存在碰撞风险，主流浏览器已不信任 SHA1 证书。应使用 SHA256 或更强的算法。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">SAN</td>
-<td align="left"><code>missing -- no SAN is deprecated</code></td>
-<td align="left"><strong>中危</strong>。缺少主题备用名称 (SAN) 字段。SAN 是现代证书匹配域名的标准，缺失会导致客户端警告。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">信任链</td>
-<td align="left"><code>NOT ok (self signed)</code> (自签名)</td>
-<td align="left"><strong>严重</strong>。证书是自签名的，不被任何公共信任机构认可。导致所有客户端都会警告连接不安全，且易受中间人攻击。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">证书有效期</td>
-<td align="left"><code>expired (2012-09-02 --&gt; 2022-09-02)</code> (已过期)</td>
-<td align="left"><strong>严重</strong>。证书已过期。任何客户端都会拒绝连接或发出严重警告。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">证书有效期长度</td>
-<td align="left"><code>&gt;= 10 years is way too long</code> (10年以上)</td>
-<td align="left"><strong>策略问题</strong>。证书有效期过长，与当前安全最佳实践（1-2年）不符，增加了长期风险。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">OCSP &#x2F; CRL</td>
-<td align="left"><code>NOT ok -- neither CRL nor OCSP URI provided</code> (未提供)</td>
-<td align="left"><strong>中危</strong>。未提供证书吊销信息。无法及时检查证书是否已被吊销，可能导致已泄露或滥用的证书仍被信任。</td>
-</tr>
-<tr>
-<td align="left"><strong>密钥信息</strong></td>
-<td align="left">服务器密钥大小</td>
-<td align="left"><code>RSA 2048 bits</code> (2048位)</td>
-<td align="left">正常，目前普遍接受的密钥大小。</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">DH 组</td>
-<td align="left"><code>Unknown DH group (1024 bits)</code> (未知DH组，1024位)</td>
-<td align="left"><strong>中危</strong>。DH组长度为1024位，强度偏弱，易受 Logjam 攻击。建议使用 2048位或更大的 DH 参数。</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="表格二：检测到的漏洞-Vulnerabilities部分"><a href="#表格二：检测到的漏洞-Vulnerabilities部分" class="headerlink" title="表格二：检测到的漏洞 (Vulnerabilities部分)"></a>表格二：检测到的漏洞 (Vulnerabilities部分)</h3><table>
-<thead>
-<tr>
-<th align="left">漏洞名称</th>
-<th align="left">CVE ID</th>
-<th align="left">状态 &#x2F; 结果</th>
-<th align="left">严重性 &#x2F; 影响</th>
-<th align="left">建议修复</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left"><strong>Heartbleed</strong></td>
-<td align="left">CVE-2014-0160</td>
-<td align="left"><code>VULNERABLE (NOT ok)</code></td>
-<td align="left"><strong>严重</strong>。服务器内存泄露，攻击者可窃取私钥、用户名、密码等敏感信息。</td>
-<td align="left">升级 OpenSSL 到无此漏洞的版本 (1.0.1g 或更高)。</td>
-</tr>
-<tr>
-<td align="left"><strong>CCS Injection</strong></td>
-<td align="left">CVE-2014-0224</td>
-<td align="left"><code>VULNERABLE (NOT ok)</code></td>
-<td align="left"><strong>严重</strong>。中间人攻击者可解密和篡改TLS连接。</td>
-<td align="left">升级 OpenSSL 到无此漏洞的版本 (1.0.1h 或更高)。</td>
-</tr>
-<tr>
-<td align="left">Ticketbleed</td>
-<td align="left">CVE-2016-9244</td>
-<td align="left"><code>(applicable only for HTTP service)</code> (仅适用于HTTP服务)</td>
-<td align="left">不适用于IMAP服务。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left">Opossum</td>
-<td align="left">CVE-2025-49812</td>
-<td align="left"><code>(implemented currently for HTTP only)</code> (当前仅适用于HTTP)</td>
-<td align="left">不适用于IMAP服务。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left">ROBOT</td>
-<td align="left"></td>
-<td align="left"><code>not vulnerable (OK)</code></td>
-<td align="left">正常，不受 ROBOT 攻击影响。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left">Secure Renegotiation</td>
-<td align="left">RFC 5746</td>
-<td align="left"><code>supported (OK)</code></td>
-<td align="left">正常，支持安全重新协商。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left">Secure Client-Initiated Renegotiation</td>
-<td align="left"></td>
-<td align="left"><code>VULNERABLE (NOT ok), potential DoS threat</code></td>
-<td align="left"><strong>中危</strong>。可能被恶意客户端利用进行拒绝服务 (DoS) 攻击。</td>
-<td align="left">配置服务器禁用客户端发起的重新协商。</td>
-</tr>
-<tr>
-<td align="left"><strong>CRIME, TLS</strong></td>
-<td align="left">CVE-2012-4929</td>
-<td align="left"><code>VULNERABLE but not using HTTP: probably no exploit known</code></td>
-<td align="left"><strong>中危</strong>。存在 CRIME 漏洞。在非HTTP服务上直接利用较难，但仍是安全缺陷。</td>
-<td align="left">禁用 TLS 压缩。</td>
-</tr>
-<tr>
-<td align="left"><strong>POODLE, SSL</strong></td>
-<td align="left">CVE-2014-3566</td>
-<td align="left"><code>VULNERABLE (NOT ok)</code></td>
-<td align="left"><strong>高危</strong>。攻击者可利用 SSLv3 和 CBC 密码套件解密敏感数据。</td>
-<td align="left">禁用 SSLv3 协议。</td>
-</tr>
-<tr>
-<td align="left">TLS_FALLBACK_SCSV</td>
-<td align="left">RFC 7507</td>
-<td align="left"><code>Downgrade attack prevention NOT supported and vulnerable to POODLE SSL</code></td>
-<td align="left"><strong>高危</strong>。不支持 SCSV，使得中间人攻击者可强制降级到不安全的 SSLv3，再利用 POODLE 攻击。</td>
-<td align="left">升级 OpenSSL 并启用 SCSV 保护。</td>
-</tr>
-<tr>
-<td align="left"><strong>SWEET32</strong></td>
-<td align="left">CVE-2016-2183, CVE-2016-6329</td>
-<td align="left"><code>VULNERABLE, uses 64 bit block ciphers</code></td>
-<td align="left"><strong>中危</strong>。使用 64 位块密码（如 3DES），可能导致在长时间连接下信息泄露。</td>
-<td align="left">禁用 64 位块密码（如 3DES、IDEA）。</td>
-</tr>
-<tr>
-<td align="left">FREAK</td>
-<td align="left">CVE-2015-0204</td>
-<td align="left"><code>not vulnerable (OK)</code></td>
-<td align="left">正常，不受 FREAK 攻击影响。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left">DROWN</td>
-<td align="left">CVE-2016-0800, CVE-2016-0703</td>
-<td align="left"><code>not vulnerable on this host and port (OK)</code></td>
-<td align="left">正常，不受 DROWN 攻击影响。<strong>注意</strong>：如果此证书在其他启用 SSLv2 的服务上使用，仍可能易受攻击。</td>
-<td align="left">N&#x2F;A (此服务不受影响)</td>
-</tr>
-<tr>
-<td align="left">LOGJAM</td>
-<td align="left">CVE-2015-4000</td>
-<td align="left"><code>not vulnerable (OK): no DH EXPORT ciphers. But: Unknown DH group (1024 bits)</code></td>
-<td align="left">正常，不受 Logjam 攻击直接影响。但使用的 DH 组强度偏弱（1024位），存在潜在风险。</td>
-<td align="left">使用 2048位或更大的 DH 参数。</td>
-</tr>
-<tr>
-<td align="left"><strong>BEAST</strong></td>
-<td align="left">CVE-2011-3389</td>
-<td align="left"><code>VULNERABLE -- but also supports higher protocols TLSv1.1 TLSv1.2 (likely mitigated)</code></td>
-<td align="left"><strong>中危</strong>。TLS 1.0 使用 CBC 模式，存在 BEAST 攻击条件。虽然有更高协议，但仍可能受影响。</td>
-<td align="left">禁用 TLS 1.0，优先使用 TLS 1.2 及以上协议。</td>
-</tr>
-<tr>
-<td align="left">LUCKY13</td>
-<td align="left">CVE-2013-0169</td>
-<td align="left"><code>potentially VULNERABLE, uses cipher block chaining (CBC) ciphers with TLS. Check patches</code></td>
-<td align="left"><strong>低危</strong>。TLS 中使用 CBC 密码套件，存在定时攻击的可能性。</td>
-<td align="left">更新相关补丁，禁用存在漏洞的 CBC 密码套件。</td>
-</tr>
-<tr>
-<td align="left">Winshock</td>
-<td align="left">CVE-2014-6321</td>
-<td align="left"><code>not vulnerable (OK)</code></td>
-<td align="left">正常，不受 Winshock 攻击影响。</td>
-<td align="left">N&#x2F;A</td>
-</tr>
-<tr>
-<td align="left"><strong>RC4</strong></td>
-<td align="left">CVE-2013-2566, CVE-2015-2808</td>
-<td align="left"><code>VULNERABLE (NOT ok): RC4-SHA, RC4-MD5</code></td>
-<td align="left"><strong>高危</strong>。使用 RC4 流密码。RC4 已被证明存在严重缺陷，容易被攻击者破解。</td>
-<td align="left">禁用所有 RC4 密码套件。</td>
-</tr>
-</tbody></table>
-<hr>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这份详尽的表格清晰地展示了 Vulnix 靶机在 SSL&#x2F;TLS 配置方面存在的<strong>大量且严重的漏洞和配置缺陷</strong>。从协议、密码套件到证书管理，几乎每个环节都存在问题。这使得该服务极易受到多种已知攻击的影响，是一个典型的存在“开放大门”的靶机。</p>
-]]></content>
-      <categories>
-        <category>渗透测试</category>
-      </categories>
-      <tags>
-        <tag>vulnix靶机</tag>
-        <tag>web</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>furryCTF热身赛wp</title>
-    <url>/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/</url>
-    <content><![CDATA[<h3 id="furryCTF2025赛前热身题（misc方向）"><a href="#furryCTF2025赛前热身题（misc方向）" class="headerlink" title="furryCTF2025赛前热身题（misc方向）"></a>furryCTF2025赛前热身题（misc方向）</h3><p>比赛网站：<a href="https://furryctf.com/games/5">https://furryctf.com/games/5</a></p>
-<h3 id="1-签到题"><a href="#1-签到题" class="headerlink" title="1.签到题"></a>1.签到题</h3><p>题目描述：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">话说，你们有发现比赛平台上藏有一个flag吗？</span><br><span class="line"></span><br><span class="line">注意flag格式哦~</span><br></pre></td></tr></table></figure>
-
-<p>在赛题主页就可以找到：</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002231.png" class="" title="赛题主页截图">
-
-<p>flag为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Hack_for_fun_not_for_profit&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-新的一年，新的开始"><a href="#2-新的一年，新的开始" class="headerlink" title="2.新的一年，新的开始"></a>2.新的一年，新的开始</h3><p>题目描述：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Catch The Future</span><br><span class="line"></span><br><span class="line">Time to own 2025</span><br><span class="line"></span><br><span class="line">Forever young in hacking</span><br><span class="line"></span><br><span class="line">furryCTF&#123;h4ppY_n3w_y34r_2o25_w1th_1Ov3&#125;</span><br><span class="line"></span><br><span class="line">祝各位师傅：</span><br><span class="line"></span><br><span class="line">栈上生花，堆里藏月，逆向不秃，web不坐牢，pwn穿一切，ak全场！ 🚩🎉</span><br></pre></td></tr></table></figure>
-
-<p>这种就是问卷题</p>
-<p>flag为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;h4ppY_n3w_y34r_2o25_w1th_1Ov3&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-PassDump"><a href="#3-PassDump" class="headerlink" title="3.PassDump"></a>3.PassDump</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">作为CTFer，很多时候都会有电脑放一夜跑程序的经历。</span><br><span class="line"></span><br><span class="line">但猫猫看着跑一夜碰撞之后蓝屏的电脑，陷入了沉思……</span><br><span class="line"></span><br><span class="line">flag格式为furryCTF&#123;出现问题的文件_蓝屏错误代码_该文件的最后一次编译时间_失败事件的缩写_当时正在使用的应用程序的名称&#125;</span><br><span class="line"></span><br><span class="line">例如，这是一个合法的flag：</span><br><span class="line"></span><br><span class="line">furryCTF&#123;system.exe_0x0000001A_2024.12.31-14:00:00_DPC_Notepad&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这题需要用到windbg,这里链接就不贴了，网上一搜就有</p>
-<p>打开windbg后</p>
-<p>打开command,也就是命令行</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002913.png" class="" title="WinDbg命令行">
-
-<p>一般会有这个蓝标字体，如果没有就自己输入</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">!analyze -v</span><br></pre></td></tr></table></figure>
-
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002934.png" class="" title="分析结果">
-
-<p>这里我把输出结果放一下</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">12: kd&gt; !analyze -v</span><br><span class="line">Loading Kernel Symbols</span><br><span class="line">..</span><br><span class="line"></span><br><span class="line">Press ctrl-c (cdb, kd, ntsd) or ctrl-break (windbg) to abort symbol loads that take too long.</span><br><span class="line">Run !sym noisy before .reload to track down problems loading symbols.</span><br><span class="line"></span><br><span class="line">.............................................................</span><br><span class="line">................................................................</span><br><span class="line">................................................................</span><br><span class="line">................................................................</span><br><span class="line">..............................................</span><br><span class="line">Loading User Symbols</span><br><span class="line"></span><br><span class="line">Loading unloaded module list</span><br><span class="line">.........................................</span><br><span class="line">*******************************************************************************</span><br><span class="line">*                                                                             *</span><br><span class="line">*                        Bugcheck Analysis                                    *</span><br><span class="line">*                                                                             *</span><br><span class="line">*******************************************************************************</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_FAILURE (116)</span><br><span class="line">Attempt to reset the display driver and recover from timeout failed.</span><br><span class="line">Arguments:</span><br><span class="line">Arg1: ffffe30a4b8cd010, Optional pointer to internal TDR recovery context (TDR_RECOVERY_CONTEXT).</span><br><span class="line">Arg2: fffff8035ce14790, The pointer into responsible device driver module (e.g. owner tag).</span><br><span class="line">Arg3: ffffffffc000009a, Optional error code (NTSTATUS) of the last failed operation.</span><br><span class="line">Arg4: 0000000000000004, Optional internal context dependent data.</span><br><span class="line"></span><br><span class="line">Debugging Details:</span><br><span class="line">------------------</span><br><span class="line"></span><br><span class="line">Unable to load image nvlddmkm.sys, Win32 error 0n2</span><br><span class="line">*** WARNING: Unable to verify timestamp for nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">KEY_VALUES_STRING: 1</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.CPU.mSec</span><br><span class="line">    Value: 2140</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Elapsed.mSec</span><br><span class="line">    Value: 13194</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Other.Mb</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Read.Mb</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Write.Mb</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Init.CPU.mSec</span><br><span class="line">    Value: 484</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Init.Elapsed.mSec</span><br><span class="line">    Value: 28118</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Memory.CommitPeak.Mb</span><br><span class="line">    Value: 102</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.DbgEng</span><br><span class="line">    Value: 10.0.29482.1003</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.Description</span><br><span class="line">    Value: 10.2509.29.03 amd64fre</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.Ext</span><br><span class="line">    Value: 1.2509.29.3</span><br><span class="line"></span><br><span class="line">    Key  : Bugcheck.Code.LegacyAPI</span><br><span class="line">    Value: 0x116</span><br><span class="line"></span><br><span class="line">    Key  : Bugcheck.Code.TargetModel</span><br><span class="line">    Value: 0x116</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.AsUlong</span><br><span class="line">    Value: 0x21808</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.DiagDataWrittenToHeader</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.ErrorCode</span><br><span class="line">    Value: 0x0</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.KernelGeneratedTriageDump</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.LastLine</span><br><span class="line">    Value: Dump completed successfully.</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.ProgressPercentage</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Bucket</span><br><span class="line">    Value: 0x116_IMAGE_nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Address</span><br><span class="line">    Value: 0xfffff8035ce14790</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Module</span><br><span class="line">    Value: nvlddmkm</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Offset</span><br><span class="line">    Value: 0x1854790</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Hash</span><br><span class="line">    Value: &#123;c89bfe8c-ed39-f658-ef27-f2898997fdbd&#125;</span><br><span class="line"></span><br><span class="line">    Key  : Faulting.IP.Type</span><br><span class="line">    Value: Paged</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Enlightenments.ValueHex</span><br><span class="line">    Value: 0x7417df84</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.AnyHypervisorPresent</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ApicEnlightened</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ApicVirtualizationAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.AsyncMemoryHint</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.CoreSchedulerRequested</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.CpuManager</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.DeprecateAutoEoi</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.DynamicCpuDisabled</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Epf</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ExtendedProcessorMasks</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.HardwareMbecAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.MaxBankNumber</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.MemoryZeroingControl</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.NoExtendedRangeFlush</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.NoNonArchCoreSharing</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Phase0InitDone</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.PowerSchedulerQos</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.RootScheduler</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.SynicAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.UseQpcBias</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Value</span><br><span class="line">    Value: 55185662</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ValueHex</span><br><span class="line">    Value: 0x34a10fe</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.VpAssistPage</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.VsmAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.AccessStats</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.CrashdumpEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.CreateVirtualProcessor</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.DisableHyperthreading</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.HostTimelineSync</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.HypervisorDebuggingEnabled</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.IsHyperV</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.LivedumpEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.MapDeviceInterrupt</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.MceEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.Nested</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.StartLogicalProcessor</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.Value</span><br><span class="line">    Value: 1015</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.ValueHex</span><br><span class="line">    Value: 0x3f7</span><br><span class="line"></span><br><span class="line">    Key  : WER.System.BIOSRevision</span><br><span class="line">    Value: 1.23.0.0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BUGCHECK_CODE:  116</span><br><span class="line"></span><br><span class="line">BUGCHECK_P1: ffffe30a4b8cd010</span><br><span class="line"></span><br><span class="line">BUGCHECK_P2: fffff8035ce14790</span><br><span class="line"></span><br><span class="line">BUGCHECK_P3: ffffffffc000009a</span><br><span class="line"></span><br><span class="line">BUGCHECK_P4: 4</span><br><span class="line"></span><br><span class="line">FILE_IN_CAB:  furryCTF.dmp</span><br><span class="line"></span><br><span class="line">DUMP_FILE_ATTRIBUTES: 0x21808</span><br><span class="line">  Kernel Generated Triage Dump</span><br><span class="line"></span><br><span class="line">FAULTING_THREAD:  ffffe30a86af3040</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_CONTEXT: dt dxgkrnl!_TDR_RECOVERY_CONTEXT ffffe30a4b8cd010</span><br><span class="line">Symbol dxgkrnl!_TDR_RECOVERY_CONTEXT not found.</span><br><span class="line"></span><br><span class="line">PROCESS_OBJECT: 0000000000000004</span><br><span class="line"></span><br><span class="line">BLACKBOXACPI: 1 (!blackboxacpi)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXBSD: 1 (!blackboxbsd)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXNTFS: 1 (!blackboxntfs)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXPNP: 1 (!blackboxpnp)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXWINLOGON: 1 (!blackboxwinlogon)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">PROCESS_NAME:  System</span><br><span class="line"></span><br><span class="line">IP_IN_PAGED_CODE: </span><br><span class="line">nvlddmkm+1854790</span><br><span class="line">fffff803`5ce14790 488b05b9f28dff  mov     rax,qword ptr [nvlddmkm+0x1133a50 (fffff803`5c6f3a50)]</span><br><span class="line"></span><br><span class="line">STACK_TEXT:  </span><br><span class="line">ffffc982`1c9677d8 fffff803`43a2375d     : 00000000`00000116 ffffe30a`4b8cd010 fffff803`5ce14790 ffffffff`c000009a : nt!KeBugCheckEx</span><br><span class="line">ffffc982`1c9677e0 fffff803`43c97be6     : fffff803`5ce14790 ffffe30a`5b80b5a0 00000000`00000004 ffffe30a`4b8cd010 : dxgkrnl!TdrBugcheckOnTimeout+0x101</span><br><span class="line">ffffc982`1c967820 fffff803`43a324be     : 00000000`00000000 00000000`00002000 00000000`00000004 00000000`00000004 : dxgkrnl!ADAPTER_RENDER::Reset+0x232</span><br><span class="line">ffffc982`1c967850 fffff803`43a69375     : ffffe30a`00000100 00000000`00000000 ffffc982`00000000 00000000`00000000 : dxgkrnl!DXGADAPTER::Reset+0x59a</span><br><span class="line">ffffc982`1c9678e0 fffff803`43a694d2     : fffff803`b290ce60 00000000`00000000 ffffb881`c42d1100 fffff803`b29cfbc0 : dxgkrnl!TdrResetFromTimeout+0x15</span><br><span class="line">ffffc982`1c967910 fffff803`b1c3072c     : ffffe30a`86af3040 ffffe30a`478ddae0 ffffe30a`478dda00 fffff803`44b52750 : dxgkrnl!TdrResetFromTimeoutWorkItem+0x22</span><br><span class="line">ffffc982`1c967950 fffff803`b1ea007a     : ffffe30a`86af3040 ffffe30a`86af3040 fffff803`b1c30140 ffffe30a`478ddae0 : nt!ExpWorkerThread+0x5ec</span><br><span class="line">ffffc982`1c967b30 fffff803`b20a5db4     : ffffb881`c42d1180 ffffe30a`86af3040 fffff803`b1ea0020 00000000`0e5f57dc : nt!PspSystemThreadStartup+0x5a</span><br><span class="line">ffffc982`1c967b80 00000000`00000000     : ffffc982`1c968000 ffffc982`1c961000 00000000`00000000 00000000`00000000 : nt!KiStartSystemThread+0x34</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SYMBOL_NAME:  nvlddmkm+1854790</span><br><span class="line"></span><br><span class="line">MODULE_NAME: nvlddmkm</span><br><span class="line"></span><br><span class="line">IMAGE_NAME:  nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">STACK_COMMAND: .process /r /p 0xffffe30a476cb040; .thread 0xffffe30a86af3040 ; kb</span><br><span class="line"></span><br><span class="line">FAILURE_BUCKET_ID:  0x116_IMAGE_nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">OSPLATFORM_TYPE:  x64</span><br><span class="line"></span><br><span class="line">OSNAME:  Windows 10</span><br><span class="line"></span><br><span class="line">FAILURE_ID_HASH:  &#123;c89bfe8c-ed39-f658-ef27-f2898997fdbd&#125;</span><br><span class="line"></span><br><span class="line">Followup:     MachineOwner</span><br><span class="line">---------</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>对比furryCTF{system.exe_0x0000001A_2024.12.31-14:00:00_DPC_Notepad}这个格式</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">出现问题的文件：IMAGE_NAME:  nvlddmkm.sys</span><br><span class="line">蓝屏错误代码：</span><br><span class="line">VIDEO_TDR_FAILURE (116)  &lt;--- 括号里的 116 就是十进制代码</span><br><span class="line">...</span><br><span class="line">BUGCHECK_CODE:  116      &lt;--- 这里确认</span><br><span class="line">提取结果： 116 (十进制) = 0x00000116 (十六进制)</span><br><span class="line">该文件的最后一次编译时间：lm v m nvlddmkm指令输入后运行</span><br><span class="line">Browse all global symbols  functions  data  Symbol Reload</span><br><span class="line">    Timestamp:        Tue Feb 11 13:40:16 2025 (67AAE2C0)  &lt;--- 就在这一行</span><br><span class="line">    CheckSum:         05B57FA7</span><br><span class="line">失败事件的缩写：</span><br><span class="line">*******************************************************************************</span><br><span class="line">*                        Bugcheck Analysis                                    *</span><br><span class="line">*******************************************************************************</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_FAILURE (116)  &lt;--- 这里是全名</span><br><span class="line">这里用TDR</span><br><span class="line">当时正在使用的应用程序的名称：这里有点坑，需要一点阅读理解，“当前正在使用”，根据题目场景，当前正在进行碰撞，碰撞会想到啥，hash碰撞吧，想想常用的工具，hashcat就是答案</span><br></pre></td></tr></table></figure>
-
-<p>最后整合一下，flag为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;nvlddmkm.sys_0x00000116_2025.02.11-13:40:16_TDR_hashcat&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-IIS服务器"><a href="#4-IIS服务器" class="headerlink" title="4.IIS服务器"></a>4.IIS服务器</h3><p>题目描述：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">猫猫前段时间闲着没事搭建了一个IIS服务器。</span><br><span class="line"></span><br><span class="line">不过，最近猫猫发现，服务器上好像多了个文件……？</span><br></pre></td></tr></table></figure>
-
-<p>用wireshark打开pcap文件</p>
-<p>依旧先ctrl+f搜索flag,找到了交了但是是错的因为那只是一个人登录用的password</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20004312.png" class="" title="Wireshark搜索结果">
-
-<p>确实被骗到了哈哈哈，诈骗的小曲</p>
-<p>你观察就可以发现，流量大多数是TCP和http流，所以右键追踪流</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20004955.png" class="" title="追踪HTTP流">
-
-<p>最后找到一个传了fl2g.txt的流量</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">GET /execute/f12g.txt HTTP/1.1</span><br><span class="line">Host: 26.114.202.3</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000474s</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Encoding: gzip</span><br><span class="line">Last-Modified: Wed, 10 Jul 2024 03:14:49 GMT</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">ETag: &quot;c0c41d5377d2da1:0&quot;</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Server: Microsoft-IIS/7.5</span><br><span class="line">X-Powered-By: ASP.NET</span><br><span class="line">Date: Wed, 10 Jul 2024 04:37:33 GMT</span><br><span class="line">Content-Length: 191</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000000s</span><br><span class="line">ZnVycnlDVEZ7RGlkX1lvdV9Ob3RlX1RoZV9EaWZmX0luX0Vycm9yX1BhZ2U/fQ==</span><br><span class="line">0.175592s</span><br><span class="line">GET /favicon.ico HTTP/1.1</span><br><span class="line">Host: 26.114.202.3</span><br><span class="line">Connection: keep-alive</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36</span><br><span class="line">Accept: image/avif,image/webp,image/apng,image/*,*/*;q=0.8</span><br><span class="line">Referer: http://26.114.202.3/execute/f12g.txt</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000349s</span><br><span class="line">HTTP/1.1 404 Not Found</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Server: Microsoft-IIS/7.5</span><br><span class="line">X-Powered-By: ASP.NET</span><br><span class="line">Date: Wed, 10 Jul 2024 04:37:34 GMT</span><br><span class="line">Content-Length: 1163</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000000s</span><br><span class="line">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;</span><br><span class="line">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=gb2312&quot;/&gt;</span><br><span class="line">&lt;title&gt;404 - ..................&lt;/title&gt;</span><br><span class="line">&lt;style type=&quot;text/css&quot;&gt;</span><br><span class="line">&lt;!--</span><br><span class="line">body&#123;margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;&#125;</span><br><span class="line">fieldset&#123;padding:0 15px 10px 15px;&#125; </span><br><span class="line">h1&#123;font-size:2.4em;margin:0;color:#FFF;&#125;</span><br><span class="line">h2&#123;font-size:1.7em;margin:0;color:#CC0000;&#125; </span><br><span class="line">h3&#123;font-size:1.2em;margin:10px 0 0 0;color:#000000;&#125; </span><br><span class="line">#header&#123;width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:&quot;trebuchet MS&quot;, Verdana, sans-serif;color:#FFF;</span><br><span class="line">background-color:#555555;&#125;</span><br><span class="line">#content&#123;margin:0 0 0 2%;position:relative;&#125;</span><br><span class="line">.content-container&#123;background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;&#125;</span><br><span class="line">--&gt;</span><br><span class="line">&lt;/style&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;div id=&quot;header&quot;&gt;&lt;h1&gt;..........&lt;/h1&gt;&lt;/div&gt;</span><br><span class="line">&lt;div id=&quot;content&quot;&gt;</span><br><span class="line"> &lt;div class=&quot;content-container&quot;&gt;&lt;fieldset&gt;</span><br><span class="line">  &lt;h2&gt;404 - ..................&lt;/h2&gt;</span><br><span class="line">  &lt;h3&gt;......................................................&lt;/h3&gt;</span><br><span class="line"> &lt;/fieldset&gt;&lt;/div&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>这个是不是很像base64啊，虽然不是Zmxh这种标准开头</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0.000000s</span><br><span class="line">ZnVycnlDVEZ7RGlkX1lvdV9Ob3RlX1RoZV9EaWZmX0luX0Vycm9yX1BhZ2U/fQ==</span><br></pre></td></tr></table></figure>
-
-<p>解密之后得到flag(这里用随波逐流)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Did_You_Note_The_Diff_In_Error_Page?&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="5-盲盒"><a href="#5-盲盒" class="headerlink" title="5.盲盒"></a>5.盲盒</h3><p>题目描述：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">来开盲盒吧~nwn</span><br><span class="line"></span><br><span class="line">注：本题原本的flag格式为flag&#123;&#125;，因为懒得改附件了，所以找到flag后请将里面的“flag”修改为“furryCTF”</span><br><span class="line"></span><br><span class="line">比如flag&#123;Hi&#125;修改为furryCTF&#123;Hi&#125;即为正确答案。</span><br></pre></td></tr></table></figure>
-
-<p>像这种word,excel,ppt这种题目，这种隐写的一般的处理方式就是把文件当压缩包去看</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005452.png" class="" title="文件解压分析">
-
-
-<p>直接用随波逐流的binwalk工具去分离</p>
-<p>一个一个文件找啊找，看有没有和flag相关的</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005630.png" class="" title="Binwalk分离结果">
-
-<p>在sharedStrings里</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;</span><br><span class="line">&lt;sst xmlns=&quot;http://schemas.openxmlformats.org/spreadsheetml/2006/main&quot; count=&quot;762826&quot; uniqueCount=&quot;2&quot;&gt;&lt;si&gt;&lt;t&gt;来开盲盒吧~&lt;/t&gt;&lt;phoneticPr fontId=&quot;1&quot; type=&quot;noConversion&quot;/&gt;&lt;/si&gt;&lt;si&gt;&lt;t&gt;flag        不在这&lt;/t&gt;&lt;phoneticPr fontId=&quot;1&quot; type=&quot;noConversion&quot;/&gt;&lt;/si&gt;&lt;/sst&gt;</span><br><span class="line">&lt;!-- ‬‌‬﻿﻿﻿‍‬‍‍‍‬‌﻿﻿﻿﻿﻿﻿﻿‌‌﻿‌‍‌﻿﻿‍‬‌‌‬‌﻿﻿﻿‍‬‌‍‍‌‬‌‬‬﻿‬‌‬﻿﻿﻿‍‌‍‌﻿‬﻿‍‍‬‬‌﻿﻿﻿‍‬‌‍﻿‍﻿‌‍﻿﻿‍‍﻿‌‌﻿‌‍‍‍‍﻿‌‬‬‌‬‌﻿﻿﻿‍‬‍‬‍‌‍﻿‌﻿‌‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿‍﻿‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿﻿‬‌‌‌‌‌‌‬‬‌‌‌‌‍‬‍‬‌‌‌‌‍‬﻿‌‌‌‌‌‍‬‌‍‌‌‌‌‍‬‍﻿‌‌‌‌‍﻿‬﻿‌‌‌‌‍‍‬‬我也没说‌‌‌‌‌﻿‌‍‌‌‌‌‌﻿‬‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‍‌‌‌‌‌‍‬‬‌‌‌‌‌‍‬‍‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‌﻿‌‌‌‌‍﻿‍‌‌‌‌‌‍﻿‌‬‌‌‌‌‌﻿‌‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‬‍﻿‌‌‌‌‍‍﻿﻿flag‌‌‌‌‍‌‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌在这呀‌‌‌‌‍‬‌﻿‌‌‌‌‌﻿‬‍nwn‌‌‌‌‍‬﻿‌‌‌‌‌‍﻿﻿‍，你不会想在这里找到flag叭~ --&gt;</span><br></pre></td></tr></table></figure>
-
-<p>是不是很明显的零宽隐写</p>
-<p>‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌<!-- ‬‌‬﻿﻿﻿‍‬‍‍‍‬‌﻿﻿﻿﻿﻿﻿﻿‌‌﻿‌‍‌﻿﻿‍‬‌‌‬‌﻿﻿﻿‍‬‌‍‍‌‬‌‬‬﻿‬‌‬﻿﻿﻿‍‌‍‌﻿‬﻿‍‍‬‬‌﻿﻿﻿‍‬‌‍﻿‍﻿‌‍﻿﻿‍‍﻿‌‌﻿‌‍‍‍‍﻿‌‬‬‌‬‌﻿﻿﻿‍‬‍‬‍‌‍﻿‌﻿‌‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿‍﻿‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿﻿‬‌‌‌‌‌‌‬‬‌‌‌‌‍‬‍‬‌‌‌‌‍‬﻿‌‌‌‌‌‍‬‌‍‌‌‌‌‍‬‍﻿‌‌‌‌‍﻿‬﻿‌‌‌‌‍‍‬‬我也没说‌‌‌‌‌﻿‌‍‌‌‌‌‌﻿‬‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‍‌‌‌‌‌‍‬‬‌‌‌‌‌‍‬‍‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‌﻿‌‌‌‌‍﻿‍‌‌‌‌‌‍﻿‌‬‌‌‌‌‌﻿‌‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‬‍﻿‌‌‌‌‍‍﻿﻿flag‌‌‌‌‍‌‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌在这呀‌‌‌‌‍‬‌﻿‌‌‌‌‌﻿‬‍nwn‌‌‌‌‍‬﻿‌‌‌‌‌‍﻿﻿‍，你不会想在这里找到flag叭~ --></p>
-<p>到网站里，随波逐流的就可以</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005847.png" class="" title="零宽字符解密工具">
-
-<p>然后你就看到flag了</p>
-<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005942.png" class="" title="解密后的Flag">
-
-<p>flag为：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">flag&#123;Z19_The_Str1ng_In_Exc9l&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="6-丢失的文档"><a href="#6-丢失的文档" class="headerlink" title="6.丢失的文档"></a>6.丢失的文档</h3><p>题目描述</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">因为一场停电，猫猫刚写了一半的小说无了……</span><br></pre></td></tr></table></figure>
-
-<p>附件是一个asd文件其实我的第一想法就是改后缀，因为asd是一个不好处理陌生的格式，而这本来就应该是word文件，所以把后缀改为.docx打开，然后发现flag出了</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">对应的flag为：</span><br><span class="line">furryCTF&#123;How_To_F1x_This_Wor6_D0cument&#125;</span><br><span class="line">123</span><br></pre></td></tr></table></figure>
-
-<h3 id="7-大伙儿好像太无聊了那就整点无聊的东西（？"><a href="#7-大伙儿好像太无聊了那就整点无聊的东西（？" class="headerlink" title="7.大伙儿好像太无聊了那就整点无聊的东西（？"></a>7.大伙儿好像太无聊了那就整点无聊的东西（？</h3><p>题目描述：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">大概是一些无聊的产物（？</span><br><span class="line"></span><br><span class="line">猫猫的一点PS：有谁想读一遍这个玩意喵owo</span><br></pre></td></tr></table></figure>
-
-<p>附件内容是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">REOREREREREREOREREREREREREOOOREOREREREREOREREREOREREREOOREOREREREREOREREREREREOREOREREREREOOREOREOREOOREREOOREOOREOREOREREREREOOREOREREREREREOREOOOREOREREREOREOOOOREREOREOREOOOREOREREREREREOREOOREOOREREOOREREREREREOREOREOOOOREREOOREREREOREREOOREREREOREREOREOOOOREREOREREREOREOREOREREOREREREREOOREREOOOREOOOREOREOREOREREOOOOREOREOOREREREREOOREOOREREREOOREOOREREREOREOREOREREREOOREREOOREREO</span><br></pre></td></tr></table></figure>
-
-<hr>
-<h3 id="第一部分：把“贪心切分”聊得明明白白"><a href="#第一部分：把“贪心切分”聊得明明白白" class="headerlink" title="第一部分：把“贪心切分”聊得明明白白"></a>第一部分：把“贪心切分”聊得明明白白</h3><p>咱们把“贪心切分”这个词拆开，用大白话和生活中的例子来理解。</p>
-<h4 id="1-什么是“切分”-Tokenization-？"><a href="#1-什么是“切分”-Tokenization-？" class="headerlink" title="1. 什么是“切分” (Tokenization)？"></a>1. 什么是“切分” (Tokenization)？</h4><p><strong>通俗解释：</strong><br>“切分”就是把一长串看起来乱糟糟的东西，按照某种规则，切成一个个有意义的“小块”。这个“小块”就叫 <strong>Token</strong>（记号）。</p>
-<p><strong>生活中的例子：</strong><br>想象一下你读英文句子：<code>thisisasentence</code>。<br>你的大脑不会把它看成一堆字母，而是自动“切分”成单词：<code>this</code>, <code>is</code>, <code>a</code>, <code>sentence</code>。这里的每个单词，就是一个 Token。</p>
-<p><strong>在这道题里：</strong><br>原始密文 <code>REORERER...</code> 就是那串长长的、没空格的句子。<br>通过观察，我们发现它好像不是由单个字母 <code>R, E, O</code> 构成的，而是由 <code>O</code> 和 <code>RE</code> 这两种“单词”拼起来的。<br>所以，“切分”就是要把 <code>REORER...</code> 切成 <code>[&#39;RE&#39;, &#39;O&#39;, &#39;RE&#39;, ...]</code> 这样一个“单词列表”。</p>
-<h4 id="2-什么是“贪心”-Greedy-？"><a href="#2-什么是“贪心”-Greedy-？" class="headerlink" title="2. 什么是“贪心” (Greedy)？"></a>2. 什么是“贪心” (Greedy)？</h4><p><strong>通俗解释：</strong><br>“贪心”是一种非常直白、简单的做事策略，就是“<strong>只顾眼前，不看长远</strong>”。每一步都做出当下看起来最好的选择。</p>
-<p><strong>生活中的例子：</strong><br>假设你要找零钱 87 分，你手头有面值为 25, 10, 5, 1 的硬币。<br>“贪心”的做法是：</p>
-<ol>
-<li>先拿出能用的最大面额：25分，还差 62 分。</li>
-<li>再拿一个 25分，还差 37 分。</li>
-<li>再拿一个 25分，还差 12 分。</li>
-<li>25的用不了了，用下一个最大的：10分，还差 2 分。</li>
-<li>10和5的都用不了，用 1分，还差 1 分。</li>
-<li>再用 1分，找零完成。<br>你每一步都“贪心地”选了当前能用的最大面额，这就是贪心算法。</li>
-</ol>
-<p><strong>在这道题里：</strong><br>我们从字符串的开头 <code>s = &quot;REORER...&quot;</code> 开始切分：</p>
-<ol>
-<li><strong>指针在第 0 位 (<code>R</code>)</strong>：<ul>
-<li>往前看 1 位是 <code>R</code>，它不是一个完整的“单词”（Token）。</li>
-<li>往前看 2 位是 <code>RE</code>，它是一个完整的“单词”！</li>
-<li><strong>贪心选择</strong>：我们选择匹配最长的那个，也就是 <code>RE</code>。</li>
-<li>于是，第一个 Token 就是 <code>RE</code>。指针向后移动 2 位。</li>
-</ul>
-</li>
-<li><strong>指针现在在第 2 位 (<code>O</code>)</strong>：<ul>
-<li>往前看 1 位是 <code>O</code>，它是一个完整的“单词”。</li>
-<li>往前看 2 位是 <code>OR</code>，它不是一个合法的“单词”。</li>
-<li><strong>贪心选择</strong>：我们选择匹配 <code>O</code>。</li>
-<li>第二个 Token 就是 <code>O</code>。指针向后移动 1 位。</li>
-</ul>
-</li>
-<li><strong>如此循环…</strong> 直到把整个字符串切完。</li>
-</ol>
-<h4 id="3-什么情况下我能想到用“贪心切分”？"><a href="#3-什么情况下我能想到用“贪心切分”？" class="headerlink" title="3. 什么情况下我能想到用“贪心切分”？"></a>3. 什么情况下我能想到用“贪心切分”？</h4><p>这是解决问题的关键。你可以通过以下几点来判断：</p>
-<ol>
-<li><p><strong>特征一：由有限的几种“构件”组成。</strong><br>当你看到一长串文本，但翻来覆去就那么几种固定的“模式”或“片段”在重复出现时。比如这道题，看几眼就发现，除了 <code>O</code>，就是 <code>RE</code> 粘在一起。这强烈暗示了基本构件（Token）就是 <code>O</code> 和 <code>RE</code>。</p>
-</li>
-<li><p><strong>特征二：构件之间没有明显的“分隔符”。</strong><br>像摩斯电码，点划之间有短停顿，字母之间有长停顿。但这道题的 <code>RE</code> 和 <code>O</code> 是紧挨着的，<code>REO</code>、<code>ORE</code> 这样，没有空格或特殊符号隔开。这就逼着我们必须自己想办法把它们切开。</p>
-</li>
-<li><p><strong>特征三：构件之间没有“歧义”。</strong><br>“贪心”策略能成功，是因为它不会“切错”。比如，如果我们的“单词”是 <code>A</code> 和 <code>AB</code>，那么遇到 <code>AB</code> 时，如果贪心切了 <code>A</code>，剩下的 <code>B</code> 就无法处理了。<br>但在本题中，<code>O</code> 和 <code>RE</code> 这两个 Token 非常完美：</p>
-<ul>
-<li>一个以 <code>O</code> 开头。</li>
-<li>一个以 <code>R</code> 开头。<br>它们的首字母完全不同，所以从任何位置开始，<strong>匹配哪个是唯一的，不存在二选一的困惑</strong>。这种没有歧义的情况，就是使用贪心切分最理想的场景。</li>
-</ul>
-</li>
-</ol>
-<p><strong>一句话总结：当你发现一个长字符串可以被一小组“没有歧义的、固定的小模式”完全拼成时，就应该立刻想到用“贪心切分”把它转换成一个“小模式”的序列，为后续解码铺路。</strong></p>
-<hr>
-<h3 id="第二部分：CyberChef-复现超详细步骤（带中间结果）"><a href="#第二部分：CyberChef-复现超详细步骤（带中间结果）" class="headerlink" title="第二部分：CyberChef 复现超详细步骤（带中间结果）"></a>第二部分：CyberChef 复现超详细步骤（带中间结果）</h3><p>下面我们一步步来，每一步都告诉你为什么这么做，以及做完后输出应该是什么样子。</p>
-<p><strong>准备工作</strong>：打开 CyberChef 网站，把你的密文原文粘贴到右上角的 <strong>Input</strong> 框里。</p>
-<p>网站地址：<a href="https://cyberchef.org/">https://cyberchef.org/</a></p>
-<h4 id="步骤-1：Find-Replace-把-RE-换成-1"><a href="#步骤-1：Find-Replace-把-RE-换成-1" class="headerlink" title="步骤 1：Find &#x2F; Replace (把 RE 换成 1)"></a>步骤 1：Find &#x2F; Replace (把 <code>RE</code> 换成 <code>1</code>)</h4><ul>
-<li><p><strong>操作</strong>：在左侧 <code>Operations</code> 搜索框里输入 <code>Find</code>，找到 <code>Find / Replace</code>，把它拖到中间的 <code>Recipe</code> 区域。</p>
-</li>
-<li><p><strong>配置</strong>：</p>
-<ul>
-<li>在 <code>Find</code> 框里，填入 <code>RE</code>。</li>
-<li>在 <code>Replace</code> 框里，填入 <code>1</code>。</li>
-<li>选项中，Global match,Case insensitive,Multiline matching全部打开就行</li>
-</ul>
-</li>
-<li><p><strong>目的</strong>：这一步是执行我们的“映射”规则，把我们认定的第一个 Token <code>RE</code> 转换成二进制里的 <code>1</code>。</p>
-</li>
-<li><p><strong>中间结果</strong>：此时，右下角 <code>Output</code> 框的内容会变成：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1O11111O111111OOO1O1111O111O111OO1O1111O11111O1O1111OO1O1O1OO11OO1OO1O1O1111OO1O11111O1OOO1O111O1OOOO11O1O1OOO1O11111O1OO1OO11OO11111O1O1OOOO11OO111O11OO111O11O1OOOO11O111O1O1O11O1111OO11OOO1OOO1O1O1O11OOOO1O1OO1111OO1OO111OO1OO111O1O1O111OO11OO11O</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h4 id="步骤-2：Find-Replace-把-字母-O-换成-0"><a href="#步骤-2：Find-Replace-把-字母-O-换成-0" class="headerlink" title="步骤 2：Find &#x2F; Replace (把 字母 O 换成 0)"></a>步骤 2：Find &#x2F; Replace (把 字母 <code>O</code> 换成 <code>0</code>)</h4><ul>
-<li><p><strong>操作</strong>：再拖动一个 <code>Find / Replace</code> 到 <code>Recipe</code> 区域，放在刚才那一步的下面。</p>
-</li>
-<li><p><strong>配置</strong>：</p>
-<ul>
-<li>在 <code>Find</code> 框里，填入 <code>O</code>。</li>
-<li>在 <code>Replace</code> 框里，填入 <code>0</code>。</li>
-</ul>
-</li>
-<li><p><strong>目的</strong>：完成映射的另一半，把 Token <code>O</code> 转换成二进制里的 <code>0</code>。</p>
-</li>
-<li><p><strong>中间结果</strong>：现在，<code>Output</code> 框里的内容就是一串纯粹的 <code>0</code> 和 <code>1</code> 了，也就是我们需要的比特流：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">10111110111111000101111011101110010111101111101011110010101001100100101011110010111110100010111010000110101000101111101001001100111110101000011001110110011101101000011011101010110111100110001000101010110000101001111001001110010011101010111001100110</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h4 id="步骤-3：Reverse-反转"><a href="#步骤-3：Reverse-反转" class="headerlink" title="步骤 3：Reverse (反转)"></a>步骤 3：Reverse (反转)</h4><ul>
-<li><strong>操作</strong>：在左侧搜索 <code>Reverse</code>，拖到 <code>Recipe</code> 中，放在第二步之后。</li>
-<li><strong>配置</strong>：保持默认选项 <code>Mode: Standard (character)</code> 即可。</li>
-<li><strong>目的</strong>：这是解题的关键一步。直接把二进制转文本会是乱码，我们猜测可能存在“整体倒序”的混淆。这一步就是把整条比特流从头到尾反转过来。</li>
-<li><strong>中间结果</strong>：<code>Output</code> 框里的比特流现在是倒序的了：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">01100110011101010111001001110010011110010100001101010100010001100111101101010111011000010110111001101110011000010101111100110010010111110100010101100001011101000101111101001111010100100110010101001111010111110111101001110111011110100011111101111101</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h4 id="步骤-4：From-Binary-从二进制转换"><a href="#步骤-4：From-Binary-从二进制转换" class="headerlink" title="步骤 4：From Binary (从二进制转换)"></a>步骤 4：From Binary (从二进制转换)</h4><ul>
-<li><p><strong>操作</strong>：在左侧搜索 <code>From Binary</code>，拖到 <code>Recipe</code> 的最后。</p>
-</li>
-<li><p><strong>配置</strong>：</p>
-<ul>
-<li>在下面的选项中，确保 <code>Data format</code> 是 <code>Binary</code>，并且 <code>Length</code> 是 <code>8</code>。</li>
-<li>其他选项默认就行。</li>
-</ul>
-</li>
-<li><p><strong>目的</strong>：将反转后的比特流，按照每 8 位一个字节的标准，翻译成 ASCII 字符。</p>
-</li>
-<li><p><strong>最终结果</strong>：<code>Output</code> 框里会清晰地显示出 flag：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Wanna_2_Eat_OReO_zwz?&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<p>最后总结一下像这种有很多重复字符的字符串，你其实应该想到把重复字符看做0和1,只不过字符的整体需要一点经验，比如本题的RE和O，你只要想到O很像0其实就能联想到RE可能是1了。</p>
-<p>当然可能还有另一种情况就是摩斯电码，这题很好有这个小彩蛋，但算个迷惑项。</p>
-<ul>
-<li><strong>RE</strong> &#x3D; <strong><code>.</code></strong> (点)</li>
-<li><strong>O</strong> &#x3D; <strong><code>-</code></strong> (划)</li>
-<li><strong>OO</strong> &#x3D; <strong>字母之间的分隔符</strong> (我用单个空格<code> </code>表示)</li>
-<li><strong>OOO</strong> &#x3D; <strong>单词之间的分隔符</strong> (我用斜杠<code>/</code>表示)</li>
-</ul>
-<p>根据这个规则，得到下面的标准摩尔斯电码：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-. . ...- . .-. / --. --- -. -. . / --. .. ...- . / -.-- --- ..- / ..- .--. / -. . ...- . .-. / --. --- -. -. . / .-.. . - / -.-- --- ..- / -.. --- .-- -.</span><br></pre></td></tr></table></figure>
-
-<p>你拖进随波逐流解密一下：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">NEVERGONNEGIVEYOUUPNEVERGONNELETYOUDOWN</span><br></pre></td></tr></table></figure>
-
-<p>又是经典诈骗。</p>
-<p>这题还有一个脚本解法：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s = &quot;REOREREREREREOREREREREREREOOOREOREREREREOREREREOREREREOOREOREREREREOREREREREREOREOREREREREOOREOREOREOOREREOOREOOREOREOREREREREOOREOREREREREREOREOOOREOREREREOREOOOOREREOREOREOOOREOREREREREREOREOOREOOREREOOREREREREREOREOREOOOOREREOOREREREOREREOOREREREOREREOREOOOOREREOREREREOREOREOREREOREREREREOOREREOOOREOOOREOREOREOREREOOOOREOREOOREREREREOOREOOREREREOOREOOREREREOREOREOREREREOOREREOOREREO&quot;</span><br><span class="line"></span><br><span class="line">def tokenize_oreo(s):</span><br><span class="line">    i = 0</span><br><span class="line">    tokens = []</span><br><span class="line">    while i &lt; len(s):</span><br><span class="line">        if s[i] == &#x27;O&#x27;:</span><br><span class="line">            tokens.append(&#x27;O&#x27;)</span><br><span class="line">            i += 1</span><br><span class="line">        elif s[i:i+2] == &#x27;RE&#x27;:</span><br><span class="line">            tokens.append(&#x27;RE&#x27;)</span><br><span class="line">            i += 2</span><br><span class="line">        else:</span><br><span class="line">            return None</span><br><span class="line">    return tokens</span><br><span class="line"></span><br><span class="line">def bits_to_text(bits, width=8, msb_first=True):</span><br><span class="line">    out = []</span><br><span class="line">    for i in range(0, len(bits) // width * width, width):</span><br><span class="line">        chunk = bits[i:i+width]</span><br><span class="line">        if not msb_first:</span><br><span class="line">            chunk = chunk[::-1]</span><br><span class="line">        val = int(chunk, 2)</span><br><span class="line">        if 0 &lt;= val &lt; 256:</span><br><span class="line">            out.append(chr(val))</span><br><span class="line">        else:</span><br><span class="line">            out.append(&#x27;?&#x27;)</span><br><span class="line">    return &#x27;&#x27;.join(out)</span><br><span class="line"></span><br><span class="line">tokens = tokenize_oreo(s)</span><br><span class="line">if not tokens:</span><br><span class="line">    print(&quot;不能用 &#123;O, RE&#125; 完整切分&quot;)</span><br><span class="line">    exit()</span><br><span class="line"></span><br><span class="line">candidates = []</span><br><span class="line">for zero, one in [(&#x27;O&#x27;,&#x27;RE&#x27;), (&#x27;RE&#x27;,&#x27;O&#x27;)]:</span><br><span class="line">    bits = &#x27;&#x27;.join(&#x27;0&#x27; if t == zero else &#x27;1&#x27; for t in tokens)</span><br><span class="line">    for width in (8,7):</span><br><span class="line">        for msb in (True, False):</span><br><span class="line">            txt = bits_to_text(bits, width=width, msb_first=msb)</span><br><span class="line">            candidates.append((zero, one, width, msb, txt))</span><br><span class="line"></span><br><span class="line">found = [c for c in candidates if &quot;furryCTF&#123;&quot; in c[4]]</span><br><span class="line">if found:</span><br><span class="line">    for z,o,w,m,txt in found:</span><br><span class="line">        print(f&quot;映射 &#123;z&#125;-&gt;0, &#123;o&#125;-&gt;1, width=&#123;w&#125;, msb_first=&#123;m&#125;&quot;)</span><br><span class="line">        print(txt)</span><br><span class="line">else:</span><br><span class="line">    # 额外尝试：反转整体位串再解一次</span><br><span class="line">    more = []</span><br><span class="line">    for zero, one in [(&#x27;O&#x27;,&#x27;RE&#x27;), (&#x27;RE&#x27;,&#x27;O&#x27;)]:</span><br><span class="line">        bits = &#x27;&#x27;.join(&#x27;0&#x27; if t == zero else &#x27;1&#x27; for t in tokens)</span><br><span class="line">        bits = bits[::-1]</span><br><span class="line">        for width in (8,7):</span><br><span class="line">            for msb in (True, False):</span><br><span class="line">                txt = bits_to_text(bits, width=width, msb_first=msb)</span><br><span class="line">                more.append((zero, one, width, msb, txt))</span><br><span class="line">    found2 = [c for c in more if &quot;furryCTF&#123;&quot; in c[4]]</span><br><span class="line">    if found2:</span><br><span class="line">        for z,o,w,m,txt in found2:</span><br><span class="line">            print(f&quot;[rev] 映射 &#123;z&#125;-&gt;0, &#123;o&#125;-&gt;1, width=&#123;w&#125;, msb_first=&#123;m&#125;&quot;)</span><br><span class="line">            print(txt)</span><br><span class="line">    else:</span><br><span class="line">        # 打印可见文本里最像的几条，方便人工观察</span><br><span class="line">        def score(t):</span><br><span class="line">            good = sum(c in &quot;furryCTF&#123;&#125;_-:;,.@/=+[]()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 &quot; for c in t)</span><br><span class="line">            return good / max(1,len(t))</span><br><span class="line">        best = sorted(candidates, key=lambda x: score(x[4]), reverse=True)[:5]</span><br><span class="line">        for z,o,w,m,txt in best:</span><br><span class="line">            print(f&quot;候选 映射 &#123;z&#125;-&gt;0, &#123;o&#125;-&gt;1, width=&#123;w&#125;, msb_first=&#123;m&#125;, 可见率=&#123;score(txt):.2f&#125;&quot;)</span><br><span class="line">            print(txt[:200])</span><br></pre></td></tr></table></figure>
-
-<p>跑出来的结果是：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[rev] 映射 O-&gt;0, RE-&gt;1, width=8, msb_first=True</span><br><span class="line">furryCTF&#123;Wanna_2_Eat_OReO_zwz?&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>ctf</category>
-        <category>ctf-wp</category>
-      </categories>
-      <tags>
-        <tag>furryCTF</tag>
-        <tag>misc</tag>
-        <tag>ctf</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)</title>
     <url>/2026/01/04/CTFSHOW-2026%E5%85%83%E6%97%A6%E8%B7%A8%E5%B9%B4%E6%AC%A2%E4%B9%90%E8%B5%9B-CS2026-%E4%B8%AA%E4%BA%BA%E5%86%99%E7%9A%84%E9%83%A8%E5%88%86wp/</url>
     <content><![CDATA[<h3 id="二-CTFSHOW-2026元旦跨年欢乐赛-CS2026-个人写的部分wp"><a href="#二-CTFSHOW-2026元旦跨年欢乐赛-CS2026-个人写的部分wp" class="headerlink" title="二.CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)"></a>二.CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)</h3><p>比赛网址：<a href="https://ctf.show/competitions/cs2026">https://ctf.show/competitions/cs2026</a></p>
@@ -1401,10 +850,644 @@
         <category>ctf-wp</category>
       </categories>
       <tags>
+        <tag>ctfshow</tag>
         <tag>web</tag>
         <tag>misc</tag>
         <tag>ctf</tag>
-        <tag>ctfshow</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vulnix常用靶机用testssl扫描结果</title>
+    <url>/2026/01/01/Vulnix%20993%20SSLTLS%20%E5%AE%89%E5%85%A8%E6%89%AB%E6%8F%8F%E7%BB%93%E6%9E%9C%E6%B1%87%E6%80%BB/</url>
+    <content><![CDATA[<think>
+
+</think>
+使用了testssl.sh-3.3
+参照网址：https://github.com/testssl/testssl.sh
+
+<hr>
+<h3 id="Vulnix-192-168-137-133-993-SSL-TLS-安全扫描结果汇总"><a href="#Vulnix-192-168-137-133-993-SSL-TLS-安全扫描结果汇总" class="headerlink" title="Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总"></a>Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总</h3><p><strong>扫描时间:</strong> 2025-12-03 08:10:02 - 08:10:57 (总耗时 56s)<br><strong>目标服务:</strong> IMAP<br><strong>OpenSSL版本 (客户端检测):</strong> OpenSSL 1.0.2-bad (Mar 28 2025)<br><strong>总体评级:</strong> T (信任问题)</p>
+<hr>
+<h3 id="表格一：支持的-SSL-TLS-协议和密码套件-协议和Cipher-Categories部分"><a href="#表格一：支持的-SSL-TLS-协议和密码套件-协议和Cipher-Categories部分" class="headerlink" title="表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)"></a>表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)</h3><table>
+<thead>
+<tr>
+<th align="left">类别</th>
+<th align="left">项目</th>
+<th align="left">状态 &#x2F; 结果</th>
+<th align="left">严重性 &#x2F; 建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>协议支持</strong></td>
+<td align="left">SSLv2</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">SSLv3</td>
+<td align="left"><code>offered (NOT ok)</code> (已提供)</td>
+<td align="left"><strong>高危</strong>。完全过时，存在 POODLE 漏洞风险，应立即禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.0</td>
+<td align="left"><code>offered (deprecated)</code> (已提供，已弃用)</td>
+<td align="left"><strong>中危</strong>。已过时，存在已知缺陷，应禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.1</td>
+<td align="left"><code>offered (deprecated)</code> (已提供，已弃用)</td>
+<td align="left"><strong>中危</strong>。已过时，存在已知缺陷，应禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.2</td>
+<td align="left"><code>offered (OK)</code> (已提供)</td>
+<td align="left">正常，目前建议支持。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">TLS 1.3</td>
+<td align="left"><code>not offered and downgraded to a weaker protocol</code> (未提供)</td>
+<td align="left"><strong>低危</strong>。不支持最新、最安全的协议。建议升级支持 TLS 1.3 以提高安全性。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">NPN&#x2F;SPDY</td>
+<td align="left"><code>not offered</code> (未提供)</td>
+<td align="left">正常，与 HTTP&#x2F;2&#x2F;3 相关，不影响 IMAP。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">ALPN&#x2F;HTTP2</td>
+<td align="left"><code>not offered</code> (未提供)</td>
+<td align="left">正常，与 HTTP&#x2F;2&#x2F;3 相关，不影响 IMAP。</td>
+</tr>
+<tr>
+<td align="left"><strong>密码套件类别</strong></td>
+<td align="left">NULL ciphers</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全（无加密）。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Anonymous NULL</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全（无认证）。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Export ciphers</td>
+<td align="left"><code>not offered (OK)</code> (未提供)</td>
+<td align="left">正常，安全（导出级弱加密）。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">LOW: 64 Bit + DES, RC[2,4], MD5</td>
+<td align="left"><code>offered (NOT ok)</code> (已提供)</td>
+<td align="left"><strong>高危</strong>。提供低强度（64位、DES、RC4、MD5）密码套件。极易被暴力破解，应立即禁用。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Triple DES &#x2F; IDEA</td>
+<td align="left"><code>offered</code> (已提供)</td>
+<td align="left"><strong>中危</strong>。提供 3DES&#x2F;IDEA 密码套件。这些算法存在性能问题且易受 SWEET32 攻击。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Obsoleted CBC</td>
+<td align="left"><code>offered</code> (已提供)</td>
+<td align="left"><strong>中危</strong>。提供已过时的 CBC 模式密码套件。易受 BEAST、POODLE、LUCKY13 攻击。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Strong (AEAD) no FS</td>
+<td align="left"><code>offered (OK)</code> (已提供)</td>
+<td align="left">正常，提供强加密（AEAD）密码套件。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">Strong (AEAD) FS</td>
+<td align="left"><code>offered (OK)</code> (已提供)</td>
+<td align="left">正常，提供强加密（AEAD）和前向保密（FS）密码套件。</td>
+</tr>
+<tr>
+<td align="left"><strong>密码套件偏好</strong></td>
+<td align="left">服务器密码顺序</td>
+<td align="left"><code>no (NOT ok)</code> (无)</td>
+<td align="left"><strong>中危</strong>。服务器未强制自己的密码套件顺序，可能导致客户端选择弱密码套件。应配置服务器强制使用安全密码套件的优先顺序。</td>
+</tr>
+<tr>
+<td align="left"><strong>证书信息</strong></td>
+<td align="left">签名算法</td>
+<td align="left"><code>SHA1 with RSA</code></td>
+<td align="left"><strong>高危</strong>。SHA1 哈希算法已不安全，存在碰撞风险，主流浏览器已不信任 SHA1 证书。应使用 SHA256 或更强的算法。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">SAN</td>
+<td align="left"><code>missing -- no SAN is deprecated</code></td>
+<td align="left"><strong>中危</strong>。缺少主题备用名称 (SAN) 字段。SAN 是现代证书匹配域名的标准，缺失会导致客户端警告。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">信任链</td>
+<td align="left"><code>NOT ok (self signed)</code> (自签名)</td>
+<td align="left"><strong>严重</strong>。证书是自签名的，不被任何公共信任机构认可。导致所有客户端都会警告连接不安全，且易受中间人攻击。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">证书有效期</td>
+<td align="left"><code>expired (2012-09-02 --&gt; 2022-09-02)</code> (已过期)</td>
+<td align="left"><strong>严重</strong>。证书已过期。任何客户端都会拒绝连接或发出严重警告。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">证书有效期长度</td>
+<td align="left"><code>&gt;= 10 years is way too long</code> (10年以上)</td>
+<td align="left"><strong>策略问题</strong>。证书有效期过长，与当前安全最佳实践（1-2年）不符，增加了长期风险。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">OCSP &#x2F; CRL</td>
+<td align="left"><code>NOT ok -- neither CRL nor OCSP URI provided</code> (未提供)</td>
+<td align="left"><strong>中危</strong>。未提供证书吊销信息。无法及时检查证书是否已被吊销，可能导致已泄露或滥用的证书仍被信任。</td>
+</tr>
+<tr>
+<td align="left"><strong>密钥信息</strong></td>
+<td align="left">服务器密钥大小</td>
+<td align="left"><code>RSA 2048 bits</code> (2048位)</td>
+<td align="left">正常，目前普遍接受的密钥大小。</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">DH 组</td>
+<td align="left"><code>Unknown DH group (1024 bits)</code> (未知DH组，1024位)</td>
+<td align="left"><strong>中危</strong>。DH组长度为1024位，强度偏弱，易受 Logjam 攻击。建议使用 2048位或更大的 DH 参数。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="表格二：检测到的漏洞-Vulnerabilities部分"><a href="#表格二：检测到的漏洞-Vulnerabilities部分" class="headerlink" title="表格二：检测到的漏洞 (Vulnerabilities部分)"></a>表格二：检测到的漏洞 (Vulnerabilities部分)</h3><table>
+<thead>
+<tr>
+<th align="left">漏洞名称</th>
+<th align="left">CVE ID</th>
+<th align="left">状态 &#x2F; 结果</th>
+<th align="left">严重性 &#x2F; 影响</th>
+<th align="left">建议修复</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>Heartbleed</strong></td>
+<td align="left">CVE-2014-0160</td>
+<td align="left"><code>VULNERABLE (NOT ok)</code></td>
+<td align="left"><strong>严重</strong>。服务器内存泄露，攻击者可窃取私钥、用户名、密码等敏感信息。</td>
+<td align="left">升级 OpenSSL 到无此漏洞的版本 (1.0.1g 或更高)。</td>
+</tr>
+<tr>
+<td align="left"><strong>CCS Injection</strong></td>
+<td align="left">CVE-2014-0224</td>
+<td align="left"><code>VULNERABLE (NOT ok)</code></td>
+<td align="left"><strong>严重</strong>。中间人攻击者可解密和篡改TLS连接。</td>
+<td align="left">升级 OpenSSL 到无此漏洞的版本 (1.0.1h 或更高)。</td>
+</tr>
+<tr>
+<td align="left">Ticketbleed</td>
+<td align="left">CVE-2016-9244</td>
+<td align="left"><code>(applicable only for HTTP service)</code> (仅适用于HTTP服务)</td>
+<td align="left">不适用于IMAP服务。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">Opossum</td>
+<td align="left">CVE-2025-49812</td>
+<td align="left"><code>(implemented currently for HTTP only)</code> (当前仅适用于HTTP)</td>
+<td align="left">不适用于IMAP服务。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">ROBOT</td>
+<td align="left"></td>
+<td align="left"><code>not vulnerable (OK)</code></td>
+<td align="left">正常，不受 ROBOT 攻击影响。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">Secure Renegotiation</td>
+<td align="left">RFC 5746</td>
+<td align="left"><code>supported (OK)</code></td>
+<td align="left">正常，支持安全重新协商。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">Secure Client-Initiated Renegotiation</td>
+<td align="left"></td>
+<td align="left"><code>VULNERABLE (NOT ok), potential DoS threat</code></td>
+<td align="left"><strong>中危</strong>。可能被恶意客户端利用进行拒绝服务 (DoS) 攻击。</td>
+<td align="left">配置服务器禁用客户端发起的重新协商。</td>
+</tr>
+<tr>
+<td align="left"><strong>CRIME, TLS</strong></td>
+<td align="left">CVE-2012-4929</td>
+<td align="left"><code>VULNERABLE but not using HTTP: probably no exploit known</code></td>
+<td align="left"><strong>中危</strong>。存在 CRIME 漏洞。在非HTTP服务上直接利用较难，但仍是安全缺陷。</td>
+<td align="left">禁用 TLS 压缩。</td>
+</tr>
+<tr>
+<td align="left"><strong>POODLE, SSL</strong></td>
+<td align="left">CVE-2014-3566</td>
+<td align="left"><code>VULNERABLE (NOT ok)</code></td>
+<td align="left"><strong>高危</strong>。攻击者可利用 SSLv3 和 CBC 密码套件解密敏感数据。</td>
+<td align="left">禁用 SSLv3 协议。</td>
+</tr>
+<tr>
+<td align="left">TLS_FALLBACK_SCSV</td>
+<td align="left">RFC 7507</td>
+<td align="left"><code>Downgrade attack prevention NOT supported and vulnerable to POODLE SSL</code></td>
+<td align="left"><strong>高危</strong>。不支持 SCSV，使得中间人攻击者可强制降级到不安全的 SSLv3，再利用 POODLE 攻击。</td>
+<td align="left">升级 OpenSSL 并启用 SCSV 保护。</td>
+</tr>
+<tr>
+<td align="left"><strong>SWEET32</strong></td>
+<td align="left">CVE-2016-2183, CVE-2016-6329</td>
+<td align="left"><code>VULNERABLE, uses 64 bit block ciphers</code></td>
+<td align="left"><strong>中危</strong>。使用 64 位块密码（如 3DES），可能导致在长时间连接下信息泄露。</td>
+<td align="left">禁用 64 位块密码（如 3DES、IDEA）。</td>
+</tr>
+<tr>
+<td align="left">FREAK</td>
+<td align="left">CVE-2015-0204</td>
+<td align="left"><code>not vulnerable (OK)</code></td>
+<td align="left">正常，不受 FREAK 攻击影响。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left">DROWN</td>
+<td align="left">CVE-2016-0800, CVE-2016-0703</td>
+<td align="left"><code>not vulnerable on this host and port (OK)</code></td>
+<td align="left">正常，不受 DROWN 攻击影响。<strong>注意</strong>：如果此证书在其他启用 SSLv2 的服务上使用，仍可能易受攻击。</td>
+<td align="left">N&#x2F;A (此服务不受影响)</td>
+</tr>
+<tr>
+<td align="left">LOGJAM</td>
+<td align="left">CVE-2015-4000</td>
+<td align="left"><code>not vulnerable (OK): no DH EXPORT ciphers. But: Unknown DH group (1024 bits)</code></td>
+<td align="left">正常，不受 Logjam 攻击直接影响。但使用的 DH 组强度偏弱（1024位），存在潜在风险。</td>
+<td align="left">使用 2048位或更大的 DH 参数。</td>
+</tr>
+<tr>
+<td align="left"><strong>BEAST</strong></td>
+<td align="left">CVE-2011-3389</td>
+<td align="left"><code>VULNERABLE -- but also supports higher protocols TLSv1.1 TLSv1.2 (likely mitigated)</code></td>
+<td align="left"><strong>中危</strong>。TLS 1.0 使用 CBC 模式，存在 BEAST 攻击条件。虽然有更高协议，但仍可能受影响。</td>
+<td align="left">禁用 TLS 1.0，优先使用 TLS 1.2 及以上协议。</td>
+</tr>
+<tr>
+<td align="left">LUCKY13</td>
+<td align="left">CVE-2013-0169</td>
+<td align="left"><code>potentially VULNERABLE, uses cipher block chaining (CBC) ciphers with TLS. Check patches</code></td>
+<td align="left"><strong>低危</strong>。TLS 中使用 CBC 密码套件，存在定时攻击的可能性。</td>
+<td align="left">更新相关补丁，禁用存在漏洞的 CBC 密码套件。</td>
+</tr>
+<tr>
+<td align="left">Winshock</td>
+<td align="left">CVE-2014-6321</td>
+<td align="left"><code>not vulnerable (OK)</code></td>
+<td align="left">正常，不受 Winshock 攻击影响。</td>
+<td align="left">N&#x2F;A</td>
+</tr>
+<tr>
+<td align="left"><strong>RC4</strong></td>
+<td align="left">CVE-2013-2566, CVE-2015-2808</td>
+<td align="left"><code>VULNERABLE (NOT ok): RC4-SHA, RC4-MD5</code></td>
+<td align="left"><strong>高危</strong>。使用 RC4 流密码。RC4 已被证明存在严重缺陷，容易被攻击者破解。</td>
+<td align="left">禁用所有 RC4 密码套件。</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>这份详尽的表格清晰地展示了 Vulnix 靶机在 SSL&#x2F;TLS 配置方面存在的<strong>大量且严重的漏洞和配置缺陷</strong>。从协议、密码套件到证书管理，几乎每个环节都存在问题。这使得该服务极易受到多种已知攻击的影响，是一个典型的存在“开放大门”的靶机。</p>
+]]></content>
+      <categories>
+        <category>渗透测试</category>
+      </categories>
+      <tags>
+        <tag>web</tag>
+        <tag>vulnix靶机</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>furryCTF热身赛wp</title>
+    <url>/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/</url>
+    <content><![CDATA[<h3 id="furryCTF2025赛前热身题（misc方向）"><a href="#furryCTF2025赛前热身题（misc方向）" class="headerlink" title="furryCTF2025赛前热身题（misc方向）"></a>furryCTF2025赛前热身题（misc方向）</h3><p>比赛网站：<a href="https://furryctf.com/games/5">https://furryctf.com/games/5</a></p>
+<h3 id="1-签到题"><a href="#1-签到题" class="headerlink" title="1.签到题"></a>1.签到题</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">话说，你们有发现比赛平台上藏有一个flag吗？</span><br><span class="line"></span><br><span class="line">注意flag格式哦~</span><br></pre></td></tr></table></figure>
+
+<p>在赛题主页就可以找到：</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002231.png" class="" title="赛题主页截图">
+
+<p>flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Hack_for_fun_not_for_profit&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-新的一年，新的开始"><a href="#2-新的一年，新的开始" class="headerlink" title="2.新的一年，新的开始"></a>2.新的一年，新的开始</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Catch The Future</span><br><span class="line"></span><br><span class="line">Time to own 2025</span><br><span class="line"></span><br><span class="line">Forever young in hacking</span><br><span class="line"></span><br><span class="line">furryCTF&#123;h4ppY_n3w_y34r_2o25_w1th_1Ov3&#125;</span><br><span class="line"></span><br><span class="line">祝各位师傅：</span><br><span class="line"></span><br><span class="line">栈上生花，堆里藏月，逆向不秃，web不坐牢，pwn穿一切，ak全场！ 🚩🎉</span><br></pre></td></tr></table></figure>
+
+<p>这种就是问卷题</p>
+<p>flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;h4ppY_n3w_y34r_2o25_w1th_1Ov3&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-PassDump"><a href="#3-PassDump" class="headerlink" title="3.PassDump"></a>3.PassDump</h3><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">作为CTFer，很多时候都会有电脑放一夜跑程序的经历。</span><br><span class="line"></span><br><span class="line">但猫猫看着跑一夜碰撞之后蓝屏的电脑，陷入了沉思……</span><br><span class="line"></span><br><span class="line">flag格式为furryCTF&#123;出现问题的文件_蓝屏错误代码_该文件的最后一次编译时间_失败事件的缩写_当时正在使用的应用程序的名称&#125;</span><br><span class="line"></span><br><span class="line">例如，这是一个合法的flag：</span><br><span class="line"></span><br><span class="line">furryCTF&#123;system.exe_0x0000001A_2024.12.31-14:00:00_DPC_Notepad&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这题需要用到windbg,这里链接就不贴了，网上一搜就有</p>
+<p>打开windbg后</p>
+<p>打开command,也就是命令行</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002913.png" class="" title="WinDbg命令行">
+
+<p>一般会有这个蓝标字体，如果没有就自己输入</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">!analyze -v</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20002934.png" class="" title="分析结果">
+
+<p>这里我把输出结果放一下</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">12: kd&gt; !analyze -v</span><br><span class="line">Loading Kernel Symbols</span><br><span class="line">..</span><br><span class="line"></span><br><span class="line">Press ctrl-c (cdb, kd, ntsd) or ctrl-break (windbg) to abort symbol loads that take too long.</span><br><span class="line">Run !sym noisy before .reload to track down problems loading symbols.</span><br><span class="line"></span><br><span class="line">.............................................................</span><br><span class="line">................................................................</span><br><span class="line">................................................................</span><br><span class="line">................................................................</span><br><span class="line">..............................................</span><br><span class="line">Loading User Symbols</span><br><span class="line"></span><br><span class="line">Loading unloaded module list</span><br><span class="line">.........................................</span><br><span class="line">*******************************************************************************</span><br><span class="line">*                                                                             *</span><br><span class="line">*                        Bugcheck Analysis                                    *</span><br><span class="line">*                                                                             *</span><br><span class="line">*******************************************************************************</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_FAILURE (116)</span><br><span class="line">Attempt to reset the display driver and recover from timeout failed.</span><br><span class="line">Arguments:</span><br><span class="line">Arg1: ffffe30a4b8cd010, Optional pointer to internal TDR recovery context (TDR_RECOVERY_CONTEXT).</span><br><span class="line">Arg2: fffff8035ce14790, The pointer into responsible device driver module (e.g. owner tag).</span><br><span class="line">Arg3: ffffffffc000009a, Optional error code (NTSTATUS) of the last failed operation.</span><br><span class="line">Arg4: 0000000000000004, Optional internal context dependent data.</span><br><span class="line"></span><br><span class="line">Debugging Details:</span><br><span class="line">------------------</span><br><span class="line"></span><br><span class="line">Unable to load image nvlddmkm.sys, Win32 error 0n2</span><br><span class="line">*** WARNING: Unable to verify timestamp for nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">KEY_VALUES_STRING: 1</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.CPU.mSec</span><br><span class="line">    Value: 2140</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Elapsed.mSec</span><br><span class="line">    Value: 13194</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Other.Mb</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Read.Mb</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.IO.Write.Mb</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Init.CPU.mSec</span><br><span class="line">    Value: 484</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Init.Elapsed.mSec</span><br><span class="line">    Value: 28118</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Memory.CommitPeak.Mb</span><br><span class="line">    Value: 102</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.DbgEng</span><br><span class="line">    Value: 10.0.29482.1003</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.Description</span><br><span class="line">    Value: 10.2509.29.03 amd64fre</span><br><span class="line"></span><br><span class="line">    Key  : Analysis.Version.Ext</span><br><span class="line">    Value: 1.2509.29.3</span><br><span class="line"></span><br><span class="line">    Key  : Bugcheck.Code.LegacyAPI</span><br><span class="line">    Value: 0x116</span><br><span class="line"></span><br><span class="line">    Key  : Bugcheck.Code.TargetModel</span><br><span class="line">    Value: 0x116</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.AsUlong</span><br><span class="line">    Value: 0x21808</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.DiagDataWrittenToHeader</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.ErrorCode</span><br><span class="line">    Value: 0x0</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.KernelGeneratedTriageDump</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.LastLine</span><br><span class="line">    Value: Dump completed successfully.</span><br><span class="line"></span><br><span class="line">    Key  : Dump.Attributes.ProgressPercentage</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Bucket</span><br><span class="line">    Value: 0x116_IMAGE_nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Address</span><br><span class="line">    Value: 0xfffff8035ce14790</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Module</span><br><span class="line">    Value: nvlddmkm</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Exception.IP.Offset</span><br><span class="line">    Value: 0x1854790</span><br><span class="line"></span><br><span class="line">    Key  : Failure.Hash</span><br><span class="line">    Value: &#123;c89bfe8c-ed39-f658-ef27-f2898997fdbd&#125;</span><br><span class="line"></span><br><span class="line">    Key  : Faulting.IP.Type</span><br><span class="line">    Value: Paged</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Enlightenments.ValueHex</span><br><span class="line">    Value: 0x7417df84</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.AnyHypervisorPresent</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ApicEnlightened</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ApicVirtualizationAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.AsyncMemoryHint</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.CoreSchedulerRequested</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.CpuManager</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.DeprecateAutoEoi</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.DynamicCpuDisabled</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Epf</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ExtendedProcessorMasks</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.HardwareMbecAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.MaxBankNumber</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.MemoryZeroingControl</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.NoExtendedRangeFlush</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.NoNonArchCoreSharing</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Phase0InitDone</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.PowerSchedulerQos</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.RootScheduler</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.SynicAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.UseQpcBias</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.Value</span><br><span class="line">    Value: 55185662</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.ValueHex</span><br><span class="line">    Value: 0x34a10fe</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.VpAssistPage</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.Flags.VsmAvailable</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.AccessStats</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.CrashdumpEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.CreateVirtualProcessor</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.DisableHyperthreading</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.HostTimelineSync</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.HypervisorDebuggingEnabled</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.IsHyperV</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.LivedumpEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.MapDeviceInterrupt</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.MceEnlightened</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.Nested</span><br><span class="line">    Value: 0</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.StartLogicalProcessor</span><br><span class="line">    Value: 1</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.Value</span><br><span class="line">    Value: 1015</span><br><span class="line"></span><br><span class="line">    Key  : Hypervisor.RootFlags.ValueHex</span><br><span class="line">    Value: 0x3f7</span><br><span class="line"></span><br><span class="line">    Key  : WER.System.BIOSRevision</span><br><span class="line">    Value: 1.23.0.0</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BUGCHECK_CODE:  116</span><br><span class="line"></span><br><span class="line">BUGCHECK_P1: ffffe30a4b8cd010</span><br><span class="line"></span><br><span class="line">BUGCHECK_P2: fffff8035ce14790</span><br><span class="line"></span><br><span class="line">BUGCHECK_P3: ffffffffc000009a</span><br><span class="line"></span><br><span class="line">BUGCHECK_P4: 4</span><br><span class="line"></span><br><span class="line">FILE_IN_CAB:  furryCTF.dmp</span><br><span class="line"></span><br><span class="line">DUMP_FILE_ATTRIBUTES: 0x21808</span><br><span class="line">  Kernel Generated Triage Dump</span><br><span class="line"></span><br><span class="line">FAULTING_THREAD:  ffffe30a86af3040</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_CONTEXT: dt dxgkrnl!_TDR_RECOVERY_CONTEXT ffffe30a4b8cd010</span><br><span class="line">Symbol dxgkrnl!_TDR_RECOVERY_CONTEXT not found.</span><br><span class="line"></span><br><span class="line">PROCESS_OBJECT: 0000000000000004</span><br><span class="line"></span><br><span class="line">BLACKBOXACPI: 1 (!blackboxacpi)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXBSD: 1 (!blackboxbsd)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXNTFS: 1 (!blackboxntfs)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXPNP: 1 (!blackboxpnp)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">BLACKBOXWINLOGON: 1 (!blackboxwinlogon)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">PROCESS_NAME:  System</span><br><span class="line"></span><br><span class="line">IP_IN_PAGED_CODE: </span><br><span class="line">nvlddmkm+1854790</span><br><span class="line">fffff803`5ce14790 488b05b9f28dff  mov     rax,qword ptr [nvlddmkm+0x1133a50 (fffff803`5c6f3a50)]</span><br><span class="line"></span><br><span class="line">STACK_TEXT:  </span><br><span class="line">ffffc982`1c9677d8 fffff803`43a2375d     : 00000000`00000116 ffffe30a`4b8cd010 fffff803`5ce14790 ffffffff`c000009a : nt!KeBugCheckEx</span><br><span class="line">ffffc982`1c9677e0 fffff803`43c97be6     : fffff803`5ce14790 ffffe30a`5b80b5a0 00000000`00000004 ffffe30a`4b8cd010 : dxgkrnl!TdrBugcheckOnTimeout+0x101</span><br><span class="line">ffffc982`1c967820 fffff803`43a324be     : 00000000`00000000 00000000`00002000 00000000`00000004 00000000`00000004 : dxgkrnl!ADAPTER_RENDER::Reset+0x232</span><br><span class="line">ffffc982`1c967850 fffff803`43a69375     : ffffe30a`00000100 00000000`00000000 ffffc982`00000000 00000000`00000000 : dxgkrnl!DXGADAPTER::Reset+0x59a</span><br><span class="line">ffffc982`1c9678e0 fffff803`43a694d2     : fffff803`b290ce60 00000000`00000000 ffffb881`c42d1100 fffff803`b29cfbc0 : dxgkrnl!TdrResetFromTimeout+0x15</span><br><span class="line">ffffc982`1c967910 fffff803`b1c3072c     : ffffe30a`86af3040 ffffe30a`478ddae0 ffffe30a`478dda00 fffff803`44b52750 : dxgkrnl!TdrResetFromTimeoutWorkItem+0x22</span><br><span class="line">ffffc982`1c967950 fffff803`b1ea007a     : ffffe30a`86af3040 ffffe30a`86af3040 fffff803`b1c30140 ffffe30a`478ddae0 : nt!ExpWorkerThread+0x5ec</span><br><span class="line">ffffc982`1c967b30 fffff803`b20a5db4     : ffffb881`c42d1180 ffffe30a`86af3040 fffff803`b1ea0020 00000000`0e5f57dc : nt!PspSystemThreadStartup+0x5a</span><br><span class="line">ffffc982`1c967b80 00000000`00000000     : ffffc982`1c968000 ffffc982`1c961000 00000000`00000000 00000000`00000000 : nt!KiStartSystemThread+0x34</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">SYMBOL_NAME:  nvlddmkm+1854790</span><br><span class="line"></span><br><span class="line">MODULE_NAME: nvlddmkm</span><br><span class="line"></span><br><span class="line">IMAGE_NAME:  nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">STACK_COMMAND: .process /r /p 0xffffe30a476cb040; .thread 0xffffe30a86af3040 ; kb</span><br><span class="line"></span><br><span class="line">FAILURE_BUCKET_ID:  0x116_IMAGE_nvlddmkm.sys</span><br><span class="line"></span><br><span class="line">OSPLATFORM_TYPE:  x64</span><br><span class="line"></span><br><span class="line">OSNAME:  Windows 10</span><br><span class="line"></span><br><span class="line">FAILURE_ID_HASH:  &#123;c89bfe8c-ed39-f658-ef27-f2898997fdbd&#125;</span><br><span class="line"></span><br><span class="line">Followup:     MachineOwner</span><br><span class="line">---------</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>对比furryCTF{system.exe_0x0000001A_2024.12.31-14:00:00_DPC_Notepad}这个格式</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">出现问题的文件：IMAGE_NAME:  nvlddmkm.sys</span><br><span class="line">蓝屏错误代码：</span><br><span class="line">VIDEO_TDR_FAILURE (116)  &lt;--- 括号里的 116 就是十进制代码</span><br><span class="line">...</span><br><span class="line">BUGCHECK_CODE:  116      &lt;--- 这里确认</span><br><span class="line">提取结果： 116 (十进制) = 0x00000116 (十六进制)</span><br><span class="line">该文件的最后一次编译时间：lm v m nvlddmkm指令输入后运行</span><br><span class="line">Browse all global symbols  functions  data  Symbol Reload</span><br><span class="line">    Timestamp:        Tue Feb 11 13:40:16 2025 (67AAE2C0)  &lt;--- 就在这一行</span><br><span class="line">    CheckSum:         05B57FA7</span><br><span class="line">失败事件的缩写：</span><br><span class="line">*******************************************************************************</span><br><span class="line">*                        Bugcheck Analysis                                    *</span><br><span class="line">*******************************************************************************</span><br><span class="line"></span><br><span class="line">VIDEO_TDR_FAILURE (116)  &lt;--- 这里是全名</span><br><span class="line">这里用TDR</span><br><span class="line">当时正在使用的应用程序的名称：这里有点坑，需要一点阅读理解，“当前正在使用”，根据题目场景，当前正在进行碰撞，碰撞会想到啥，hash碰撞吧，想想常用的工具，hashcat就是答案</span><br></pre></td></tr></table></figure>
+
+<p>最后整合一下，flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;nvlddmkm.sys_0x00000116_2025.02.11-13:40:16_TDR_hashcat&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-IIS服务器"><a href="#4-IIS服务器" class="headerlink" title="4.IIS服务器"></a>4.IIS服务器</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">猫猫前段时间闲着没事搭建了一个IIS服务器。</span><br><span class="line"></span><br><span class="line">不过，最近猫猫发现，服务器上好像多了个文件……？</span><br></pre></td></tr></table></figure>
+
+<p>用wireshark打开pcap文件</p>
+<p>依旧先ctrl+f搜索flag,找到了交了但是是错的因为那只是一个人登录用的password</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20004312.png" class="" title="Wireshark搜索结果">
+
+<p>确实被骗到了哈哈哈，诈骗的小曲</p>
+<p>你观察就可以发现，流量大多数是TCP和http流，所以右键追踪流</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20004955.png" class="" title="追踪HTTP流">
+
+<p>最后找到一个传了fl2g.txt的流量</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">GET /execute/f12g.txt HTTP/1.1</span><br><span class="line">Host: 26.114.202.3</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000474s</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Encoding: gzip</span><br><span class="line">Last-Modified: Wed, 10 Jul 2024 03:14:49 GMT</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">ETag: &quot;c0c41d5377d2da1:0&quot;</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Server: Microsoft-IIS/7.5</span><br><span class="line">X-Powered-By: ASP.NET</span><br><span class="line">Date: Wed, 10 Jul 2024 04:37:33 GMT</span><br><span class="line">Content-Length: 191</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000000s</span><br><span class="line">ZnVycnlDVEZ7RGlkX1lvdV9Ob3RlX1RoZV9EaWZmX0luX0Vycm9yX1BhZ2U/fQ==</span><br><span class="line">0.175592s</span><br><span class="line">GET /favicon.ico HTTP/1.1</span><br><span class="line">Host: 26.114.202.3</span><br><span class="line">Connection: keep-alive</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36</span><br><span class="line">Accept: image/avif,image/webp,image/apng,image/*,*/*;q=0.8</span><br><span class="line">Referer: http://26.114.202.3/execute/f12g.txt</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000349s</span><br><span class="line">HTTP/1.1 404 Not Found</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Server: Microsoft-IIS/7.5</span><br><span class="line">X-Powered-By: ASP.NET</span><br><span class="line">Date: Wed, 10 Jul 2024 04:37:34 GMT</span><br><span class="line">Content-Length: 1163</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">0.000000s</span><br><span class="line">&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Strict//EN&quot; &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd&quot;&gt;</span><br><span class="line">&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=gb2312&quot;/&gt;</span><br><span class="line">&lt;title&gt;404 - ..................&lt;/title&gt;</span><br><span class="line">&lt;style type=&quot;text/css&quot;&gt;</span><br><span class="line">&lt;!--</span><br><span class="line">body&#123;margin:0;font-size:.7em;font-family:Verdana, Arial, Helvetica, sans-serif;background:#EEEEEE;&#125;</span><br><span class="line">fieldset&#123;padding:0 15px 10px 15px;&#125; </span><br><span class="line">h1&#123;font-size:2.4em;margin:0;color:#FFF;&#125;</span><br><span class="line">h2&#123;font-size:1.7em;margin:0;color:#CC0000;&#125; </span><br><span class="line">h3&#123;font-size:1.2em;margin:10px 0 0 0;color:#000000;&#125; </span><br><span class="line">#header&#123;width:96%;margin:0 0 0 0;padding:6px 2% 6px 2%;font-family:&quot;trebuchet MS&quot;, Verdana, sans-serif;color:#FFF;</span><br><span class="line">background-color:#555555;&#125;</span><br><span class="line">#content&#123;margin:0 0 0 2%;position:relative;&#125;</span><br><span class="line">.content-container&#123;background:#FFF;width:96%;margin-top:8px;padding:10px;position:relative;&#125;</span><br><span class="line">--&gt;</span><br><span class="line">&lt;/style&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;div id=&quot;header&quot;&gt;&lt;h1&gt;..........&lt;/h1&gt;&lt;/div&gt;</span><br><span class="line">&lt;div id=&quot;content&quot;&gt;</span><br><span class="line"> &lt;div class=&quot;content-container&quot;&gt;&lt;fieldset&gt;</span><br><span class="line">  &lt;h2&gt;404 - ..................&lt;/h2&gt;</span><br><span class="line">  &lt;h3&gt;......................................................&lt;/h3&gt;</span><br><span class="line"> &lt;/fieldset&gt;&lt;/div&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这个是不是很像base64啊，虽然不是Zmxh这种标准开头</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">0.000000s</span><br><span class="line">ZnVycnlDVEZ7RGlkX1lvdV9Ob3RlX1RoZV9EaWZmX0luX0Vycm9yX1BhZ2U/fQ==</span><br></pre></td></tr></table></figure>
+
+<p>解密之后得到flag(这里用随波逐流)</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Did_You_Note_The_Diff_In_Error_Page?&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-盲盒"><a href="#5-盲盒" class="headerlink" title="5.盲盒"></a>5.盲盒</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">来开盲盒吧~nwn</span><br><span class="line"></span><br><span class="line">注：本题原本的flag格式为flag&#123;&#125;，因为懒得改附件了，所以找到flag后请将里面的“flag”修改为“furryCTF”</span><br><span class="line"></span><br><span class="line">比如flag&#123;Hi&#125;修改为furryCTF&#123;Hi&#125;即为正确答案。</span><br></pre></td></tr></table></figure>
+
+<p>像这种word,excel,ppt这种题目，这种隐写的一般的处理方式就是把文件当压缩包去看</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005452.png" class="" title="文件解压分析">
+
+
+<p>直接用随波逐流的binwalk工具去分离</p>
+<p>一个一个文件找啊找，看有没有和flag相关的</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005630.png" class="" title="Binwalk分离结果">
+
+<p>在sharedStrings里</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;</span><br><span class="line">&lt;sst xmlns=&quot;http://schemas.openxmlformats.org/spreadsheetml/2006/main&quot; count=&quot;762826&quot; uniqueCount=&quot;2&quot;&gt;&lt;si&gt;&lt;t&gt;来开盲盒吧~&lt;/t&gt;&lt;phoneticPr fontId=&quot;1&quot; type=&quot;noConversion&quot;/&gt;&lt;/si&gt;&lt;si&gt;&lt;t&gt;flag        不在这&lt;/t&gt;&lt;phoneticPr fontId=&quot;1&quot; type=&quot;noConversion&quot;/&gt;&lt;/si&gt;&lt;/sst&gt;</span><br><span class="line">&lt;!-- ‬‌‬﻿﻿﻿‍‬‍‍‍‬‌﻿﻿﻿﻿﻿﻿﻿‌‌﻿‌‍‌﻿﻿‍‬‌‌‬‌﻿﻿﻿‍‬‌‍‍‌‬‌‬‬﻿‬‌‬﻿﻿﻿‍‌‍‌﻿‬﻿‍‍‬‬‌﻿﻿﻿‍‬‌‍﻿‍﻿‌‍﻿﻿‍‍﻿‌‌﻿‌‍‍‍‍﻿‌‬‬‌‬‌﻿﻿﻿‍‬‍‬‍‌‍﻿‌﻿‌‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿‍﻿‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿﻿‬‌‌‌‌‌‌‬‬‌‌‌‌‍‬‍‬‌‌‌‌‍‬﻿‌‌‌‌‌‍‬‌‍‌‌‌‌‍‬‍﻿‌‌‌‌‍﻿‬﻿‌‌‌‌‍‍‬‬我也没说‌‌‌‌‌﻿‌‍‌‌‌‌‌﻿‬‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‍‌‌‌‌‌‍‬‬‌‌‌‌‌‍‬‍‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‌﻿‌‌‌‌‍﻿‍‌‌‌‌‌‍﻿‌‬‌‌‌‌‌﻿‌‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‬‍﻿‌‌‌‌‍‍﻿﻿flag‌‌‌‌‍‌‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌在这呀‌‌‌‌‍‬‌﻿‌‌‌‌‌﻿‬‍nwn‌‌‌‌‍‬﻿‌‌‌‌‌‍﻿﻿‍，你不会想在这里找到flag叭~ --&gt;</span><br></pre></td></tr></table></figure>
+
+<p>是不是很明显的零宽隐写</p>
+<p>‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌<!-- ‬‌‬﻿﻿﻿‍‬‍‍‍‬‌﻿﻿﻿﻿﻿﻿﻿‌‌﻿‌‍‌﻿﻿‍‬‌‌‬‌﻿﻿﻿‍‬‌‍‍‌‬‌‬‬﻿‬‌‬﻿﻿﻿‍‌‍‌﻿‬﻿‍‍‬‬‌﻿﻿﻿‍‬‌‍﻿‍﻿‌‍﻿﻿‍‍﻿‌‌﻿‌‍‍‍‍﻿‌‬‬‌‬‌﻿﻿﻿‍‬‍‬‍‌‍﻿‌﻿‌‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿‍﻿‌‌‌‌‍‬﻿‬‌‌‌‌‍﻿﻿‬‌‌‌‌‌‌‬‬‌‌‌‌‍‬‍‬‌‌‌‌‍‬﻿‌‌‌‌‌‍‬‌‍‌‌‌‌‍‬‍﻿‌‌‌‌‍﻿‬﻿‌‌‌‌‍‍‬‬我也没说‌‌‌‌‌﻿‌‍‌‌‌‌‌﻿‬‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‍‌‌‌‌‌‍‬‬‌‌‌‌‌‍‬‍‍‌‌‌‌‍‍﻿﻿‌‌‌‌‍‍‌﻿‌‌‌‌‍﻿‍‌‌‌‌‌‍﻿‌‬‌‌‌‌‌﻿‌‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‬‍﻿‌‌‌‌‍‍﻿﻿flag‌‌‌‌‍‌‬‍‌‌‌‌‍‬﻿‬‌‌‌‌‍‍﻿﻿‌‌‌‌‍‌‍‍‌‌‌‌‍﻿‬‌在这呀‌‌‌‌‍‬‌﻿‌‌‌‌‌﻿‬‍nwn‌‌‌‌‍‬﻿‌‌‌‌‌‍﻿﻿‍，你不会想在这里找到flag叭~ --></p>
+<p>到网站里，随波逐流的就可以</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005847.png" class="" title="零宽字符解密工具">
+
+<p>然后你就看到flag了</p>
+<img src="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE%202026-01-03%20005942.png" class="" title="解密后的Flag">
+
+<p>flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">flag&#123;Z19_The_Str1ng_In_Exc9l&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-丢失的文档"><a href="#6-丢失的文档" class="headerlink" title="6.丢失的文档"></a>6.丢失的文档</h3><p>题目描述</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">因为一场停电，猫猫刚写了一半的小说无了……</span><br></pre></td></tr></table></figure>
+
+<p>附件是一个asd文件其实我的第一想法就是改后缀，因为asd是一个不好处理陌生的格式，而这本来就应该是word文件，所以把后缀改为.docx打开，然后发现flag出了</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">对应的flag为：</span><br><span class="line">furryCTF&#123;How_To_F1x_This_Wor6_D0cument&#125;</span><br><span class="line">123</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-大伙儿好像太无聊了那就整点无聊的东西（？"><a href="#7-大伙儿好像太无聊了那就整点无聊的东西（？" class="headerlink" title="7.大伙儿好像太无聊了那就整点无聊的东西（？"></a>7.大伙儿好像太无聊了那就整点无聊的东西（？</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">大概是一些无聊的产物（？</span><br><span class="line"></span><br><span class="line">猫猫的一点PS：有谁想读一遍这个玩意喵owo</span><br></pre></td></tr></table></figure>
+
+<p>附件内容是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">REOREREREREREOREREREREREREOOOREOREREREREOREREREOREREREOOREOREREREREOREREREREREOREOREREREREOOREOREOREOOREREOOREOOREOREOREREREREOOREOREREREREREOREOOOREOREREREOREOOOOREREOREOREOOOREOREREREREREOREOOREOOREREOOREREREREREOREOREOOOOREREOOREREREOREREOOREREREOREREOREOOOOREREOREREREOREOREOREREOREREREREOOREREOOOREOOOREOREOREOREREOOOOREOREOOREREREREOOREOOREREREOOREOOREREREOREOREOREREREOOREREOOREREO</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="第一部分：把“贪心切分”聊得明明白白"><a href="#第一部分：把“贪心切分”聊得明明白白" class="headerlink" title="第一部分：把“贪心切分”聊得明明白白"></a>第一部分：把“贪心切分”聊得明明白白</h3><p>咱们把“贪心切分”这个词拆开，用大白话和生活中的例子来理解。</p>
+<h4 id="1-什么是“切分”-Tokenization-？"><a href="#1-什么是“切分”-Tokenization-？" class="headerlink" title="1. 什么是“切分” (Tokenization)？"></a>1. 什么是“切分” (Tokenization)？</h4><p><strong>通俗解释：</strong><br>“切分”就是把一长串看起来乱糟糟的东西，按照某种规则，切成一个个有意义的“小块”。这个“小块”就叫 <strong>Token</strong>（记号）。</p>
+<p><strong>生活中的例子：</strong><br>想象一下你读英文句子：<code>thisisasentence</code>。<br>你的大脑不会把它看成一堆字母，而是自动“切分”成单词：<code>this</code>, <code>is</code>, <code>a</code>, <code>sentence</code>。这里的每个单词，就是一个 Token。</p>
+<p><strong>在这道题里：</strong><br>原始密文 <code>REORERER...</code> 就是那串长长的、没空格的句子。<br>通过观察，我们发现它好像不是由单个字母 <code>R, E, O</code> 构成的，而是由 <code>O</code> 和 <code>RE</code> 这两种“单词”拼起来的。<br>所以，“切分”就是要把 <code>REORER...</code> 切成 <code>[&#39;RE&#39;, &#39;O&#39;, &#39;RE&#39;, ...]</code> 这样一个“单词列表”。</p>
+<h4 id="2-什么是“贪心”-Greedy-？"><a href="#2-什么是“贪心”-Greedy-？" class="headerlink" title="2. 什么是“贪心” (Greedy)？"></a>2. 什么是“贪心” (Greedy)？</h4><p><strong>通俗解释：</strong><br>“贪心”是一种非常直白、简单的做事策略，就是“<strong>只顾眼前，不看长远</strong>”。每一步都做出当下看起来最好的选择。</p>
+<p><strong>生活中的例子：</strong><br>假设你要找零钱 87 分，你手头有面值为 25, 10, 5, 1 的硬币。<br>“贪心”的做法是：</p>
+<ol>
+<li>先拿出能用的最大面额：25分，还差 62 分。</li>
+<li>再拿一个 25分，还差 37 分。</li>
+<li>再拿一个 25分，还差 12 分。</li>
+<li>25的用不了了，用下一个最大的：10分，还差 2 分。</li>
+<li>10和5的都用不了，用 1分，还差 1 分。</li>
+<li>再用 1分，找零完成。<br>你每一步都“贪心地”选了当前能用的最大面额，这就是贪心算法。</li>
+</ol>
+<p><strong>在这道题里：</strong><br>我们从字符串的开头 <code>s = &quot;REORER...&quot;</code> 开始切分：</p>
+<ol>
+<li><strong>指针在第 0 位 (<code>R</code>)</strong>：<ul>
+<li>往前看 1 位是 <code>R</code>，它不是一个完整的“单词”（Token）。</li>
+<li>往前看 2 位是 <code>RE</code>，它是一个完整的“单词”！</li>
+<li><strong>贪心选择</strong>：我们选择匹配最长的那个，也就是 <code>RE</code>。</li>
+<li>于是，第一个 Token 就是 <code>RE</code>。指针向后移动 2 位。</li>
+</ul>
+</li>
+<li><strong>指针现在在第 2 位 (<code>O</code>)</strong>：<ul>
+<li>往前看 1 位是 <code>O</code>，它是一个完整的“单词”。</li>
+<li>往前看 2 位是 <code>OR</code>，它不是一个合法的“单词”。</li>
+<li><strong>贪心选择</strong>：我们选择匹配 <code>O</code>。</li>
+<li>第二个 Token 就是 <code>O</code>。指针向后移动 1 位。</li>
+</ul>
+</li>
+<li><strong>如此循环…</strong> 直到把整个字符串切完。</li>
+</ol>
+<h4 id="3-什么情况下我能想到用“贪心切分”？"><a href="#3-什么情况下我能想到用“贪心切分”？" class="headerlink" title="3. 什么情况下我能想到用“贪心切分”？"></a>3. 什么情况下我能想到用“贪心切分”？</h4><p>这是解决问题的关键。你可以通过以下几点来判断：</p>
+<ol>
+<li><p><strong>特征一：由有限的几种“构件”组成。</strong><br>当你看到一长串文本，但翻来覆去就那么几种固定的“模式”或“片段”在重复出现时。比如这道题，看几眼就发现，除了 <code>O</code>，就是 <code>RE</code> 粘在一起。这强烈暗示了基本构件（Token）就是 <code>O</code> 和 <code>RE</code>。</p>
+</li>
+<li><p><strong>特征二：构件之间没有明显的“分隔符”。</strong><br>像摩斯电码，点划之间有短停顿，字母之间有长停顿。但这道题的 <code>RE</code> 和 <code>O</code> 是紧挨着的，<code>REO</code>、<code>ORE</code> 这样，没有空格或特殊符号隔开。这就逼着我们必须自己想办法把它们切开。</p>
+</li>
+<li><p><strong>特征三：构件之间没有“歧义”。</strong><br>“贪心”策略能成功，是因为它不会“切错”。比如，如果我们的“单词”是 <code>A</code> 和 <code>AB</code>，那么遇到 <code>AB</code> 时，如果贪心切了 <code>A</code>，剩下的 <code>B</code> 就无法处理了。<br>但在本题中，<code>O</code> 和 <code>RE</code> 这两个 Token 非常完美：</p>
+<ul>
+<li>一个以 <code>O</code> 开头。</li>
+<li>一个以 <code>R</code> 开头。<br>它们的首字母完全不同，所以从任何位置开始，<strong>匹配哪个是唯一的，不存在二选一的困惑</strong>。这种没有歧义的情况，就是使用贪心切分最理想的场景。</li>
+</ul>
+</li>
+</ol>
+<p><strong>一句话总结：当你发现一个长字符串可以被一小组“没有歧义的、固定的小模式”完全拼成时，就应该立刻想到用“贪心切分”把它转换成一个“小模式”的序列，为后续解码铺路。</strong></p>
+<hr>
+<h3 id="第二部分：CyberChef-复现超详细步骤（带中间结果）"><a href="#第二部分：CyberChef-复现超详细步骤（带中间结果）" class="headerlink" title="第二部分：CyberChef 复现超详细步骤（带中间结果）"></a>第二部分：CyberChef 复现超详细步骤（带中间结果）</h3><p>下面我们一步步来，每一步都告诉你为什么这么做，以及做完后输出应该是什么样子。</p>
+<p><strong>准备工作</strong>：打开 CyberChef 网站，把你的密文原文粘贴到右上角的 <strong>Input</strong> 框里。</p>
+<p>网站地址：<a href="https://cyberchef.org/">https://cyberchef.org/</a></p>
+<h4 id="步骤-1：Find-Replace-把-RE-换成-1"><a href="#步骤-1：Find-Replace-把-RE-换成-1" class="headerlink" title="步骤 1：Find &#x2F; Replace (把 RE 换成 1)"></a>步骤 1：Find &#x2F; Replace (把 <code>RE</code> 换成 <code>1</code>)</h4><ul>
+<li><p><strong>操作</strong>：在左侧 <code>Operations</code> 搜索框里输入 <code>Find</code>，找到 <code>Find / Replace</code>，把它拖到中间的 <code>Recipe</code> 区域。</p>
+</li>
+<li><p><strong>配置</strong>：</p>
+<ul>
+<li>在 <code>Find</code> 框里，填入 <code>RE</code>。</li>
+<li>在 <code>Replace</code> 框里，填入 <code>1</code>。</li>
+<li>选项中，Global match,Case insensitive,Multiline matching全部打开就行</li>
+</ul>
+</li>
+<li><p><strong>目的</strong>：这一步是执行我们的“映射”规则，把我们认定的第一个 Token <code>RE</code> 转换成二进制里的 <code>1</code>。</p>
+</li>
+<li><p><strong>中间结果</strong>：此时，右下角 <code>Output</code> 框的内容会变成：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">1O11111O111111OOO1O1111O111O111OO1O1111O11111O1O1111OO1O1O1OO11OO1OO1O1O1111OO1O11111O1OOO1O111O1OOOO11O1O1OOO1O11111O1OO1OO11OO11111O1O1OOOO11OO111O11OO111O11O1OOOO11O111O1O1O11O1111OO11OOO1OOO1O1O1O11OOOO1O1OO1111OO1OO111OO1OO111O1O1O111OO11OO11O</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="步骤-2：Find-Replace-把-字母-O-换成-0"><a href="#步骤-2：Find-Replace-把-字母-O-换成-0" class="headerlink" title="步骤 2：Find &#x2F; Replace (把 字母 O 换成 0)"></a>步骤 2：Find &#x2F; Replace (把 字母 <code>O</code> 换成 <code>0</code>)</h4><ul>
+<li><p><strong>操作</strong>：再拖动一个 <code>Find / Replace</code> 到 <code>Recipe</code> 区域，放在刚才那一步的下面。</p>
+</li>
+<li><p><strong>配置</strong>：</p>
+<ul>
+<li>在 <code>Find</code> 框里，填入 <code>O</code>。</li>
+<li>在 <code>Replace</code> 框里，填入 <code>0</code>。</li>
+</ul>
+</li>
+<li><p><strong>目的</strong>：完成映射的另一半，把 Token <code>O</code> 转换成二进制里的 <code>0</code>。</p>
+</li>
+<li><p><strong>中间结果</strong>：现在，<code>Output</code> 框里的内容就是一串纯粹的 <code>0</code> 和 <code>1</code> 了，也就是我们需要的比特流：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">10111110111111000101111011101110010111101111101011110010101001100100101011110010111110100010111010000110101000101111101001001100111110101000011001110110011101101000011011101010110111100110001000101010110000101001111001001110010011101010111001100110</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="步骤-3：Reverse-反转"><a href="#步骤-3：Reverse-反转" class="headerlink" title="步骤 3：Reverse (反转)"></a>步骤 3：Reverse (反转)</h4><ul>
+<li><strong>操作</strong>：在左侧搜索 <code>Reverse</code>，拖到 <code>Recipe</code> 中，放在第二步之后。</li>
+<li><strong>配置</strong>：保持默认选项 <code>Mode: Standard (character)</code> 即可。</li>
+<li><strong>目的</strong>：这是解题的关键一步。直接把二进制转文本会是乱码，我们猜测可能存在“整体倒序”的混淆。这一步就是把整条比特流从头到尾反转过来。</li>
+<li><strong>中间结果</strong>：<code>Output</code> 框里的比特流现在是倒序的了：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">01100110011101010111001001110010011110010100001101010100010001100111101101010111011000010110111001101110011000010101111100110010010111110100010101100001011101000101111101001111010100100110010101001111010111110111101001110111011110100011111101111101</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="步骤-4：From-Binary-从二进制转换"><a href="#步骤-4：From-Binary-从二进制转换" class="headerlink" title="步骤 4：From Binary (从二进制转换)"></a>步骤 4：From Binary (从二进制转换)</h4><ul>
+<li><p><strong>操作</strong>：在左侧搜索 <code>From Binary</code>，拖到 <code>Recipe</code> 的最后。</p>
+</li>
+<li><p><strong>配置</strong>：</p>
+<ul>
+<li>在下面的选项中，确保 <code>Data format</code> 是 <code>Binary</code>，并且 <code>Length</code> 是 <code>8</code>。</li>
+<li>其他选项默认就行。</li>
+</ul>
+</li>
+<li><p><strong>目的</strong>：将反转后的比特流，按照每 8 位一个字节的标准，翻译成 ASCII 字符。</p>
+</li>
+<li><p><strong>最终结果</strong>：<code>Output</code> 框里会清晰地显示出 flag：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Wanna_2_Eat_OReO_zwz?&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>最后总结一下像这种有很多重复字符的字符串，你其实应该想到把重复字符看做0和1,只不过字符的整体需要一点经验，比如本题的RE和O，你只要想到O很像0其实就能联想到RE可能是1了。</p>
+<p>当然可能还有另一种情况就是摩斯电码，这题很好有这个小彩蛋，但算个迷惑项。</p>
+<ul>
+<li><strong>RE</strong> &#x3D; <strong><code>.</code></strong> (点)</li>
+<li><strong>O</strong> &#x3D; <strong><code>-</code></strong> (划)</li>
+<li><strong>OO</strong> &#x3D; <strong>字母之间的分隔符</strong> (我用单个空格<code> </code>表示)</li>
+<li><strong>OOO</strong> &#x3D; <strong>单词之间的分隔符</strong> (我用斜杠<code>/</code>表示)</li>
+</ul>
+<p>根据这个规则，得到下面的标准摩尔斯电码：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">-. . ...- . .-. / --. --- -. -. . / --. .. ...- . / -.-- --- ..- / ..- .--. / -. . ...- . .-. / --. --- -. -. . / .-.. . - / -.-- --- ..- / -.. --- .-- -.</span><br></pre></td></tr></table></figure>
+
+<p>你拖进随波逐流解密一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">NEVERGONNEGIVEYOUUPNEVERGONNELETYOUDOWN</span><br></pre></td></tr></table></figure>
+
+<p>又是经典诈骗。</p>
+<p>这题还有一个脚本解法：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">s = &quot;REOREREREREREOREREREREREREOOOREOREREREREOREREREOREREREOOREOREREREREOREREREREREOREOREREREREOOREOREOREOOREREOOREOOREOREOREREREREOOREOREREREREREOREOOOREOREREREOREOOOOREREOREOREOOOREOREREREREREOREOOREOOREREOOREREREREREOREOREOOOOREREOOREREREOREREOOREREREOREREOREOOOOREREOREREREOREOREOREREOREREREREOOREREOOOREOOOREOREOREOREREOOOOREOREOOREREREREOOREOOREREREOOREOOREREREOREOREOREREREOOREREOOREREO&quot;</span><br><span class="line"></span><br><span class="line">def tokenize_oreo(s):</span><br><span class="line">    i = 0</span><br><span class="line">    tokens = []</span><br><span class="line">    while i &lt; len(s):</span><br><span class="line">        if s[i] == &#x27;O&#x27;:</span><br><span class="line">            tokens.append(&#x27;O&#x27;)</span><br><span class="line">            i += 1</span><br><span class="line">        elif s[i:i+2] == &#x27;RE&#x27;:</span><br><span class="line">            tokens.append(&#x27;RE&#x27;)</span><br><span class="line">            i += 2</span><br><span class="line">        else:</span><br><span class="line">            return None</span><br><span class="line">    return tokens</span><br><span class="line"></span><br><span class="line">def bits_to_text(bits, width=8, msb_first=True):</span><br><span class="line">    out = []</span><br><span class="line">    for i in range(0, len(bits) // width * width, width):</span><br><span class="line">        chunk = bits[i:i+width]</span><br><span class="line">        if not msb_first:</span><br><span class="line">            chunk = chunk[::-1]</span><br><span class="line">        val = int(chunk, 2)</span><br><span class="line">        if 0 &lt;= val &lt; 256:</span><br><span class="line">            out.append(chr(val))</span><br><span class="line">        else:</span><br><span class="line">            out.append(&#x27;?&#x27;)</span><br><span class="line">    return &#x27;&#x27;.join(out)</span><br><span class="line"></span><br><span class="line">tokens = tokenize_oreo(s)</span><br><span class="line">if not tokens:</span><br><span class="line">    print(&quot;不能用 &#123;O, RE&#125; 完整切分&quot;)</span><br><span class="line">    exit()</span><br><span class="line"></span><br><span class="line">candidates = []</span><br><span class="line">for zero, one in [(&#x27;O&#x27;,&#x27;RE&#x27;), (&#x27;RE&#x27;,&#x27;O&#x27;)]:</span><br><span class="line">    bits = &#x27;&#x27;.join(&#x27;0&#x27; if t == zero else &#x27;1&#x27; for t in tokens)</span><br><span class="line">    for width in (8,7):</span><br><span class="line">        for msb in (True, False):</span><br><span class="line">            txt = bits_to_text(bits, width=width, msb_first=msb)</span><br><span class="line">            candidates.append((zero, one, width, msb, txt))</span><br><span class="line"></span><br><span class="line">found = [c for c in candidates if &quot;furryCTF&#123;&quot; in c[4]]</span><br><span class="line">if found:</span><br><span class="line">    for z,o,w,m,txt in found:</span><br><span class="line">        print(f&quot;映射 &#123;z&#125;-&gt;0, &#123;o&#125;-&gt;1, width=&#123;w&#125;, msb_first=&#123;m&#125;&quot;)</span><br><span class="line">        print(txt)</span><br><span class="line">else:</span><br><span class="line">    # 额外尝试：反转整体位串再解一次</span><br><span class="line">    more = []</span><br><span class="line">    for zero, one in [(&#x27;O&#x27;,&#x27;RE&#x27;), (&#x27;RE&#x27;,&#x27;O&#x27;)]:</span><br><span class="line">        bits = &#x27;&#x27;.join(&#x27;0&#x27; if t == zero else &#x27;1&#x27; for t in tokens)</span><br><span class="line">        bits = bits[::-1]</span><br><span class="line">        for width in (8,7):</span><br><span class="line">            for msb in (True, False):</span><br><span class="line">                txt = bits_to_text(bits, width=width, msb_first=msb)</span><br><span class="line">                more.append((zero, one, width, msb, txt))</span><br><span class="line">    found2 = [c for c in more if &quot;furryCTF&#123;&quot; in c[4]]</span><br><span class="line">    if found2:</span><br><span class="line">        for z,o,w,m,txt in found2:</span><br><span class="line">            print(f&quot;[rev] 映射 &#123;z&#125;-&gt;0, &#123;o&#125;-&gt;1, width=&#123;w&#125;, msb_first=&#123;m&#125;&quot;)</span><br><span class="line">            print(txt)</span><br><span class="line">    else:</span><br><span class="line">        # 打印可见文本里最像的几条，方便人工观察</span><br><span class="line">        def score(t):</span><br><span class="line">            good = sum(c in &quot;furryCTF&#123;&#125;_-:;,.@/=+[]()abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 &quot; for c in t)</span><br><span class="line">            return good / max(1,len(t))</span><br><span class="line">        best = sorted(candidates, key=lambda x: score(x[4]), reverse=True)[:5]</span><br><span class="line">        for z,o,w,m,txt in best:</span><br><span class="line">            print(f&quot;候选 映射 &#123;z&#125;-&gt;0, &#123;o&#125;-&gt;1, width=&#123;w&#125;, msb_first=&#123;m&#125;, 可见率=&#123;score(txt):.2f&#125;&quot;)</span><br><span class="line">            print(txt[:200])</span><br></pre></td></tr></table></figure>
+
+<p>跑出来的结果是：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">[rev] 映射 O-&gt;0, RE-&gt;1, width=8, msb_first=True</span><br><span class="line">furryCTF&#123;Wanna_2_Eat_OReO_zwz?&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-Miscode"><a href="#8-Miscode" class="headerlink" title="8.Miscode"></a>8.Miscode</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">这些文件好像都是乱码……？</span><br><span class="line">不过，似乎有什么东西混进了.gitattributes？</span><br><span class="line">温馨提示：请注意flag格式哦~</span><br></pre></td></tr></table></figure>
+
+<p>打开附件，<strong>.gitattributes</strong>的内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">*.php linguist-language=7b</span><br><span class="line">*.swift linguist-language=61</span><br><span class="line">*.scala linguist-language=48</span><br><span class="line">*.py linguist-language=66</span><br><span class="line">*.erl linguist-language=76</span><br><span class="line">*.c linguist-language=72</span><br><span class="line">*.f90 linguist-language=47</span><br><span class="line">*.kt linguist-language=37</span><br><span class="line">*.rb linguist-language=53</span><br><span class="line">*.lua linguist-language=57</span><br><span class="line">*.cs linguist-language=69</span><br><span class="line">*.go linguist-language=43</span><br><span class="line">*.m linguist-language=31</span><br><span class="line">*.js linguist-language=74</span><br><span class="line">*.ex linguist-language=36</span><br><span class="line">*.pl linguist-language=31</span><br><span class="line">*.clj linguist-language=68</span><br><span class="line">*.vb linguist-language=5f</span><br><span class="line">*.sh linguist-language=46</span><br><span class="line">*.cpp linguist-language=79</span><br><span class="line">*.r linguist-language=21</span><br><span class="line">*.ml linguist-language=7d</span><br><span class="line">*.ts linguist-language=5f</span><br><span class="line">*.hs linguist-language=6c</span><br><span class="line">*.java linguist-language=75</span><br><span class="line">*.rs linguist-language=54</span><br></pre></td></tr></table></figure>
+
+<p>而<strong>random file</strong>那个文件夹下有3000多个文件但是两种文件对比后可以发现random file下的文件后缀名就是.gitattributes有的，所以是有规律性的，大概率和次数有关，可能需要脚本。</p>
+<ul>
+<li>背景：仓库用 <code>.gitattributes</code> 把每种扩展名映射到一个 1 字节十六进制值（<code>linguist-language=xx</code>），这其实就是把扩展名→ASCII 字符的字典藏在 GitHub Linguist 配置里；<code>random_files/</code> 里放了大量占位文件，通过“每种扩展名出现的次数”来给字符排位。</li>
+<li>思路：解析 <code>.gitattributes</code> 得到映射表 ext→char；统计 <code>random_files/</code> 中每个扩展名的文件数；按“出现次数升序”排序（同次数按 <code>.gitattributes</code> 原顺序稳定打破平手）；把对应字符连成串。题面还放了外层干扰前后缀（<code>furryCTF</code> 与 <code>&#123;FTCyruf&#125;</code>），以及可能的空 <code>&#123;&#125;</code>，清理后规范输出 <code>furryCTF&#123;...&#125;</code>。</li>
+</ul>
+<h3 id="代码解释"><a href="#代码解释" class="headerlink" title="代码解释"></a>代码解释</h3><p>题目的核心思路隐藏在 Git 仓库的两个部分：</p>
+<ol>
+<li><p><code>.gitattributes</code> 文件：定义了文件后缀名 (<code>ext</code>) 和一个 ASCII 字符之间的映射关系。</p>
+</li>
+<li><p><code>random_files/</code> 目录：包含了大量不同后缀名的文件，这些文件的数量决定了对应字符的排列顺序。</p>
+<p>！！！注意：要把**.gitattributes<strong>和</strong>random_files**和脚本放在同一个目录下。</p>
+</li>
+</ol>
+<p>脚本通过以下步骤来解出 Flag：</p>
+<ol>
+<li><p><strong>参数解析 (<code>argparse</code>)</strong></p>
+<ul>
+<li>脚本可以接受两个命令行参数：<ul>
+<li><code>path</code>: 挑战仓库的根目录路径，默认为当前目录 (<code>.</code>)。</li>
+<li><code>--mode</code>: 拼接字符的顺序，<code>fwd</code> 代表正序（从前到后），<code>rev</code> 代表逆序（从后往前），默认是 <code>rev</code>，因为这正是本题的解法。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>解析映射关系 (<code>parse_mapping</code> 函数)</strong></p>
+<ul>
+<li>此函数读取 <code>.gitattributes</code> 文件。</li>
+<li>它使用正则表达式 <code>^\*\.(\w+)\s+linguist-language=([0-9a-fA-F]&#123;2&#125;)\s*$</code> 来匹配类似 <code>*.txt linguist-language=41</code> 这样的行。</li>
+<li><strong>正则表达式解析</strong>：<ul>
+<li><code>^\*\.</code>：匹配以 <code>*.</code> 开头的行。</li>
+<li><code>(\w+)</code>：捕获文件后缀名（如 <code>txt</code>）。</li>
+<li><code>\s+linguist-language=</code>：匹配中间的固定文本。</li>
+<li><code>([0-9a-fA-F]&#123;2&#125;)</code>：捕获两位十六进制数（如 <code>41</code>）。</li>
+<li><code>\s*$</code>：匹配行尾的任意空格。</li>
+</ul>
+</li>
+<li>对于每个匹配行，它将后缀名存为 key，并将两位十六进制数解码为对应的 ASCII 字符（例如 <code>41</code> -&gt; <code>&#39;A&#39;</code>）作为 value，存入一个字典 <code>mp</code> 中并返回。</li>
+</ul>
+</li>
+<li><p><strong>统计文件数量 (<code>count_exts</code> 函数)</strong></p>
+<ul>
+<li>此函数递归地遍历 <code>random_files/</code> 目录下的所有文件。</li>
+<li>对于每个文件，它提取其后缀名（如 <code>.txt</code>），去除开头的点号 <code>.</code>，并转换为小写，以保证计数的一致性。</li>
+<li>使用 <code>collections.Counter</code> 对象来高效地统计每种后缀名出现的次数，并返回这个计数器。</li>
+</ul>
+</li>
+<li><p><strong>主逻辑 (<code>main</code> 函数)</strong></p>
+<ul>
+<li><strong>初始化和校验</strong>：设置好文件路径，并检查 <code>.gitattributes</code> 和 <code>random_files/</code> 是否存在，如果不存在则退出程序。</li>
+<li><strong>调用核心函数</strong>：调用 <code>parse_mapping</code> 和 <code>count_exts</code> 获取映射表和计数值。</li>
+<li><strong>排序</strong>：<ul>
+<li>将映射表中的后缀名和它们对应的计数值组合成一个元组列表 <code>(ext, count)</code>。</li>
+<li>最关键的一步：<code>items.sort(key=lambda t: t[1])</code>。这行代码根据元组的第二个元素（也就是文件数量 <code>count</code>）对列表进行 <strong>升序</strong> 排序。Python 的 <code>sort</code> 是稳定的，意味着如果两个后缀名文件数量相同，它们在排序后的相对位置将保持不变（与它们在 <code>.gitattributes</code> 文件中的顺序一致）。</li>
+</ul>
+</li>
+<li><strong>拼接 Flag</strong>：<ul>
+<li>根据 <code>--mode</code> 参数决定拼接顺序。默认是 <code>rev</code>，所以 <code>reversed(items)</code> 会将排好序的列表反转。这意味着，<strong>文件数量最多的后缀名对应的字符会排在最前面</strong>。</li>
+<li>最后，它遍历这个序列，从映射表 <code>mp</code> 中取出每个后缀名对应的字符，并将它们拼接成一个原始的字符串 <code>s</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>格式化输出 (<code>normalize</code> 函数)</strong></p>
+<ul>
+<li>此函数负责清理拼接好的原始字符串 <code>s</code>。</li>
+<li>它移除了可能存在于字符串开头和结尾的干扰项（<code>furryCTF</code> 和 <code>&#123;FTCyruf&#125;</code>）。</li>
+<li>它还会移除空的花括号 <code>&#123;&#125;</code>。</li>
+<li>最后，它提取出花括号内的核心内容，并用标准的 <code>furryCTF&#123;...&#125;</code> 格式包裹起来，打印到控制台。</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> re  <span class="comment"># 导入正则表达式模块，用于文本匹配</span></span><br><span class="line"><span class="keyword">import</span> argparse  <span class="comment"># 导入参数解析模块，用于处理命令行参数</span></span><br><span class="line"><span class="keyword">from</span> pathlib <span class="keyword">import</span> Path  <span class="comment"># 导入路径处理模块，以面向对象的方式处理文件系统路径</span></span><br><span class="line"><span class="keyword">from</span> collections <span class="keyword">import</span> Counter  <span class="comment"># 导入计数器类，用于高效地统计元素出现次数</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">parse_mapping</span>(<span class="params">gitattributes: Path</span>) -&gt; <span class="built_in">dict</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    解析 .gitattributes 文件，提取文件后缀名到 ASCII 字符的映射。</span></span><br><span class="line"><span class="string">    例如，解析行: *.ext linguist-language=41 -&gt; &#123;&#x27;ext&#x27;: &#x27;A&#x27;&#125;</span></span><br><span class="line"><span class="string">  </span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        gitattributes (Path): .gitattributes 文件的路径对象。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        dict: 一个从后缀名（小写）到对应字符的映射字典。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    mp = &#123;&#125;  <span class="comment"># 初始化一个空字典来存储映射关系</span></span><br><span class="line">    <span class="comment"># 编译一个正则表达式，用于高效匹配目标行格式</span></span><br><span class="line">    <span class="comment"># 模式解释:</span></span><br><span class="line">    <span class="comment">#   ^                  - 匹配行首</span></span><br><span class="line">    <span class="comment">#   \*\.               - 匹配字面量 &quot;*. &quot;</span></span><br><span class="line">    <span class="comment">#   (\w+)              - 捕获组1: 匹配一个或多个单词字符（即文件后缀名）</span></span><br><span class="line">    <span class="comment">#   \s+                - 匹配一个或多个空白字符</span></span><br><span class="line">    <span class="comment">#   linguist-language= - 匹配字面量 &quot;linguist-language=&quot;</span></span><br><span class="line">    <span class="comment">#   ([0-9a-fA-F]&#123;2&#125;)   - 捕获组2: 匹配两位十六进制数</span></span><br><span class="line">    <span class="comment">#   \s*                - 匹配零个或多个空白字符</span></span><br><span class="line">    <span class="comment">#   $                  - 匹配行尾</span></span><br><span class="line">    pat = re.<span class="built_in">compile</span>(<span class="string">r&#x27;^\*\.(\w+)\s+linguist-language=([0-9a-fA-F]&#123;2&#125;)\s*$&#x27;</span>)</span><br><span class="line">  </span><br><span class="line">    <span class="comment"># 以只读模式打开 .gitattributes 文件，指定 ascii 编码并忽略错误</span></span><br><span class="line">    <span class="keyword">with</span> gitattributes.<span class="built_in">open</span>(<span class="string">&#x27;r&#x27;</span>, encoding=<span class="string">&#x27;ascii&#x27;</span>, errors=<span class="string">&#x27;ignore&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">            <span class="comment"># 尝试对每一行进行正则匹配</span></span><br><span class="line">            m = pat.<span class="keyword">match</span>(line.strip())</span><br><span class="line">            <span class="keyword">if</span> m:  <span class="comment"># 如果匹配成功</span></span><br><span class="line">                ext = m.group(<span class="number">1</span>).lower()  <span class="comment"># 提取后缀名并转为小写，确保一致性</span></span><br><span class="line">                <span class="comment"># 将十六进制字符串转换为字节，再解码为 ASCII 字符</span></span><br><span class="line">                ch = <span class="built_in">bytes</span>.fromhex(m.group(<span class="number">2</span>)).decode(<span class="string">&#x27;ascii&#x27;</span>)</span><br><span class="line">                mp[ext] = ch  <span class="comment"># 将映射关系存入字典</span></span><br><span class="line">    <span class="keyword">return</span> mp</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">count_exts</span>(<span class="params">random_dir: Path</span>) -&gt; Counter:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    递归统计指定目录中所有文件的后缀名出现次数。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        random_dir (Path): 要统计的目录路径对象。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        Counter: 一个包含后缀名及其计数的 Counter 对象。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    cnt = Counter()  <span class="comment"># 初始化一个计数器</span></span><br><span class="line">    <span class="comment"># rglob(&#x27;*&#x27;) 递归地查找目录下的所有文件和文件夹</span></span><br><span class="line">    <span class="keyword">for</span> p <span class="keyword">in</span> random_dir.rglob(<span class="string">&#x27;*&#x27;</span>):</span><br><span class="line">        <span class="comment"># 确认 p 是一个文件并且有后缀名</span></span><br><span class="line">        <span class="keyword">if</span> p.is_file() <span class="keyword">and</span> p.suffix:</span><br><span class="line">            <span class="comment"># p.suffix 返回带点的后缀（如 &quot;.txt&quot;）</span></span><br><span class="line">            <span class="comment"># [1:] 切片操作去除开头的点，lower() 转为小写</span></span><br><span class="line">            cnt[p.suffix[<span class="number">1</span>:].lower()] += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> cnt</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">normalize</span>(<span class="params">raw: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    清理原始字符串，移除边缘的干扰项，并规范化为 furryCTF&#123;...&#125; 格式。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Args:</span></span><br><span class="line"><span class="string">        raw (str): 原始拼接出的字符串。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    Returns:</span></span><br><span class="line"><span class="string">        str: 格式化后的 Flag 字符串。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    t = raw</span><br><span class="line">    <span class="comment"># 如果字符串以 &#x27;furryCTF&#x27; 开头，则移除它</span></span><br><span class="line">    <span class="keyword">if</span> t.startswith(<span class="string">&#x27;furryCTF&#x27;</span>):</span><br><span class="line">        t = t[<span class="built_in">len</span>(<span class="string">&#x27;furryCTF&#x27;</span>):]</span><br><span class="line">    <span class="comment"># 如果字符串以 &#x27;&#123;FTCyruf&#125;&#x27; 结尾，则移除它</span></span><br><span class="line">    <span class="keyword">if</span> t.endswith(<span class="string">&#x27;&#123;FTCyruf&#125;&#x27;</span>):</span><br><span class="line">        t = t[:-<span class="built_in">len</span>(<span class="string">&#x27;&#123;FTCyruf&#125;&#x27;</span>)]</span><br><span class="line">    <span class="comment"># 移除可能存在的空花括号</span></span><br><span class="line">    t = t.replace(<span class="string">&#x27;&#123;&#125;&#x27;</span>, <span class="string">&#x27;&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 再次使用正则查找被花括号包裹的核心内容</span></span><br><span class="line">    m = re.search(<span class="string">r&#x27;\&#123;([^&#123;&#125;]+)\&#125;&#x27;</span>, t)</span><br><span class="line">    <span class="comment"># 如果找到，payload 就是括号里的内容；否则，就去除首尾的括号和空白</span></span><br><span class="line">    payload = m.group(<span class="number">1</span>) <span class="keyword">if</span> m <span class="keyword">else</span> t.strip(<span class="string">&#x27;&#123;&#125;&#x27;</span>).strip()</span><br><span class="line">    <span class="comment"># 返回标准格式的 Flag</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&#x27;furryCTF&#123;&#123;<span class="subst">&#123;payload&#125;</span>&#125;&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    主执行函数，协调整个解题流程。</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    <span class="comment"># 创建一个命令行参数解析器</span></span><br><span class="line">    ap = argparse.ArgumentParser(description=<span class="string">&quot;Solve the gitattributes CTF challenge.&quot;</span>)</span><br><span class="line">    <span class="comment"># 添加 &#x27;path&#x27; 参数，nargs=&#x27;?&#x27; 表示可选，default=&#x27;.&#x27; 表示默认当前目录</span></span><br><span class="line">    ap.add_argument(<span class="string">&#x27;path&#x27;</span>, nargs=<span class="string">&#x27;?&#x27;</span>, default=<span class="string">&#x27;.&#x27;</span>, <span class="built_in">help</span>=<span class="string">&quot;Path to the challenge repository root.&quot;</span>)</span><br><span class="line">    <span class="comment"># 添加 &#x27;--mode&#x27; 参数，限定选择为 &#x27;fwd&#x27; 或 &#x27;rev&#x27;，默认为 &#x27;rev&#x27;</span></span><br><span class="line">    ap.add_argument(<span class="string">&#x27;--mode&#x27;</span>, choices=[<span class="string">&#x27;fwd&#x27;</span>, <span class="string">&#x27;rev&#x27;</span>], default=<span class="string">&#x27;rev&#x27;</span>,</span><br><span class="line">                    <span class="built_in">help</span>=<span class="string">&#x27;Assembly order: fwd=forward (ascending count), rev=reverse (descending count, default)&#x27;</span>)</span><br><span class="line">    args = ap.parse_args()  <span class="comment"># 解析命令行传入的参数</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 将路径转换为绝对路径，避免相对路径问题</span></span><br><span class="line">    base = Path(args.path).resolve()</span><br><span class="line">    gitattributes = base / <span class="string">&#x27;.gitattributes&#x27;</span></span><br><span class="line">    random_dir = base / <span class="string">&#x27;random_files&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 检查所需文件和目录是否存在，如果不存在则打印错误并退出</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> gitattributes.is_file():</span><br><span class="line">        <span class="keyword">raise</span> SystemExit(<span class="string">f&#x27;Error: Not found: <span class="subst">&#123;gitattributes&#125;</span>&#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> random_dir.is_dir():</span><br><span class="line">        <span class="keyword">raise</span> SystemExit(<span class="string">f&#x27;Error: Not found: <span class="subst">&#123;random_dir&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 调用函数获取映射表和文件计数</span></span><br><span class="line">    mp = parse_mapping(gitattributes)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> mp:</span><br><span class="line">        <span class="keyword">raise</span> SystemExit(<span class="string">&#x27;Error: No mappings found in .gitattributes&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    cnt = count_exts(random_dir)</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> cnt:</span><br><span class="line">        <span class="keyword">raise</span> SystemExit(<span class="string">&#x27;Error: No files found in random_files&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 将映射表中的后缀名和其对应的计数值组合成一个元组列表</span></span><br><span class="line">    <span class="comment"># 这样做可以确保排序的稳定性（基于 .gitattributes 中的原始顺序）</span></span><br><span class="line">    items = [(ext, cnt[ext]) <span class="keyword">for</span> ext <span class="keyword">in</span> mp.keys() <span class="keyword">if</span> ext <span class="keyword">in</span> cnt]</span><br><span class="line">    <span class="comment"># 核心排序逻辑：根据元组的第二个元素（即文件数量）进行升序排序。</span></span><br><span class="line">    <span class="comment"># Python的 sort 是稳定的，计数值相同时，元素原始相对顺序不变。</span></span><br><span class="line">    items.sort(key=<span class="keyword">lambda</span> t: t[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 根据 --mode 参数决定遍历序列的方向</span></span><br><span class="line">    <span class="comment"># 默认是 &#x27;rev&#x27;，所以使用 reversed() 来反转序列，实现按数量降序遍历</span></span><br><span class="line">    seq = items <span class="keyword">if</span> args.mode == <span class="string">&#x27;fwd&#x27;</span> <span class="keyword">else</span> <span class="built_in">reversed</span>(items)</span><br><span class="line">    <span class="comment"># 使用列表推导和 join 方法，高效地拼接出最终的原始字符串</span></span><br><span class="line">    s = <span class="string">&#x27;&#x27;</span>.join(mp[ext] <span class="keyword">for</span> ext, _ <span class="keyword">in</span> seq)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 打印经过清理和格式化后的最终 Flag</span></span><br><span class="line">    <span class="built_in">print</span>(normalize(s))</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当该脚本被直接执行时，调用 main() 函数</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>最后输出flag:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">furryCTF&#123;Sia7t_W1!H_G1lhv6&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这题既要统计各个后缀名次数，并把它们进行转换，还要注意得到的字符串是flag的反转形式，要逆回来。</p>
+]]></content>
+      <categories>
+        <category>ctf</category>
+        <category>ctf-wp</category>
+      </categories>
+      <tags>
+        <tag>misc</tag>
+        <tag>ctf</tag>
+        <tag>furryCTF</tag>
       </tags>
   </entry>
   <entry>
