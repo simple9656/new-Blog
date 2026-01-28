@@ -54,7 +54,7 @@ function createtime() {
             footer.appendChild(runTimeBox);
         }
         
-        runTimeBox.innerHTML = "小破站已运行 " + dnum + " 天 " + hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+        runTimeBox.innerHTML = "joke的小世界已运行 " + dnum + " 天 " + hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
     }
 }
 
