@@ -1,0 +1,626 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>XCTF-LilacCTF 2026-Writeup | joke的小世界</title><meta name="author" content="joke"><meta name="copyright" content="joke"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="XCTF-LilacCTF 2026-Writeup官方题目网址：https:&#x2F;&#x2F;adworld.xctf.org.cn&#x2F;match&#x2F;guide?event_hash&#x3D;7b528ca2-f4da-11f0-bf63-000c297261bb 这次就做出来5题(比一开始只会签到要好)，以自己的拙见写一份wp 1.MISC-Welcome签到题 题目描述： 1789c0540b10980400c5ce">
+<meta property="og:type" content="article">
+<meta property="og:title" content="XCTF-LilacCTF 2026-Writeup">
+<meta property="og:url" content="https://joke-new.zeabur.app/2026/01/28/XCTF-LilacCTF-2026-Writeup/index.html">
+<meta property="og:site_name" content="joke的小世界">
+<meta property="og:description" content="XCTF-LilacCTF 2026-Writeup官方题目网址：https:&#x2F;&#x2F;adworld.xctf.org.cn&#x2F;match&#x2F;guide?event_hash&#x3D;7b528ca2-f4da-11f0-bf63-000c297261bb 这次就做出来5题(比一开始只会签到要好)，以自己的拙见写一份wp 1.MISC-Welcome签到题 题目描述： 1789c0540b10980400c5ce">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://picsum.photos/1920/1080?random=1">
+<meta property="article:published_time" content="2026-01-28T04:37:32.000Z">
+<meta property="article:modified_time" content="2026-01-28T04:56:30.906Z">
+<meta property="article:author" content="joke">
+<meta property="article:tag" content="XCTF">
+<meta property="article:tag" content="ctf">
+<meta property="article:tag" content="misc">
+<meta property="article:tag" content="web">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://picsum.photos/1920/1080?random=1"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "XCTF-LilacCTF 2026-Writeup",
+  "url": "https://joke-new.zeabur.app/2026/01/28/XCTF-LilacCTF-2026-Writeup/",
+  "image": "https://picsum.photos/1920/1080?random=1",
+  "datePublished": "2026-01-28T04:37:32.000Z",
+  "dateModified": "2026-01-28T04:56:30.906Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "joke",
+      "url": "https://joke-new.zeabur.app"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/9.jpg"><link rel="canonical" href="https://joke-new.zeabur.app/2026/01/28/XCTF-LilacCTF-2026-Writeup/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css?v=5.5.3"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!true && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"pagination":{"enable":false,"hitsPerPage":8},"languages":{"hits_empty":"未找到符合您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid@4.12.0/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'XCTF-LilacCTF 2026-Writeup',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="https://npm.elemecdn.com/lxgw-wenkai-screen-webfont/style.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="/css/transparent.css"><link rel="stylesheet" href="/css/custom.css"><meta name="generator" content="Hexo 8.1.1"></head><body><script>window.paceOptions = {
+  restartOnPushState: false
+}
+
+btf.addGlobalFn('pjaxSend', () => {
+  Pace.restart()
+}, 'pace_restart')
+
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/pink/pace-theme-minimal.css"/><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><div class="bg-animation" id="web_bg" style="background-color: #eee;"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/9.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-inbox"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(https://picsum.photos/1920/1080?random=1);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/9.jpg" alt="Logo"><span class="site-name">joke的小世界</span></a><a class="nav-page-title" href="/"><span class="site-name">XCTF-LilacCTF 2026-Writeup</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜索</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-book"></i><span> 文章</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-inbox"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li></ul></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">XCTF-LilacCTF 2026-Writeup</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-01-28T04:37:32.000Z" title="发表于 2026-01-28 12:37:32">2026-01-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-01-28T04:56:30.906Z" title="更新于 2026-01-28 12:56:30">2026-01-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ctf/">ctf</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ctf/ctf-wp/">ctf-wp</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="XCTF-LilacCTF-2026-Writeup"><a href="#XCTF-LilacCTF-2026-Writeup" class="headerlink" title="XCTF-LilacCTF 2026-Writeup"></a>XCTF-<strong>LilacCTF 2026</strong>-Writeup</h1><p>官方题目网址：<a target="_blank" rel="noopener" href="https://adworld.xctf.org.cn/match/guide?event_hash=7b528ca2-f4da-11f0-bf63-000c297261bb">https://adworld.xctf.org.cn/match/guide?event_hash=7b528ca2-f4da-11f0-bf63-000c297261bb</a></p>
+<p>这次就做出来5题(比一开始只会签到要好)，以自己的拙见写一份wp</p>
+<h3 id="1-MISC-Welcome"><a href="#1-MISC-Welcome" class="headerlink" title="1.MISC-Welcome"></a><strong>1.MISC-Welcome</strong></h3><p>签到题</p>
+<p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">789c0540b10980400c5ce92442067849153bc1f278ae1031ad95b87bc8bba6c611df6925ec46076bc955f2e0056ccc773c7f03fb580c81</span><br></pre></td></tr></table></figure>
+
+<p>这是一个十六进制字符串（hex）最后肯定要转成ASCII码：这里介绍两种做法，一种是用脚本就是下面这种做法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import binascii, zlib</span><br><span class="line">hexdata = &quot;789c0540b10980400c5ce92442067849153bc1f278ae1031ad95b87bc8bba6c611df6925ec46076bc955f2e0056ccc773c7f03fb580c81&quot;</span><br><span class="line">raw = binascii.unhexlify(hexdata)</span><br><span class="line">out = zlib.decompress(raw)</span><br><span class="line">print(out.decode(&#x27;utf-8&#x27;))</span><br></pre></td></tr></table></figure>
+
+<p>还有一种就是传统的cyberchef:（网址：<a target="_blank" rel="noopener" href="https://cyberchef.org/%EF%BC%89">https://cyberchef.org/）</a></p>
+<p>这个十六进制有一个特征,就是文件头（zlib：文件头：789c），zlib众所周知是一个压缩包，所以我们要做的就只有两件：转hex和zilb解压，在cyberchef里就是，<strong>From Hex</strong>(从十六进制转换)转换成你平时在010 editor里看到的乱码（这其实才是zlib真正的内容）和<strong>Zlib inflate</strong>（zlib解压）即可获得flag。</p>
+<p>flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LilacCTF&#123;W3lc0M3_70_l1L4cc7F_g00D_LuCk&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-MISC-Questionnaire"><a href="#2-MISC-Questionnaire" class="headerlink" title="2.MISC-Questionnaire"></a><strong>2.MISC-Questionnaire</strong></h3><p>我没想到问卷题也算分。</p>
+<p>flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LilacCTF&#123;7h4nk_U_f0r_p4rt1cip4t1n9_L1l4cCTF_2026&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-MISC-Sky-Is-Ours"><a href="#3-MISC-Sky-Is-Ours" class="headerlink" title="3.MISC-Sky Is Ours"></a><strong>3.MISC-Sky Is Ours</strong></h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">John likes to choose window seats on airplanes. He took this photo on a plane on April 10, 2025. What was his flight number?</span><br><span class="line">The final flag is LilacCTF&#123;flight number&#125;.</span><br><span class="line">Note: The flight number should be the actual operating flight number, in all capital letters.</span><br></pre></td></tr></table></figure>
+
+<p>翻译一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">约翰喜欢选飞机上的靠窗座位。他于 2025 年 4 月 10 日在飞机上拍下了这张照片。他乘坐的航班号是多少？</span><br><span class="line">最终的 flag 格式为 LilacCTF &#123;航班号&#125;。</span><br><span class="line">注：航班号需填写实际执飞的航班号，且全部使用大写字母。</span><br></pre></td></tr></table></figure>
+
+<p>题目图片贴一下：</p>
+<img src="/2026/01/28/XCTF-LilacCTF-2026-Writeup/1.jpeg" class="" title="题目附件">
+
+
+<p>放大的图更可以看出特征：一道经典的osint,依旧飞机题，但是明面上给的文字信息很少。</p>
+<p>我来整理一下信息：</p>
+<p>1.2025 年 4 月 10 日这是拍摄时间，这个时间还能补充，在你右键图片-&gt;属性,在详细信息里发现是11:20拍的,这是第一个信息。（当然exif信息是可以用exiftools扫出来，也可以用的线上，这里推荐两个：<a target="_blank" rel="noopener" href="https://www.gaitubao.com/exif%EF%BC%8C">https://www.gaitubao.com/exif，</a></p>
+<p><a target="_blank" rel="noopener" href="https://exif.tuchong.com/%EF%BC%89">https://exif.tuchong.com/）</a></p>
+<p>2.看这张图，飞机的侧翼是助我找到这个航班的关键（于我而言），根据这个侧翼的颜色分布及特征：白-蓝-白-深蓝-白-深蓝，加上搜索引擎搜索，（这里是豆包搜出来的），最后锁定是青岛航空，给你们看几张图</p>
+<img src="/2026/01/28/XCTF-LilacCTF-2026-Writeup/2.jpeg" class="" title="搜索结果">
+
+<img src="/2026/01/28/XCTF-LilacCTF-2026-Writeup/3.jpeg" class="" title="搜索结果2">
+
+
+<p>就说是不是一模一样吧，所以接下来就是根据航空公司查航班了，这里我用的网址是：<a target="_blank" rel="noopener" href="https://www.flightera.net/%EF%BC%8C%E5%9C%A8**AIRLINE**%E9%87%8C%E5%A1%AB**Qingdao">https://www.flightera.net/，在**AIRLINE**里填**Qingdao</a> Airlines**（你填进去会有提示的）或者1480，至于确定这架飞机的机型这个很玄学，直接用AI来表示吧：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">判断 “飞越黄海、飞向山东半岛” 是靠这 2 个视觉 + 地理逻辑：</span><br><span class="line">地貌特征：照片里能看到大片开阔海域，旁边是 “半岛状陆地”—— 而山东半岛是中国唯一伸入黄海的大型半岛，这个地貌是黄海 + 山东半岛的典型组合；</span><br><span class="line">飞行方向：飞机翼尖在画面上方，陆地（山东半岛）处于画面右侧，说明航班是向西飞行（翼尖朝向是飞机前进方向的侧方），而山东半岛位于黄海西侧，因此是 “飞向山东半岛”。</span><br></pre></td></tr></table></figure>
+
+<p>难绷真的，然后根据这个起始地点和终点的大概位置，判断出机型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">最开始确定 B-8430，是基于青岛航空 2024 年及之前的旧执飞数据：</span><br><span class="line">当时青岛航空的国际航线（比如之前推测的 QW9902），固定使用 “耐冬花” 涂装的 A320 执飞，而该系列中专门匹配日韩航线的注册号就是 B-8430（这是当时公开的航班 - 注册号绑定信息）；</span><br><span class="line">B-8430 的机型是 A320，和照片里的翼尖涂装（青岛航空 A320）完全对应，所以当时结合 “国际航线 + 涂装 + 旧数据” 锁定了它。</span><br></pre></td></tr></table></figure>
+
+<p>算了聊天记录全贴吧：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">A：这个侧翼像哪个飞机</span><br><span class="line">B：这是 ** 青岛航空的空客 A320（或 A320neo）** 客机的翼尖小翼。</span><br><span class="line">它的标志性特征是黑白相间的条纹鲨鳍小翼，这正是青岛航空的涂装风格。结合照片中跨越海域和城市地貌的航线特征，也符合青岛航空的典型飞行场景。</span><br><span class="line">要不要我帮你整理一份常见航空公司翼尖小翼识别清单，方便你以后快速辨认？</span><br><span class="line">A：飞机是对的，继续锁定</span><br><span class="line">B：航空公司确认：翼尖的黑白条纹鲨鳍小翼，明确是青岛航空（IATA 代码 QW）的空客 A320 系列，这一点你已经确认是对的。</span><br><span class="line">时间与位置匹配：照片拍摄于 2025 年 4 月 10 日 11:20（北京时间），航班正飞越黄海，远处是山东半岛。</span><br><span class="line">（这之后我把那个查询网站的搜索页面图片给她了）</span><br><span class="line">A:飞机名字叫什么</span><br></pre></td></tr></table></figure>
+
+<img src="/2026/01/28/XCTF-LilacCTF-2026-Writeup/1.png" class="" title="查询结果">
+
+<img src="/2026/01/28/XCTF-LilacCTF-2026-Writeup/2.png" class="" title="查询结果2">
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">B：这架青岛航空的飞机，它的名字是 **“耐冬花”**（或 “琴岛・耐冬花”）。</span><br><span class="line">青岛航空的所有空客 A320 系列飞机，都以青岛市花 “耐冬花” 作为统一的命名主题。从你提供的注册号列表来看，照片里的飞机很可能是注册号为B-8430的这架，它执行的正是青岛往返首尔的 QW9901/QW9902 航班，与照片的时间、航线完全吻合。</span><br></pre></td></tr></table></figure>
+
+<p>这里我确定了型号后我就去根据时间去查了（暂且相信她）：</p>
+<p>型号网址：<a target="_blank" rel="noopener" href="https://www.flightera.net/zh/planes/B-8430">https://www.flightera.net/zh/planes/B-8430</a></p>
+<p>下面有历史航班点进具体年月，因为拍摄时间是11:20，所以我选择了从9点开始查：</p>
+<img src="/2026/01/28/XCTF-LilacCTF-2026-Writeup/0.png" class="" title="结果">
+
+
+<p>可以看到符合大致时间的只有<strong>QW6097</strong>，这就是我们要找的航班。</p>
+<p>flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LilacCTF&#123;QW6097&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-ezPython"><a href="#4-ezPython" class="headerlink" title="4.ezPython"></a>4.ezPython</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Python is not as difficult as you think</span><br><span class="line"></span><br><span class="line">flag format: LilacCTF&#123;...&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PyInstaller 一键解包 + “自修改”XXTEA 还原</p>
+<p>结论</p>
+<p>flag：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LilacCTF&#123;e@sy_Pyth0n_SMC!&#125;</span><br></pre></td></tr></table></figure>
+
+<p>验证（PowerShell）：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$flag</span> = <span class="string">&#x27;LilacCTF&#123;e@sy_Pyth0n_SMC!&#125;&#x27;</span></span><br><span class="line"><span class="variable">$flag</span> | &amp; <span class="string">&quot;C:\Users\Lenovo\Desktop\逆向工作目录\main.exe&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>输出会出现 <code>Right, congratulations!</code>。</p>
+<hr>
+<ol>
+<li>定位：main.exe 是 PyInstaller Bootloader</li>
+</ol>
+<p>把 <code>main.exe</code> 丢进 IDA，能看到典型 PyInstaller bootloader 逻辑：</p>
+<ul>
+<li>读取可执行文件末尾 overlay（PKG）</li>
+<li>解析 TOC（目录）</li>
+<li>通过 <code>PyMarshal_ReadObjectFromString</code> 反序列化脚本&#x2F;模块 code object</li>
+<li><code>PyEval_EvalCode</code> 执行脚本（<code>main</code> &#x2F; <code>pyiboot01_bootstrap</code> 等）</li>
+</ul>
+<p>因此 flag 逻辑不在 C 层，而在 PKG&#x2F;PYZ 里的 Python 字节码模块。</p>
+<hr>
+<ol start="2">
+<li>解析 PyInstaller Cookie（注意是大端）</li>
+</ol>
+<p>在文件末尾搜索 magic：<code>MEI 0C 0B 0A 0B 0E</code>，其后紧跟 88 字节 cookie。</p>
+<p>该题 cookie 的关键点：整型字段是 <strong>大端</strong>（<code>&gt;I</code>），否则会把 <code>pkglen/toc_off/toc_len</code> 解成离谱的大数。</p>
+<p>cookie 字段（我们实际用到的）：</p>
+<ul>
+<li><code>pkglen</code>：overlay(PKG) 总长度</li>
+<li><code>toc_off</code>：TOC 在 overlay 内偏移</li>
+<li><code>toc_len</code>：TOC 长度</li>
+<li><code>pylib</code>：例如 <code>python39.dll</code></li>
+</ul>
+<hr>
+<ol start="3">
+<li>解 TOC 并提取文件</li>
+</ol>
+<p>TOC 是一串 entry，entry 结构（同样大端）：</p>
+<ul>
+<li><code>entry_len</code> (u32)</li>
+<li><code>data_pos</code> (u32)：数据相对 overlay 起始偏移</li>
+<li><code>clen</code> (u32)：压缩后长度</li>
+<li><code>ulen</code> (u32)：解压后长度</li>
+<li><code>flag</code> (u8)：1 表示 zlib 压缩</li>
+<li><code>type</code> (u8)：<code>s</code>&#x2F;<code>m</code>&#x2F;<code>z</code>&#x2F;<code>b</code> 等</li>
+<li><code>name</code>：以 <code>\0</code> 结尾的字符串</li>
+</ul>
+<p>本题提出来的关键条目：</p>
+<ul>
+<li><code>main</code>（type <code>s</code>）：主脚本（marshal code object）</li>
+<li><code>PYZ-00.pyz</code>（type <code>z</code>）：Python 模块包（里面有 <code>crypto</code>、<code>myalgo</code> 等）</li>
+<li><code>struct</code>（type <code>m</code>）：本题把 <code>_struct</code> 封装成一个 marshal 形式，方便脚本 <code>import struct</code></li>
+</ul>
+<p>我这里把所有条目都提取到了：</p>
+<ul>
+<li><a href="file:///C:/Users/Lenovo/Desktop/%E9%80%86%E5%90%91%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95/main_extracted/">main_extracted</a></li>
+</ul>
+<p>其中：</p>
+<ul>
+<li><a href="file:///C:/Users/Lenovo/Desktop/%E9%80%86%E5%90%91%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95/main_extracted/main.marshal">main.marshal</a></li>
+<li><a href="file:///C:/Users/Lenovo/Desktop/%E9%80%86%E5%90%91%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95/main_extracted/PYZ-00.pyz">PYZ-00.pyz</a></li>
+<li><a href="file:///C:/Users/Lenovo/Desktop/%E9%80%86%E5%90%91%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95/main_extracted/struct.marshal">struct.marshal</a></li>
+</ul>
+<hr>
+<ol start="4">
+<li>main 脚本做了什么</li>
+</ol>
+<p>对 <code>main.marshal</code> 用 python3.9 的 <code>marshal.loads</code> 可以拿到 code object（注意：你本机 python3.11 直接 loads 会报 <code>bad marshal data</code>，因为版本不匹配）。</p>
+<p><code>main</code> 的关键常量：</p>
+<ul>
+<li>key bytes：<code>b&#39;1111222233334444&#39;</code></li>
+<li>校验目标（4 个 u32）：<code>(761104570, 1033127419, 3729026053, 795718415)</code></li>
+<li>提示文本是 base64 &#x2F; ascii85 混淆：<ul>
+<li><code>V2VsYzBtMyBUbyBUaGUgV29ybGQgb2YgTDFsYWMgPDM=</code> → <code>Welc0m3 To The World of L1lac &lt;3</code></li>
+<li><code>UmlnaHQsIGNvbmdyYXR1bGF0aW9ucyE=</code> → <code>Right, congratulations!</code></li>
+<li><code>V3JvbmcgRmxhZyE=</code> → <code>Wrong Flag!</code></li>
+<li><code>:i(G#8T&amp;KiF&lt;F_)F\</code>JToCggs;&#96;（ascii85）用于“触发”后面的自修改逻辑（见下一节）</li>
+</ul>
+</li>
+</ul>
+<p>它的校验结构可以概括为：</p>
+<ol>
+<li>要求输入形如 <code>LilacCTF&#123;...&#125;</code>，并且 <code>&#123;&#125;</code> 中间长度固定为 16 字节（否则 <code>struct.unpack(&#39;&lt;IIII&#39;, buf)</code> 会报错）</li>
+<li>把 16 字节内容按 little-endian 拆成 4 个 u32</li>
+<li>调 <code>myalgo.btea(v, 4, key)</code>（看起来像 XXTEA&#x2F;BTEA 加密）</li>
+<li>加密结果必须等于脚本里写死的那个 4-u32 tuple</li>
+</ol>
+<hr>
+<ol start="5">
+<li>关键坑：ascii85 解码会“改写”myalgo.MX</li>
+</ol>
+<p><code>myalgo</code> 一开始看起来像标准 BTEA&#x2F;XXTEA，但如果你直接调用，会得到和主程序运行时不同的结果。</p>
+<p>原因在 <code>crypto.a85decode</code>：它不仅仅是解 ascii85，它会做一次“自修改”：</p>
+<ul>
+<li>在解码过程中动态构造&#x2F;替换 <code>myalgo.MX</code> 的字节码（等价于把 MX 函数换成另一个表达式）</li>
+<li>因此同样的明文&#x2F;密钥，用 <code>btea</code> 加密出来的密文会变</li>
+</ul>
+<p>我们用 python3.9 运行时加载 <code>PYZ-00.pyz</code> 里的模块后做对比：</p>
+<ul>
+<li>调 <code>crypto.a85decode(&#39;:i(G#8T&amp;KiF&lt;F_)F</code>JToCggs;’)<code> 之前，</code>MX&#96; 是一种实现</li>
+<li>调用之后，<code>MX</code> 被替换成另一种位移组合：</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">((z &lt;&lt; 3) ^ (y &gt;&gt; 5)) + ((y &lt;&lt; 4) ^ (z &gt;&gt; 2))</span><br></pre></td></tr></table></figure>
+
+<p>并且 <code>btea</code> 内部使用的 DELTA 常量也不是标准 TEA 的 <code>0x9E3779B9</code>，而是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELTA = 1163219540 = 0x45555254</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol start="6">
+<li>还原 flag：对目标密文做 BTEA 解密</li>
+</ol>
+<p>已知：</p>
+<ul>
+<li>目标密文（4 个 u32）：<code>res = [761104570, 1033127419, 3729026053, 795718415]</code></li>
+<li>key（由 <code>b&#39;1111222233334444&#39;</code> 以 <code>&lt;IIII</code> 解释得到 4 个 u32）</li>
+<li>算法：BTEA&#x2F;XXTEA 结构，但使用“被替换后的 MX”和自定义 <code>DELTA=0x45555254</code></li>
+</ul>
+<p>因为主程序的校验是：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Encrypt(plain16) == res</span><br></pre></td></tr></table></figure>
+
+<p>所以我们直接对 <code>res</code> 做解密得到 <code>plain16</code>，再拼回 flag：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">plain16 = b&quot;e@sy_Pyth0n_SMC!&quot;</span><br><span class="line">flag = &quot;LilacCTF&#123;&quot; + plain16.decode(&quot;ascii&quot;) + &quot;&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol start="7">
+<li>最终 flag</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LilacCTF&#123;e@sy_Pyth0n_SMC!&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-C"><a href="#5-C" class="headerlink" title="5.C++++"></a>5.C++++</h3><p>题目描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">A simple .net app</span><br><span class="line">flag format: LilacCTF&#123;...&#125;</span><br></pre></td></tr></table></figure>
+
+<p>SentinelGuard（Twofish-like &#x2F; AES S-box 表还原）</p>
+<p>目标文件：</p>
+<ul>
+<li><a href="file:///c:/Users/Lenovo/Desktop/%E9%80%86%E5%90%91%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95/SentinelGuard.exe">SentinelGuard.exe</a></li>
+<li>解密&#x2F;验证脚本：<a href="file:///c:/Users/Lenovo/Desktop/%E9%80%86%E5%90%91%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95/solve_twofish_token.py">solve_twofish_token.py</a></li>
+</ul>
+<p>结论</p>
+<p>flag &#x2F; SECURITY TOKEN：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LilacCTF&#123;I_ju3t_w@nnA_b3_hapPy&#125;</span><br></pre></td></tr></table></figure>
+
+<p>验证（PowerShell）：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;LilacCTF&#123;I_ju3t_w@nnA_b3_hapPy&#125;&#x27;</span> | &amp; .\SentinelGuard.exe</span><br></pre></td></tr></table></figure>
+
+<p>会输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[+] ACCESS GRANTED. WELCOME BACK.</span><br></pre></td></tr></table></figure>
+
+<hr>
+<ol>
+<li>程序主流程定位（IDA）</li>
+</ol>
+<p>从输出&#x2F;交互行为（banner + “ENTER SECURITY TOKEN”）逆向定位到校验主函数：</p>
+<ul>
+<li><code>sub_14007C6C0</code>：打印、读入 token、变换、比较、输出结果</li>
+</ul>
+<p>核心调用链：</p>
+<ul>
+<li><code>sub_14007C6C0</code> → <code>sub_14007C490</code>：写入 ctx 的两段 key buffer</li>
+<li><code>sub_14007C6C0</code> → <code>sub_14007C4E0(ctx, inputString)</code>：把输入变换为比较用的字符串</li>
+<li><code>sub_14007C4E0</code>：<ul>
+<li>输入按 16 字节对齐</li>
+<li><code>sub_14007C890</code> 做 key schedule</li>
+<li>每 16 字节调用 <code>sub_14007CA40</code> 做 block 变换</li>
+</ul>
+</li>
+</ul>
+<p>比较对象是一个写死的 hex 字符串（32 字节密文的 hex 表示）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">A20492152735B4F6ECBAA359DB64417BDF277A73B085666034CF38E748D8FBD4</span><br></pre></td></tr></table></figure>
+
+<p>它长度为 64 hex 字符，对应 32 字节（两块 16 字节 block）。</p>
+<hr>
+<ol start="2">
+<li>“强制成功”补丁为什么拿不到 flag</li>
+</ol>
+<p>比较后会根据结果走成功&#x2F;失败分支。可以把分支 patch 掉（强制打印 success），证明定位点正确，但程序在 success 后并不会额外打印 flag，因此仍需要还原正确 token。</p>
+<p>（本题最终 token 就是 flag 本身。）</p>
+<hr>
+<ol start="3">
+<li>算法结构（Twofish-like）与关键子函数</li>
+</ol>
+<p>整体结构类似 Twofish（16 轮、每轮通过 h&#x2F;g 函数产生混淆扩散），但参数和表不是标准 Twofish：</p>
+<ul>
+<li><code>sub_14007C890</code>：生成 40 个子密钥（20 * 2）</li>
+<li><code>sub_14007CA40</code>：16 轮 block transform</li>
+<li><code>sub_14007CC20</code>：核心的 h&#x2F;g 函数（字节查表 + MDS 混合）</li>
+<li><code>sub_14007CB60</code>：RS-like remainder，用于生成 S-key</li>
+</ul>
+<hr>
+<ol start="4">
+<li>关键突破：q 表不是 Twofish 标准表，而是二进制内嵌表</li>
+</ol>
+<p>初始化函数：</p>
+<ul>
+<li><code>sub_14007D260</code> 会执行：<ul>
+<li><code>memmove(dst+0x20, &amp;unk_1401F9470, 0x200)</code></li>
+</ul>
+</li>
+</ul>
+<p>也就是拷贝 512 字节查表到运行时结构中。</p>
+<p>从字节序列可识别出：</p>
+<ul>
+<li>前 256 字节：AES S-box</li>
+<li>后 256 字节：AES inverse S-box</li>
+</ul>
+<p>因此不能用 Twofish 标准 q0&#x2F;q1 permutation 去复现，必须直接使用 <code>unk_1401F9470</code> 的真实表。</p>
+<hr>
+<ol start="5">
+<li>MDS 表生成与 RS remainder</li>
+</ol>
+<p>5.1 MDS 相关</p>
+<p><code>sub_14007D2E0</code> 在启动时生成 4 组 256-entry 的 32-bit 表，内部使用了 GF(2^8) 上的变换：</p>
+<ul>
+<li>多项式 <code>0x11B</code></li>
+<li>条件异或常量 <code>0x8D</code></li>
+</ul>
+<p>脚本中用 <code>_div2 / _div4 / _build_mds_tables</code> 复刻这一过程。</p>
+<p>5.2 RS remainder</p>
+<p><code>sub_14007CB60</code> 中可看到典型的 RS remainder 结构，关键常量：</p>
+<ul>
+<li><code>0x11D</code></li>
+<li><code>0x8E</code></li>
+</ul>
+<p>脚本里 <code>_rs_rem</code> 与 <code>_rs_mds_encode</code> 对齐该实现，用于推导 S-key。</p>
+<hr>
+<ol start="6">
+<li>key schedule 的“非标准 Twofish 常量”</li>
+</ol>
+<p>在 <code>sub_14007C890</code> 里，子密钥生成使用的常量来自 <code>sub_14000101D()</code> 指向的数据：</p>
+<ul>
+<li><code>step = 0x0A0A0A0A</code></li>
+<li><code>bias = 0x0D0D0D0D</code></li>
+<li><code>rot  = 0x0D</code>（13）</li>
+</ul>
+<p>对应关系（与标准 Twofish 的 <code>rho=0x01010101</code> 不同）：</p>
+<ul>
+<li><code>A = h(step*i, Me)</code></li>
+<li><code>B = rol8(h(step*i + bias, Mo))</code></li>
+<li><code>K[2i]   = A + B</code></li>
+<li><code>K[2i+1] = rol(A + 2B, rot)</code></li>
+</ul>
+<p>这也是直接套标准 Twofish 实现会失败的原因之一。</p>
+<hr>
+<ol start="7">
+<li>复现与解密（脚本）</li>
+</ol>
+<p>脚本 <a href="file:///c:/Users/Lenovo/Desktop/%E9%80%86%E5%90%91%E5%B7%A5%E4%BD%9C%E7%9B%AE%E5%BD%95/solve_twofish_token.py">solve_twofish_token.py</a> 做了两步验证：</p>
+<ol>
+<li>用程序内置密文解密出明文（得到 token）</li>
+<li>将明文再加密回去，确认得到的密文与内置密文完全一致（自洽校验）</li>
+</ol>
+<p>运行：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python .\solve_twofish_token.py</span><br></pre></td></tr></table></figure>
+
+<p>应看到：</p>
+<ul>
+<li><code>pt_utf8 LilacCTF&#123;I_ju3t_w@nnA_b3_hapPy&#125;</code></li>
+<li><code>reenc_matches True</code></li>
+</ul>
+<hr>
+<ol start="8">
+<li>最终 flag</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LilacCTF&#123;I_ju3t_w@nnA_b3_hapPy&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>附录：solve_twofish_token.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_rol32</span>(<span class="params">x: <span class="built_in">int</span>, n: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    n &amp;= <span class="number">31</span></span><br><span class="line">    <span class="keyword">return</span> ((x &lt;&lt; n) &amp; <span class="number">0xFFFFFFFF</span>) | ((x &amp; <span class="number">0xFFFFFFFF</span>) &gt;&gt; (<span class="number">32</span> - n))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_ror32</span>(<span class="params">x: <span class="built_in">int</span>, n: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    n &amp;= <span class="number">31</span></span><br><span class="line">    <span class="keyword">return</span> ((x &amp; <span class="number">0xFFFFFFFF</span>) &gt;&gt; n) | ((x &lt;&lt; (<span class="number">32</span> - n)) &amp; <span class="number">0xFFFFFFFF</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_ror4</span>(<span class="params">x: <span class="built_in">int</span>, n: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    n &amp;= <span class="number">3</span></span><br><span class="line">    x &amp;= <span class="number">0xF</span></span><br><span class="line">    <span class="keyword">return</span> ((x &gt;&gt; n) | ((x &lt;&lt; (<span class="number">4</span> - n)) &amp; <span class="number">0xF</span>)) &amp; <span class="number">0xF</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">_Q_BYTES = <span class="built_in">bytes</span>.fromhex(</span><br><span class="line">    <span class="string">&quot;63 7c 77 7b f2 6b 6f c5 30 01 67 2b fe d7 ab 76&quot;</span></span><br><span class="line">    <span class="string">&quot; ca 82 c9 7d fa 59 47 f0 ad d4 a2 af 9c a4 72 c0&quot;</span></span><br><span class="line">    <span class="string">&quot; b7 fd 93 26 36 3f f7 cc 34 a5 e5 f1 71 d8 31 15&quot;</span></span><br><span class="line">    <span class="string">&quot; 04 c7 23 c3 18 96 05 9a 07 12 80 e2 eb 27 b2 75&quot;</span></span><br><span class="line">    <span class="string">&quot; 09 83 2c 1a 1b 6e 5a a0 52 3b d6 b3 29 e3 2f 84&quot;</span></span><br><span class="line">    <span class="string">&quot; 53 d1 00 ed 20 fc b1 5b 6a cb be 39 4a 4c 58 cf&quot;</span></span><br><span class="line">    <span class="string">&quot; d0 ef aa fb 43 4d 33 85 45 f9 02 7f 50 3c 9f a8&quot;</span></span><br><span class="line">    <span class="string">&quot; 51 a3 40 8f 92 9d 38 f5 bc b6 da 21 10 ff f3 d2&quot;</span></span><br><span class="line">    <span class="string">&quot; cd 0c 13 ec 5f 97 44 17 c4 a7 7e 3d 64 5d 19 73&quot;</span></span><br><span class="line">    <span class="string">&quot; 60 81 4f dc 22 2a 90 88 46 ee b8 14 de 5e 0b db&quot;</span></span><br><span class="line">    <span class="string">&quot; e0 32 3a 0a 49 06 24 5c c2 d3 ac 62 91 95 e4 79&quot;</span></span><br><span class="line">    <span class="string">&quot; e7 c8 37 6d 8d d5 4e a9 6c 56 f4 ea 65 7a ae 08&quot;</span></span><br><span class="line">    <span class="string">&quot; ba 78 25 2e 1c a6 b4 c6 e8 dd 74 1f 4b bd 8b 8a&quot;</span></span><br><span class="line">    <span class="string">&quot; 70 3e b5 66 48 03 f6 0e 61 35 57 b9 86 c1 1d 9e&quot;</span></span><br><span class="line">    <span class="string">&quot; e1 f8 98 11 69 d9 8e 94 9b 1e 87 e9 ce 55 28 df&quot;</span></span><br><span class="line">    <span class="string">&quot; 8c a1 89 0d bf e6 42 68 41 99 2d 0f b0 54 bb 16&quot;</span></span><br><span class="line">    <span class="string">&quot; 52 09 6a d5 30 36 a5 38 bf 40 a3 9e 81 f3 d7 fb&quot;</span></span><br><span class="line">    <span class="string">&quot; 7c e3 39 82 9b 2f ff 87 34 8e 43 44 c4 de e9 cb&quot;</span></span><br><span class="line">    <span class="string">&quot; 54 7b 94 32 a6 c2 23 3d ee 4c 95 0b 42 fa c3 4e&quot;</span></span><br><span class="line">    <span class="string">&quot; 08 2e a1 66 28 d9 24 b2 76 5b a2 49 6d 8b d1 25&quot;</span></span><br><span class="line">    <span class="string">&quot; 72 f8 f6 64 86 68 98 16 d4 a4 5c cc 5d 65 b6 92&quot;</span></span><br><span class="line">    <span class="string">&quot; 6c 70 48 50 fd ed b9 da 5e 15 46 57 a7 8d 9d 84&quot;</span></span><br><span class="line">    <span class="string">&quot; 90 d8 ab 00 8c bc d3 0a f7 e4 58 05 b8 b3 45 06&quot;</span></span><br><span class="line">    <span class="string">&quot; d0 2c 1e 8f ca 3f 0f 02 c1 af bd 03 01 13 8a 6b&quot;</span></span><br><span class="line">    <span class="string">&quot; 3a 91 11 41 4f 67 dc ea 97 f2 cf ce f0 b4 e6 73&quot;</span></span><br><span class="line">    <span class="string">&quot; 96 ac 74 22 e7 ad 35 85 e2 f9 37 e8 1c 75 df 6e&quot;</span></span><br><span class="line">    <span class="string">&quot; 47 f1 1a 71 1d 29 c5 89 6f b7 62 0e aa 18 be 1b&quot;</span></span><br><span class="line">    <span class="string">&quot; fc 56 3e 4b c6 d2 79 20 9a db c0 fe 78 cd 5a f4&quot;</span></span><br><span class="line">    <span class="string">&quot; 1f dd a8 33 88 07 c7 31 b1 12 10 59 27 80 ec 5f&quot;</span></span><br><span class="line">    <span class="string">&quot; 60 51 7f a9 19 b5 4a 0d 2d e5 7a 9f 93 c9 9c ef&quot;</span></span><br><span class="line">    <span class="string">&quot; a0 e0 3b 4d ae 2a f5 b0 c8 eb bb 3c 83 53 99 61&quot;</span></span><br><span class="line">    <span class="string">&quot; 17 2b 04 7e ba 77 d6 26 e1 69 14 63 55 21 0c 7d&quot;</span></span><br><span class="line">)</span><br><span class="line">Q0 = <span class="built_in">list</span>(_Q_BYTES[:<span class="number">256</span>])</span><br><span class="line">Q1 = <span class="built_in">list</span>(_Q_BYTES[<span class="number">256</span>:])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_div2</span>(<span class="params">v: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    v &amp;= <span class="number">0xFF</span></span><br><span class="line">    <span class="keyword">return</span> ((v &gt;&gt; <span class="number">1</span>) ^ (<span class="number">0x8D</span> <span class="keyword">if</span> (v &amp; <span class="number">1</span>) <span class="keyword">else</span> <span class="number">0</span>)) &amp; <span class="number">0xFF</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_div4</span>(<span class="params">v: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    v &amp;= <span class="number">0xFF</span></span><br><span class="line">    <span class="keyword">return</span> ((v &gt;&gt; <span class="number">2</span>) ^ (<span class="number">0x8D</span> <span class="keyword">if</span> (v &amp; <span class="number">2</span>) <span class="keyword">else</span> <span class="number">0</span>) ^ (<span class="number">0x46</span> <span class="keyword">if</span> (v &amp; <span class="number">1</span>) <span class="keyword">else</span> <span class="number">0</span>)) &amp; <span class="number">0xFF</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_build_mds_tables</span>(<span class="params">q_base</span>):</span><br><span class="line">    m0 = [<span class="number">0</span>] * <span class="number">256</span></span><br><span class="line">    m1 = [<span class="number">0</span>] * <span class="number">256</span></span><br><span class="line">    m2 = [<span class="number">0</span>] * <span class="number">256</span></span><br><span class="line">    m3 = [<span class="number">0</span>] * <span class="number">256</span></span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">256</span>):</span><br><span class="line">        v9 = q_base[x] &amp; <span class="number">0xFF</span></span><br><span class="line">        v10 = (v9 ^ _div4(v9)) &amp; <span class="number">0xFF</span></span><br><span class="line">        v12 = (_div4(v9) ^ v9 ^ _div2(v9)) &amp; <span class="number">0xFF</span></span><br><span class="line">        m0[x] = v10 | (v9 &lt;&lt; <span class="number">8</span>) | (v12 &lt;&lt; <span class="number">16</span>) | (v9 &lt;&lt; <span class="number">24</span>)</span><br><span class="line">        m1[x] = v9 | (v12 &lt;&lt; <span class="number">8</span>) | (v10 &lt;&lt; <span class="number">16</span>) | (v12 &lt;&lt; <span class="number">24</span>)</span><br><span class="line">        m2[x] = v12 | (v10 &lt;&lt; <span class="number">8</span>) | (v9 &lt;&lt; <span class="number">16</span>) | (v10 &lt;&lt; <span class="number">24</span>)</span><br><span class="line">        m3[x] = m0[x]</span><br><span class="line">    <span class="keyword">return</span> m0, m1, m2, m3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">MDS0, MDS1, MDS2, MDS3 = _build_mds_tables(Q0)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_rs_rem</span>(<span class="params">x: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    b3 = (x &gt;&gt; <span class="number">24</span>) &amp; <span class="number">0xFF</span></span><br><span class="line">    g2 = (b3 &lt;&lt; <span class="number">1</span>) &amp; <span class="number">0x1FF</span></span><br><span class="line">    <span class="keyword">if</span> b3 &amp; <span class="number">0x80</span>:</span><br><span class="line">        g2 ^= <span class="number">0x11D</span></span><br><span class="line">    g2 &amp;= <span class="number">0xFF</span></span><br><span class="line">    g3 = ((b3 &gt;&gt; <span class="number">1</span>) &amp; <span class="number">0x7F</span>) ^ g2</span><br><span class="line">    <span class="keyword">if</span> b3 &amp; <span class="number">1</span>:</span><br><span class="line">        g3 ^= <span class="number">0x8E</span></span><br><span class="line">    g3 &amp;= <span class="number">0xFF</span></span><br><span class="line">    b0 = (x &gt;&gt; <span class="number">0</span>) &amp; <span class="number">0xFF</span></span><br><span class="line">    b1 = (x &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span></span><br><span class="line">    b2 = (x &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0xFF</span></span><br><span class="line">    <span class="keyword">return</span> ((b0 ^ g3) | ((b1 ^ g2) &lt;&lt; <span class="number">8</span>) | ((b2 ^ g3) &lt;&lt; <span class="number">16</span>) | (b3 &lt;&lt; <span class="number">24</span>)) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_rs_mds_encode</span>(<span class="params">even_word: <span class="built_in">int</span>, odd_word: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    r = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> w <span class="keyword">in</span> (odd_word &amp; <span class="number">0xFFFFFFFF</span>, even_word &amp; <span class="number">0xFFFFFFFF</span>):</span><br><span class="line">        r ^= w</span><br><span class="line">        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">            r = _rs_rem(r)</span><br><span class="line">    <span class="keyword">return</span> r &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_h_word</span>(<span class="params">x: <span class="built_in">int</span>, l0: <span class="built_in">int</span>, l1: <span class="built_in">int</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">    b0 = x &amp; <span class="number">0xFF</span></span><br><span class="line">    b1 = (x &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span></span><br><span class="line">    b2 = (x &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0xFF</span></span><br><span class="line">    b3 = (x &gt;&gt; <span class="number">24</span>) &amp; <span class="number">0xFF</span></span><br><span class="line"></span><br><span class="line">    y0 = (Q1[Q0[b0] ^ (l1 &amp; <span class="number">0xFF</span>)] ^ (l0 &amp; <span class="number">0xFF</span>)) &amp; <span class="number">0xFF</span></span><br><span class="line">    y1 = (Q1[Q1[b1] ^ ((l1 &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>)] ^ ((l0 &gt;&gt; <span class="number">8</span>) &amp; <span class="number">0xFF</span>)) &amp; <span class="number">0xFF</span></span><br><span class="line">    y2 = (Q0[Q0[b2] ^ ((l1 &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0xFF</span>)] ^ ((l0 &gt;&gt; <span class="number">16</span>) &amp; <span class="number">0xFF</span>)) &amp; <span class="number">0xFF</span></span><br><span class="line">    y3 = (Q0[Q1[b3] ^ ((l1 &gt;&gt; <span class="number">24</span>) &amp; <span class="number">0xFF</span>)] ^ ((l0 &gt;&gt; <span class="number">24</span>) &amp; <span class="number">0xFF</span>)) &amp; <span class="number">0xFF</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (MDS0[y0] ^ MDS1[y1] ^ MDS2[y2] ^ MDS3[y3]) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_key_schedule_128</span>(<span class="params">key: <span class="built_in">bytes</span></span>) -&gt; <span class="built_in">tuple</span>[<span class="built_in">tuple</span>[<span class="built_in">int</span>, <span class="built_in">int</span>], <span class="built_in">list</span>[<span class="built_in">int</span>]]:</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(key) != <span class="number">16</span>:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">&quot;key must be 16 bytes&quot;</span>)</span><br><span class="line"></span><br><span class="line">    kw = [<span class="built_in">int</span>.from_bytes(key[i : i + <span class="number">4</span>], <span class="string">&quot;little&quot;</span>) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="number">16</span>, <span class="number">4</span>)]</span><br><span class="line">    me = [kw[<span class="number">0</span>], kw[<span class="number">2</span>]]</span><br><span class="line">    mo = [kw[<span class="number">1</span>], kw[<span class="number">3</span>]]</span><br><span class="line"></span><br><span class="line">    s1 = _rs_mds_encode(me[<span class="number">0</span>], mo[<span class="number">0</span>])</span><br><span class="line">    s0 = _rs_mds_encode(me[<span class="number">1</span>], mo[<span class="number">1</span>])</span><br><span class="line">    s_key = (s0, s1)</span><br><span class="line"></span><br><span class="line">    step = <span class="number">0x0A0A0A0A</span></span><br><span class="line">    bias = <span class="number">0x0D0D0D0D</span></span><br><span class="line">    rot = <span class="number">0x0D</span></span><br><span class="line"></span><br><span class="line">    k = [<span class="number">0</span>] * <span class="number">40</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">20</span>):</span><br><span class="line">        a = _h_word((step * i) &amp; <span class="number">0xFFFFFFFF</span>, me[<span class="number">0</span>], me[<span class="number">1</span>])</span><br><span class="line">        b = _rol32(_h_word((step * i + bias) &amp; <span class="number">0xFFFFFFFF</span>, mo[<span class="number">0</span>], mo[<span class="number">1</span>]), <span class="number">8</span>)</span><br><span class="line">        k[<span class="number">2</span> * i] = (a + b) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        k[<span class="number">2</span> * i + <span class="number">1</span>] = _rol32((a + <span class="number">2</span> * b) &amp; <span class="number">0xFFFFFFFF</span>, rot)</span><br><span class="line">    <span class="keyword">return</span> s_key, k</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_encrypt_block</span>(<span class="params">block: <span class="built_in">bytes</span>, s_key: <span class="built_in">tuple</span>[<span class="built_in">int</span>, <span class="built_in">int</span>], k: <span class="built_in">list</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">bytes</span>:</span><br><span class="line">    s0, s1, s2, s3 = struct.unpack(<span class="string">&quot;&lt;4I&quot;</span>, block)</span><br><span class="line">    s0 ^= k[<span class="number">0</span>]</span><br><span class="line">    s1 ^= k[<span class="number">1</span>]</span><br><span class="line">    s2 ^= k[<span class="number">2</span>]</span><br><span class="line">    s3 ^= k[<span class="number">3</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">        t0 = _h_word(s0, s_key[<span class="number">0</span>], s_key[<span class="number">1</span>])</span><br><span class="line">        t1 = _h_word(_rol32(s1, <span class="number">8</span>), s_key[<span class="number">0</span>], s_key[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">        s3 = _rol32(s3, <span class="number">5</span>)</span><br><span class="line">        s2 = _rol32((((k[<span class="number">8</span> + <span class="number">2</span> * r] + t0 + t1) &amp; <span class="number">0xFFFFFFFF</span>) ^ s2) &amp; <span class="number">0xFFFFFFFF</span>, <span class="number">27</span>)</span><br><span class="line">        s3 ^= (k[<span class="number">8</span> + <span class="number">2</span> * r + <span class="number">1</span>] + t0 + <span class="number">2</span> * t1) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> r != <span class="number">15</span>:</span><br><span class="line">            s0, s2 = s2, s0</span><br><span class="line">            s1, s3 = s3, s1</span><br><span class="line"></span><br><span class="line">    s0 ^= k[<span class="number">4</span>]</span><br><span class="line">    s1 ^= k[<span class="number">5</span>]</span><br><span class="line">    s2 ^= k[<span class="number">6</span>]</span><br><span class="line">    s3 ^= k[<span class="number">7</span>]</span><br><span class="line">    <span class="keyword">return</span> struct.pack(<span class="string">&quot;&lt;4I&quot;</span>, s0, s1, s2, s3)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_decrypt_block</span>(<span class="params">block: <span class="built_in">bytes</span>, s_key: <span class="built_in">tuple</span>[<span class="built_in">int</span>, <span class="built_in">int</span>], k: <span class="built_in">list</span>[<span class="built_in">int</span>]</span>) -&gt; <span class="built_in">bytes</span>:</span><br><span class="line">    s0, s1, s2, s3 = struct.unpack(<span class="string">&quot;&lt;4I&quot;</span>, block)</span><br><span class="line">    s0 ^= k[<span class="number">4</span>]</span><br><span class="line">    s1 ^= k[<span class="number">5</span>]</span><br><span class="line">    s2 ^= k[<span class="number">6</span>]</span><br><span class="line">    s3 ^= k[<span class="number">7</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">15</span>, -<span class="number">1</span>, -<span class="number">1</span>):</span><br><span class="line">        <span class="keyword">if</span> r != <span class="number">15</span>:</span><br><span class="line">            s0, s2 = s2, s0</span><br><span class="line">            s1, s3 = s3, s1</span><br><span class="line"></span><br><span class="line">        t0 = _h_word(s0, s_key[<span class="number">0</span>], s_key[<span class="number">1</span>])</span><br><span class="line">        t1 = _h_word(_rol32(s1, <span class="number">8</span>), s_key[<span class="number">0</span>], s_key[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line">        s2 = _ror32(s2, <span class="number">27</span>)</span><br><span class="line">        s2 ^= (k[<span class="number">8</span> + <span class="number">2</span> * r] + t0 + t1) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        s3 ^= (k[<span class="number">8</span> + <span class="number">2</span> * r + <span class="number">1</span>] + t0 + <span class="number">2</span> * t1) &amp; <span class="number">0xFFFFFFFF</span></span><br><span class="line">        s3 = _ror32(s3, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line">    s0 ^= k[<span class="number">0</span>]</span><br><span class="line">    s1 ^= k[<span class="number">1</span>]</span><br><span class="line">    s2 ^= k[<span class="number">2</span>]</span><br><span class="line">    s3 ^= k[<span class="number">3</span>]</span><br><span class="line">    <span class="keyword">return</span> struct.pack(<span class="string">&quot;&lt;4I&quot;</span>, s0, s1, s2, s3)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    key = <span class="built_in">bytes</span>([b ^ <span class="number">0x41</span> <span class="keyword">for</span> b <span class="keyword">in</span> [<span class="number">0x16</span>, <span class="number">0x0E</span>, <span class="number">0x0F</span>, <span class="number">0x05</span>, <span class="number">0x04</span>, <span class="number">0x13</span>, <span class="number">0x07</span>, <span class="number">0x14</span>, <span class="number">0x0D</span>, <span class="number">0x67</span>, <span class="number">0x67</span>, <span class="number">0x11</span>, <span class="number">0x04</span>, <span class="number">0x00</span>, <span class="number">0x02</span>, <span class="number">0x04</span>]])</span><br><span class="line">    ct = <span class="built_in">bytes</span>.fromhex(<span class="string">&quot;A20492152735B4F6ECBAA359DB64417BDF277A73B085666034CF38E748D8FBD4&quot;</span>)</span><br><span class="line">    s_key, subkeys = _key_schedule_128(key)</span><br><span class="line"></span><br><span class="line">    pt = _decrypt_block(ct[:<span class="number">16</span>], s_key, subkeys) + _decrypt_block(ct[<span class="number">16</span>:], s_key, subkeys)</span><br><span class="line">    pt_stripped = pt.rstrip(<span class="string">b&quot;\x00&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;pt_hex&quot;</span>, pt.<span class="built_in">hex</span>())</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;pt_hex_stripped&quot;</span>, pt_stripped.<span class="built_in">hex</span>())</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;pt_utf8&quot;</span>, pt_stripped.decode(<span class="string">&quot;utf-8&quot;</span>))</span><br><span class="line">    <span class="keyword">except</span> UnicodeDecodeError:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;pt_utf16le&quot;</span>, pt_stripped.decode(<span class="string">&quot;utf-16le&quot;</span>))</span><br><span class="line">    <span class="keyword">except</span> UnicodeDecodeError:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">    padded = pt_stripped + <span class="string">b&quot;\x00&quot;</span> * ((<span class="number">16</span> - (<span class="built_in">len</span>(pt_stripped) % <span class="number">16</span>)) % <span class="number">16</span>)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(padded) == <span class="number">0</span>:</span><br><span class="line">        padded = <span class="string">b&quot;\x00&quot;</span> * <span class="number">16</span></span><br><span class="line">    check = _encrypt_block(padded[:<span class="number">16</span>], s_key, subkeys) + _encrypt_block(padded[<span class="number">16</span>:<span class="number">32</span>], s_key, subkeys)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;reenc_matches&quot;</span>, check == ct)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p>所以flag为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LilacCTF&#123;I_ju3t_w@nnA_b3_hapPy&#125;</span><br></pre></td></tr></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://joke-new.zeabur.app">joke</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://joke-new.zeabur.app/2026/01/28/XCTF-LilacCTF-2026-Writeup/">https://joke-new.zeabur.app/2026/01/28/XCTF-LilacCTF-2026-Writeup/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://joke-new.zeabur.app" target="_blank">joke的小世界</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/web/">web</a><a class="post-meta__tags" href="/tags/misc/">misc</a><a class="post-meta__tags" href="/tags/ctf/">ctf</a><a class="post-meta__tags" href="/tags/XCTF/">XCTF</a></div><div class="post-share"><div class="social-share" data-image="https://picsum.photos/1920/1080?random=1" data-sites="facebook,x,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/01/24/Web%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%85%A5%E9%97%A8%E9%A2%98%E5%8D%95/" title="Web攻防世界入门题单"><img class="cover" src="https://picsum.photos/1920/1080?random=1" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Web攻防世界入门题单</div></div><div class="info-2"><div class="info-item-1">Web学习笔记Writeup攻防世界入门题单：https://adworld.xctf.org.cn/challenges/problem-set-index?id=25 入门题单教程：https://www.bilibili.com/video/BV1rz4y137dF/（讲的非常通俗，爱了爱了） 1.view_source题目描述： 1X老师让小宁同学查看一个网页的源代码，但小宁同学发现鼠标右键好像不管用了。  本题要求就是看网页源代码，按F12，元素里就可以看到flag   flag为： 1cyberpeace&#123;34c612f0278f14ab46733186fa21d41f&#125;   2.get_post题目描述： 1X老师告诉小宁同学HTTP通常使用两种请求方法，你知道是哪两种吗？  通过上网查询，得知： HTTP协议中最常用的两种请求方法是GET和POST。  GET：用于从服务器获取数据，参数通过URL传递（如/test?name=value），适合非敏感信息的查询，但数据长度受URL限制。 POST：用于向服务器提交数据，参数放在请求体中（如表单提...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/01/04/CTFSHOW-2026%E5%85%83%E6%97%A6%E8%B7%A8%E5%B9%B4%E6%AC%A2%E4%B9%90%E8%B5%9B-CS2026-%E4%B8%AA%E4%BA%BA%E5%86%99%E7%9A%84%E9%83%A8%E5%88%86wp/" title="CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)"><img class="cover" src="https://picsum.photos/1920/1080?random=1" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-04</div><div class="info-item-2">CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)</div></div><div class="info-2"><div class="info-item-1">二.CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)比赛网址：https://ctf.show/competitions/cs2026 当前积分： 1150   已解出题目数：10   还是很菜的hhh(毕竟需要AI辅助) 1.热身签到12题目描述元旦时，我二舅姥爷给我出的密码题  压缩包里有个flag.txt,内容是： 154515552545455515456547055555566545654495548554855575370515051485150515453705555545755525456537054515551515051485150515450495568  这样的数字特征暗示我们可能要把这些数字转换成ASCII码，但数字个数太多了，有104位，所以不妨两位一组试试， 这里解释一下原因（我表达方式不太行AI生成一下），然后把每组数字先转为十进制（其实他本身就是了），每组转成对应的ASCII码： 1104 是一个偶数！在密码学和编码学中，“偶数长度”是一个非常强烈的信号，它暗示着数据可能是成对处理的。为什么？因为计算机中最基础的单位“字节...</div></div></div></a><a class="pagination-related" href="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/" title="furryCTF热身赛wp"><img class="cover" src="https://picsum.photos/1920/1080?random=2" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-03</div><div class="info-item-2">furryCTF热身赛wp</div></div><div class="info-2"><div class="info-item-1">furryCTF2025赛前热身题（misc方向）比赛网站：https://furryctf.com/games/5 1.签到题题目描述： 123话说，你们有发现比赛平台上藏有一个flag吗？注意flag格式哦~  在赛题主页就可以找到：   flag为： 1furryCTF&#123;Hack_for_fun_not_for_profit&#125;  2.新的一年，新的开始题目描述： 1234567891011Catch The FutureTime to own 2025Forever young in hackingfurryCTF&#123;h4ppY_n3w_y34r_2o25_w1th_1Ov3&#125;祝各位师傅：栈上生花，堆里藏月，逆向不秃，web不坐牢，pwn穿一切，ak全场！ 🚩🎉  这种就是问卷题 flag为： 1furryCTF&#123;h4ppY_n3w_y34r_2o25_w1th_1Ov3&#125;  3.PassDump123456789作为CTFer，很多时候都会有电脑放一夜跑程序的经历。但猫猫看着跑一夜碰撞之后蓝屏的电脑，陷入了沉思...</div></div></div></a><a class="pagination-related" href="/2026/01/24/Web%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%85%A5%E9%97%A8%E9%A2%98%E5%8D%95/" title="Web攻防世界入门题单"><img class="cover" src="https://picsum.photos/1920/1080?random=1" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-24</div><div class="info-item-2">Web攻防世界入门题单</div></div><div class="info-2"><div class="info-item-1">Web学习笔记Writeup攻防世界入门题单：https://adworld.xctf.org.cn/challenges/problem-set-index?id=25 入门题单教程：https://www.bilibili.com/video/BV1rz4y137dF/（讲的非常通俗，爱了爱了） 1.view_source题目描述： 1X老师让小宁同学查看一个网页的源代码，但小宁同学发现鼠标右键好像不管用了。  本题要求就是看网页源代码，按F12，元素里就可以看到flag   flag为： 1cyberpeace&#123;34c612f0278f14ab46733186fa21d41f&#125;   2.get_post题目描述： 1X老师告诉小宁同学HTTP通常使用两种请求方法，你知道是哪两种吗？  通过上网查询，得知： HTTP协议中最常用的两种请求方法是GET和POST。  GET：用于从服务器获取数据，参数通过URL传递（如/test?name=value），适合非敏感信息的查询，但数据长度受URL限制。 POST：用于向服务器提交数据，参数放在请求体中（如表单提...</div></div></div></a><a class="pagination-related" href="/2026/01/05/%E5%8E%8B%E7%BC%A9%E5%8C%85%E5%90%84%E7%A7%8D%E7%B1%BB%E5%9E%8B%E8%A7%A3%E5%8E%8B%E8%84%9A%E6%9C%AC%EF%BC%88%E9%80%82%E5%90%88%E5%A5%97%E5%A8%83%E9%A2%98%EF%BC%89/" title="压缩包各种类型解压脚本（适合套娃题）"><img class="cover" src="https://picsum.photos/1920/1080?random=3" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-05</div><div class="info-item-2">压缩包各种类型解压脚本（适合套娃题）</div></div><div class="info-2"><div class="info-item-1">压缩包全解压脚本： 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111112113114115116117118119120121122123124125126127128129130131132133134135136137138139140141142143144145146147148149150151152153154155156157158159160161162163164165166167168169170171172173174175176177178179180181182183184import osimport shutilimport zipfileimport ...</div></div></div></a><a class="pagination-related" href="/2026/01/01/Vulnix%20993%20SSLTLS%20%E5%AE%89%E5%85%A8%E6%89%AB%E6%8F%8F%E7%BB%93%E6%9E%9C%E6%B1%87%E6%80%BB/" title="vulnix常用靶机用testssl扫描结果"><img class="cover" src="https://picsum.photos/1920/1080?random=3" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-01-01</div><div class="info-item-2">vulnix常用靶机用testssl扫描结果</div></div><div class="info-2"><div class="info-item-1">   使用了testssl.sh-3.3 参照网址：https://github.com/testssl/testssl.sh   Vulnix (192.168.137.133:993) SSL&#x2F;TLS 安全扫描结果汇总扫描时间: 2025-12-03 08:10:02 - 08:10:57 (总耗时 56s)目标服务: IMAPOpenSSL版本 (客户端检测): OpenSSL 1.0.2-bad (Mar 28 2025)总体评级: T (信任问题)  表格一：支持的 SSL&#x2F;TLS 协议和密码套件 (协议和Cipher Categories部分)   类别 项目 状态 &#x2F; 结果 严重性 &#x2F; 建议    协议支持 SSLv2 not offered (OK) (未提供) 正常，安全。    SSLv3 offered (NOT ok) (已提供) 高危。完全过时，存在 POODLE 漏洞风险，应立即禁用。    TLS 1.0 offered (deprecated) (已提供，已弃用) 中危。已过时，存在已知缺陷，应禁用。    ...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="twikoo-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/9.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">joke</div><div class="author-info-description">我希望你多笑笑</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/simple9656"><i class="fab fa-github"></i><span>click me</span></a><div class="card-info-social-icons"><a class="social-icon" href="/h" target="_blank" title=""><i></i></a><a class="social-icon" href="/t" target="_blank" title=""><i class="1"></i></a><a class="social-icon" href="/t" target="_blank" title=""><i class="2"></i></a><a class="social-icon" href="/p" target="_blank" title=""><i class="3"></i></a><a class="social-icon" href="/s" target="_blank" title=""><i class="4"></i></a><a class="social-icon" href="/:" target="_blank" title=""><i class="5"></i></a><a class="social-icon" href="/" target="_blank" title=""><i class="6"></i></a><a class="social-icon" href="/" target="_blank" title=""><i class="7"></i></a><a class="social-icon" href="/g" target="_blank" title=""><i class="8"></i></a><a class="social-icon" href="/i" target="_blank" title=""><i class="9"></i></a><a class="social-icon" href="/t" target="_blank" title=""><i class="10"></i></a><a class="social-icon" href="/h" target="_blank" title=""><i class="11"></i></a><a class="social-icon" href="/u" target="_blank" title=""><i class="12"></i></a><a class="social-icon" href="/b" target="_blank" title=""><i class="13"></i></a><a class="social-icon" href="/." target="_blank" title=""><i class="14"></i></a><a class="social-icon" href="/c" target="_blank" title=""><i class="15"></i></a><a class="social-icon" href="/o" target="_blank" title=""><i class="16"></i></a><a class="social-icon" href="/m" target="_blank" title=""><i class="17"></i></a><a class="social-icon" href="/" target="_blank" title=""><i class="18"></i></a><a class="social-icon" href="/s" target="_blank" title=""><i class="19"></i></a><a class="social-icon" href="/i" target="_blank" title=""><i class="20"></i></a><a class="social-icon" href="/m" target="_blank" title=""><i class="21"></i></a><a class="social-icon" href="/p" target="_blank" title=""><i class="22"></i></a><a class="social-icon" href="/l" target="_blank" title=""><i class="23"></i></a><a class="social-icon" href="/e" target="_blank" title=""><i class="24"></i></a><a class="social-icon" href="/9" target="_blank" title=""><i class="25"></i></a><a class="social-icon" href="/6" target="_blank" title=""><i class="26"></i></a><a class="social-icon" href="/5" target="_blank" title=""><i class="27"></i></a><a class="social-icon" href="/6" target="_blank" title=""><i class="28"></i></a><a class="social-icon" href="/" target="_blank" title=""><i class="29"></i></a><a class="social-icon" href="/%7C" target="_blank" title=""><i class="30"></i></a><a class="social-icon" href="/%7C" target="_blank" title=""><i class="31"></i></a><a class="social-icon" href="/" target="_blank" title=""><i class="32"></i></a><a class="social-icon" href="/G" target="_blank" title=""><i class="33"></i></a><a class="social-icon" href="/i" target="_blank" title=""><i class="34"></i></a><a class="social-icon" href="/t" target="_blank" title=""><i class="35"></i></a><a class="social-icon" href="/h" target="_blank" title=""><i class="36"></i></a><a class="social-icon" href="/u" target="_blank" title=""><i class="37"></i></a><a class="social-icon" href="/b" target="_blank" title=""><i class="38"></i></a><a class="social-icon" href="/" target="_blank" title=""><i class="39"></i></a><a class="social-icon" href="/%7C" target="_blank" title=""><i class="40"></i></a><a class="social-icon" href="/%7C" target="_blank" title=""><i class="41"></i></a><a class="social-icon" href="/" target="_blank" title=""><i class="42"></i></a><a class="social-icon" href="/'" target="_blank" title=""><i class="43"></i></a><a class="social-icon" href="#" target="_blank" title=""><i class="44"></i></a><a class="social-icon" href="/2" target="_blank" title=""><i class="45"></i></a><a class="social-icon" href="/4" target="_blank" title=""><i class="46"></i></a><a class="social-icon" href="/2" target="_blank" title=""><i class="47"></i></a><a class="social-icon" href="/9" target="_blank" title=""><i class="48"></i></a><a class="social-icon" href="/2" target="_blank" title=""><i class="49"></i></a><a class="social-icon" href="/e" target="_blank" title=""><i class="50"></i></a><a class="social-icon" href="/'" target="_blank" title=""><i class="51"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">你是我的全世界</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#XCTF-LilacCTF-2026-Writeup"><span class="toc-number">1.</span> <span class="toc-text">XCTF-LilacCTF 2026-Writeup</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-MISC-Welcome"><span class="toc-number">1.1.</span> <span class="toc-text">1.MISC-Welcome</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-MISC-Questionnaire"><span class="toc-number">1.2.</span> <span class="toc-text">2.MISC-Questionnaire</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-MISC-Sky-Is-Ours"><span class="toc-number">1.3.</span> <span class="toc-text">3.MISC-Sky Is Ours</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-ezPython"><span class="toc-number">1.4.</span> <span class="toc-text">4.ezPython</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-C"><span class="toc-number">1.5.</span> <span class="toc-text">5.C++++</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2026/01/28/XCTF-LilacCTF-2026-Writeup/" title="XCTF-LilacCTF 2026-Writeup"><img src="https://picsum.photos/1920/1080?random=1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="XCTF-LilacCTF 2026-Writeup"/></a><div class="content"><a class="title" href="/2026/01/28/XCTF-LilacCTF-2026-Writeup/" title="XCTF-LilacCTF 2026-Writeup">XCTF-LilacCTF 2026-Writeup</a><time datetime="2026-01-28T04:37:32.000Z" title="发表于 2026-01-28 12:37:32">2026-01-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/24/Web%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%85%A5%E9%97%A8%E9%A2%98%E5%8D%95/" title="Web攻防世界入门题单"><img src="https://picsum.photos/1920/1080?random=1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Web攻防世界入门题单"/></a><div class="content"><a class="title" href="/2026/01/24/Web%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C%E5%85%A5%E9%97%A8%E9%A2%98%E5%8D%95/" title="Web攻防世界入门题单">Web攻防世界入门题单</a><time datetime="2026-01-23T16:27:53.000Z" title="发表于 2026-01-24 00:27:53">2026-01-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/05/%E5%8E%8B%E7%BC%A9%E5%8C%85%E5%90%84%E7%A7%8D%E7%B1%BB%E5%9E%8B%E8%A7%A3%E5%8E%8B%E8%84%9A%E6%9C%AC%EF%BC%88%E9%80%82%E5%90%88%E5%A5%97%E5%A8%83%E9%A2%98%EF%BC%89/" title="压缩包各种类型解压脚本（适合套娃题）"><img src="https://picsum.photos/1920/1080?random=3" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="压缩包各种类型解压脚本（适合套娃题）"/></a><div class="content"><a class="title" href="/2026/01/05/%E5%8E%8B%E7%BC%A9%E5%8C%85%E5%90%84%E7%A7%8D%E7%B1%BB%E5%9E%8B%E8%A7%A3%E5%8E%8B%E8%84%9A%E6%9C%AC%EF%BC%88%E9%80%82%E5%90%88%E5%A5%97%E5%A8%83%E9%A2%98%EF%BC%89/" title="压缩包各种类型解压脚本（适合套娃题）">压缩包各种类型解压脚本（适合套娃题）</a><time datetime="2026-01-05T13:45:53.000Z" title="发表于 2026-01-05 21:45:53">2026-01-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/04/CTFSHOW-2026%E5%85%83%E6%97%A6%E8%B7%A8%E5%B9%B4%E6%AC%A2%E4%B9%90%E8%B5%9B-CS2026-%E4%B8%AA%E4%BA%BA%E5%86%99%E7%9A%84%E9%83%A8%E5%88%86wp/" title="CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)"><img src="https://picsum.photos/1920/1080?random=1" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)"/></a><div class="content"><a class="title" href="/2026/01/04/CTFSHOW-2026%E5%85%83%E6%97%A6%E8%B7%A8%E5%B9%B4%E6%AC%A2%E4%B9%90%E8%B5%9B-CS2026-%E4%B8%AA%E4%BA%BA%E5%86%99%E7%9A%84%E9%83%A8%E5%88%86wp/" title="CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)">CTFSHOW-2026元旦跨年欢乐赛-CS2026(个人写的部分wp)</a><time datetime="2026-01-04T08:21:23.000Z" title="发表于 2026-01-04 16:21:23">2026-01-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/" title="furryCTF热身赛wp"><img src="https://picsum.photos/1920/1080?random=2" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="furryCTF热身赛wp"/></a><div class="content"><a class="title" href="/2026/01/03/furryCTF%E7%83%AD%E8%BA%AB%E8%B5%9Bwp/" title="furryCTF热身赛wp">furryCTF热身赛wp</a><time datetime="2026-01-02T17:05:43.000Z" title="发表于 2026-01-03 01:05:43">2026-01-03</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;&nbsp;2025 - 2026 By joke</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 8.1.1</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.5.3</a></span></div><div class="footer_custom_text">你和我的一切有关</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js?v=5.5.3"></script><script src="/js/main.js?v=5.5.3"></script><div class="js-pjax"><script>(() => {
+  const isShuoshuo = GLOBAL_CONFIG_SITE.pageType === 'shuoshuo'
+  const option = null
+
+  const getCount = () => {
+    const countELement = document.getElementById('twikoo-count')
+    if(!countELement) return
+    twikoo.getCommentsCount({
+      envId: 'https://jokeblogcomments.vercel.app',
+      region: '',
+      urls: [window.location.pathname],
+      includeReply: false
+    }).then(res => {
+      countELement.textContent = res[0].count
+    }).catch(err => {
+      console.error(err)
+    })
+  }
+
+  const init = (el = document, path = location.pathname) => {
+    twikoo.init({
+      el: el.querySelector('#twikoo-wrap'),
+      envId: 'https://jokeblogcomments.vercel.app',
+      region: '',
+      onCommentLoaded: () => {
+        btf.loadLightbox(document.querySelectorAll('#twikoo .tk-content img:not(.tk-owo-emotion)'))
+      },
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    
+
+    isShuoshuo && (window.shuoshuoComment.destroyTwikoo = () => {
+      if (el.children.length) {
+        el.innerHTML = ''
+        el.classList.add('no-comment')
+      }
+    })
+  }
+
+  const loadTwikoo = (el, path) => {
+    if (typeof twikoo === 'object') setTimeout(() => init(el, path), 0)
+    else btf.getScript('https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.all.min.js').then(() => init(el, path))
+  }
+
+  if (isShuoshuo) {
+    'Twikoo' === 'Twikoo'
+      ? window.shuoshuoComment = { loadComment: loadTwikoo }
+      : window.loadOtherComment = loadTwikoo
+    return
+  }
+
+  if ('Twikoo' === 'Twikoo' || !false) {
+    if (false) btf.loadComment(document.getElementById('twikoo-wrap'), loadTwikoo)
+    else loadTwikoo()
+  } else {
+    window.loadOtherComment = loadTwikoo
+  }
+})()</script></div><script src="/js/random_bg.js"></script><script src="/js/sakura.js"></script><script src="/js/music_card.js"></script><script src="/js/runtime.js"></script><canvas class="fireworks" mobile="false"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.6/dist/fireworks.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax@0.2.8/pjax.min.js" defer="defer"></script><script>document.addEventListener('DOMContentLoaded', () => {
+  const pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+  window.pjax = new Pjax({
+    elements: 'a:not([target="_blank"])',
+    selectors: pjaxSelectors,
+    cacheBust: false,
+    analytics: false,
+    scrollRestoration: false
+  })
+
+  const triggerPjaxFn = (val) => {
+    if (!val) return
+    Object.values(val).forEach(fn => {
+      try {
+        fn()
+      } catch (err) {
+        console.debug('Pjax callback failed:', err)
+      }
+    })
+  }
+
+  document.addEventListener('pjax:send', () => {
+    // removeEventListener
+    btf.removeGlobalFnEvent('pjaxSendOnce')
+    btf.removeGlobalFnEvent('themeChange')
+
+    // reset readmode
+    const $bodyClassList = document.body.classList
+    if ($bodyClassList.contains('read-mode')) $bodyClassList.remove('read-mode')
+
+    triggerPjaxFn(window.globalFn.pjaxSend)
+  })
+
+  document.addEventListener('pjax:complete', () => {
+    btf.removeGlobalFnEvent('pjaxCompleteOnce')
+    document.querySelectorAll('script[data-pjax]').forEach(item => {
+      const newScript = document.createElement('script')
+      const content = item.text || item.textContent || item.innerHTML || ""
+      Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+      newScript.appendChild(document.createTextNode(content))
+      item.parentNode.replaceChild(newScript, item)
+    })
+
+    triggerPjaxFn(window.globalFn.pjaxComplete)
+  })
+
+  document.addEventListener('pjax:error', e => {
+    if (e.request.status === 404) {
+      false
+        ? pjax.loadUrl('/404.html')
+        : window.location.href = e.request.responseURL
+    }
+  })
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><i class="fas fa-spinner fa-pulse" id="loading-status" hidden="hidden"></i><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="text-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据加载中</span></div><div class="local-search-input"><input placeholder="搜索文章..." type="text"/></div><hr/><div id="local-search-results"></div><div class="ais-Pagination" id="local-search-pagination" style="display:none;"><ul class="ais-Pagination-list"></ul></div><div id="local-search-stats"></div></div><div id="search-mask"></div><script src="/js/search/local-search.js?v=5.5.3"></script></div></div><script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/shizuku.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"react":{"opacity":0.9},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body></html>
